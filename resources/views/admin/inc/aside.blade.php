@@ -14,13 +14,13 @@
           <span class="nav-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
           <span class="nav-text">Dashboard</span>
         </a>
-        <a class="nav-link" href="users.html">
-          <span class="nav-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
-          <span class="nav-text">Users</span>
+        <a class="nav-link" href="{{ route('admin.categories.index') }}">
+          <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+          <span class="nav-text">Categories</span>
         </a>
-        <a class="nav-link" href="add-user.html">
-          <span class="nav-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
-          <span class="nav-text">Add User</span>
+        <a class="nav-link" href="{{ route('admin.brands.index') }}">
+          <span class="nav-icon"><i class="bi bi-tag" aria-hidden="true"></i></span>
+          <span class="nav-text">Brands</span>
         </a>
         <a class="nav-link" href="profile.html">
           <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
