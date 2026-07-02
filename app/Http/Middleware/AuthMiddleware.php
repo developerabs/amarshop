@@ -16,7 +16,6 @@ class AuthMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (! auth()->check()) {
-            dd('User is not authenticated. Redirecting to login page.');
             return redirect()->route('admin.login');
         }
 

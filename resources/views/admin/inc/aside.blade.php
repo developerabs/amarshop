@@ -10,7 +10,7 @@
       </div>
 
       <nav class="sidebar-nav">
-        <a class="nav-link active" href="index.html" aria-current="page">
+        <a class="nav-link active" href="{{ route('admin.dashboard') }}" aria-current="page">
           <span class="nav-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
           <span class="nav-text">Dashboard</span>
         </a>
@@ -50,7 +50,7 @@
           <span class="nav-icon"><i class="bi bi-window-stack" aria-hidden="true"></i></span>
           <span class="nav-text">Modals</span>
         </a>
-        <a class="nav-link" href="settings.html">
+        <a class="nav-link" href="{{ route('admin.site-settings') }}">
           <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
           <span class="nav-text">Settings</span>
         </a>
