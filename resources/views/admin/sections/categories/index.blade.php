@@ -9,28 +9,12 @@
         <h1 class="h3 mb-1">All Categories</h1>
         </div>
     </div>
-    <div class="heading-actions"><a class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#formModal" href="{{ route('admin.categories.create') }}"><i class="bi bi-person-plus" aria-hidden="true"></i> Add Category</a></div>
+    <div class="heading-actions"><a class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#formModal" href="{{ route('admin.categories.create') }}"><i class="bi bi-plus" aria-hidden="true"></i> Add Category</a></div>
     </div>
 
     <section class="panel">
     <div class="panel-header"><div><h2 class="h5 mb-1 section-title"><i class="bi bi-table" aria-hidden="true"></i><span>All Categories</span></h2></div><input class="form-control form-control-sm table-search" type="search" placeholder="Search orders" data-table-search="ordersTable" aria-label="Search orders"></div>
     <div class="table-responsive">
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        @if ($errors->any())
-            <div class="alert alert-danger" role="alert">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
         <table class="table align-middle mb-0" id="ordersTable" data-searchable-table>
             <thead>
                 <tr>
@@ -46,7 +30,7 @@
             <tbody>
                 @forelse($categories ?? [] as $category)
                 <tr>
-                    <td class="fw-semibold">{{ $loop->iteration }}</td>
+                    <td class="fw-semibold">{{ $categories->firstItem() + $loop->index }}</td>
                     <td></td>
                     <td>{{ $category->name ?? 'N/A' }}</td>
                     <td>{{ $category->parent ? $category->parent->name : 'None' }}</td>
@@ -74,13 +58,16 @@
                 @endforelse
              </tbody>
          </table>
+        <div class="mt-3">
+            {{ $categories->links() }}
+        </div>
      </div>
     </section>
     <div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
             <form class="panel needs-validation" novalidate method="POST" action="{{ route('admin.categories.store') }}" enctype="multipart/form-data">
                 @csrf
-                <div class="panel-header"><div><h2 class="h5 mb-1 section-title"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i><span>Add New Category</span></h2><p class="text-muted mb-0">Bootstrap-ready fields with custom validation feedback.</p></div></div>
+                <div class="panel-header"><div><h2 class="h5 mb-1 section-title"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i><span>Add New Category</span></h2></div></div>
                 <div class="row g-3">
                     <div class="col-md-12">
                         <label class="form-label" for="formName">Name*</label>

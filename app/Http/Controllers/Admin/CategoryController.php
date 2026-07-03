@@ -51,7 +51,7 @@ class CategoryController extends Controller
             return redirect()->back()->with('error', 'Cannot add a subcategory to a level 2 category.')->withInput();
         }
         if (isset($validatedData['image']) && $request->hasFile('image')) {
-            $validatedData['image'] = $request->file('image')->store('categories', 'public');
+            $validatedData['image'] = uploadImage($request->file('image'), 'categories');
         }
 
         try {

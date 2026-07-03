@@ -12,6 +12,7 @@ class Category extends Model
         'description',
         'image',
         'parent_id',
+        'level',
         'status',
     ];
     protected $casts = [
@@ -20,6 +21,7 @@ class Category extends Model
         'description' => 'string',
         'image' => 'string',
         'parent_id' => 'integer',
+        'level' => 'integer',
         'status' => 'boolean',
     ];
 
