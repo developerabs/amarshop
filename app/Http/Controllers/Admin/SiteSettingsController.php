@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\SiteSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Admin\SiteSettings;
+use Illuminate\Support\Facades\Validator;
 
 class SiteSettingsController extends Controller
 {   
@@ -17,7 +18,7 @@ class SiteSettingsController extends Controller
 
     public function update(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'site_name' => 'required|string|max:255',
             'site_title' => 'required|string|max:255',
             'site_description' => 'nullable|string|max:255',
@@ -28,6 +29,12 @@ class SiteSettingsController extends Controller
             'site_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'site_favicon' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $validatedData = $validator->validated();
 
         $siteSetting = SiteSettings::first();
 

@@ -10,18 +10,36 @@
       </div>
 
       <nav class="sidebar-nav">
-        <a class="nav-link active" href="{{ route('admin.dashboard') }}" aria-current="page">
+        <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}" aria-current="page">
           <span class="nav-icon"><i class="bi bi-speedometer2" aria-hidden="true"></i></span>
           <span class="nav-text">Dashboard</span>
         </a>
-        <a class="nav-link" href="{{ route('admin.categories.index') }}">
-          <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
-          <span class="nav-text">Categories</span>
-        </a>
-        <a class="nav-link" href="{{ route('admin.brands.index') }}">
-          <span class="nav-icon"><i class="bi bi-tag" aria-hidden="true"></i></span>
-          <span class="nav-text">Brands</span>
-        </a>
+        <div class="nav-group">
+          @php
+              $ecomRoutes = [
+                'admin.categories.*', 
+                'admin.brands.*'
+              ];
+              $ecomActive = request()->routeIs(...$ecomRoutes);
+          @endphp
+          <a class="nav-link nav-group-toggle {{ $ecomActive ? 'active' : '' }}" href="#ecomMenu" data-bs-toggle="collapse" aria-expanded="{{ $ecomActive ? 'true' : 'false' }}">
+            <span class="nav-icon"><i class="bi bi-bag" aria-hidden="true"></i></span>
+            <span class="nav-text">Ecom</span>
+            <span class="nav-caret"><i class="bi bi-chevron-down"></i></span>
+          </a>
+          <div class="collapse {{ $ecomActive ? 'show' : '' }}" id="ecomMenu">
+            <nav class="nav-group-items">
+              <a class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}">
+                <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+                <span class="nav-text">Categories</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}" href="{{ route('admin.brands.index') }}">
+                <span class="nav-icon"><i class="bi bi-tag" aria-hidden="true"></i></span>
+                <span class="nav-text">Brands</span>
+              </a>
+            </nav>
+          </div>
+        </div>
         <a class="nav-link" href="profile.html">
           <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
           <span class="nav-text">Profile</span>

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Brand;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class BrandController extends Controller
@@ -20,7 +22,7 @@ class BrandController extends Controller
     }
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -29,16 +31,28 @@ class BrandController extends Controller
             'meta_description' => 'nullable|string|max:255',
         ]);
 
-        // Create the brand
-        $brand = Brand::create([
-            'name' => $request->input('name'),
-            'slug' => Str::slug($request->input('name')),
-            'description' => $request->input('description'),
-            'meta_title' => $request->input('meta_title'),
-            'meta_keywords' => $request->input('meta_keywords'),
-            'meta_description' => $request->input('meta_description'),
-            'status' => true, // Default status
-        ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $validatedData = $validator->validated();
+
+        try {
+            DB::beginTransaction();
+            $brand = Brand::create([
+                'name' => $validatedData['name'],
+                'slug' => Str::slug($validatedData['name']),
+                'description' => $validatedData['description'],
+                'meta_title' => $validatedData['meta_title'],
+                'meta_keywords' => $validatedData['meta_keywords'],
+                'meta_description' => $validatedData['meta_description'],
+                'status' => true, // Default status
+            ]);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Failed to create brand: ' . $e->getMessage())->withInput();
+        }
 
         return redirect()->route('admin.brands.index')->with('success', 'Brand created successfully.');
     }
@@ -50,7 +64,7 @@ class BrandController extends Controller
     }
     public function update(Request $request, $brandId)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -59,23 +73,43 @@ class BrandController extends Controller
             'meta_description' => 'nullable|string|max:255',
         ]);
 
-        $brand = Brand::findOrFail($brandId);
-        $brand->update([
-            'name' => $request->input('name'),
-            'slug' => Str::slug($request->input('name')),
-            'description' => $request->input('description'),
-            'meta_title' => $request->input('meta_title'),
-            'meta_keywords' => $request->input('meta_keywords'),
-            'meta_description' => $request->input('meta_description'),
-            'status' => $request->has('status') ? true : false,
-        ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $validatedData = $validator->validated();
+
+        try {
+            DB::beginTransaction();
+            $brand = Brand::findOrFail($brandId);
+            $brand->update([
+                'name' => $validatedData['name'],
+                'slug' => Str::slug($validatedData['name']),
+                'description' => $validatedData['description'],
+                'meta_title' => $validatedData['meta_title'],
+                'meta_keywords' => $validatedData['meta_keywords'],
+                'meta_description' => $validatedData['meta_description'],
+                'status' => $request->has('status') ? true : false,
+            ]);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Failed to update brand: ' . $e->getMessage())->withInput();
+        }
 
         return redirect()->route('admin.brands.index')->with('success', 'Brand updated successfully.');
     }
     public function destroy($brandId)
     {
-        $brand = Brand::findOrFail($brandId);
-        $brand->delete();
+        try {
+            DB::beginTransaction();
+            $brand = Brand::findOrFail($brandId);
+            $brand->delete();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Failed to delete brand: ' . $e->getMessage());
+        }
 
         return redirect()->route('admin.brands.index')->with('success', 'Brand deleted successfully.');
     }
