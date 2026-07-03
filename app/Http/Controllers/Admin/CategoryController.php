@@ -13,26 +13,36 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::with('parent')->orderBy('id', 'desc')->paginate(20);
         $parentCategories = Category::with('children', 'children.children')->where('level', 0)->orderBy('id', 'desc')->get();
         
-        return view('admin.sections.categories.index', compact('categories', 'parentCategories'));
+        return view('admin.sections.categories.index', compact('parentCategories'));
     }
-
-    public function create()
+    public function search(Request $request)
     {
-        $parentCategories = Category::where('level', 0)->orderBy('id', 'desc')->get();
-        return view('admin.sections.categories.create', compact('parentCategories'));
-    }
+        $query = Category::query();
 
+        if ($request->has('name') && !empty($request->input('name'))) {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        }
+
+        if ($request->has('status') && $request->input('status') !== '') {
+            $query->where('status', $request->input('status'));
+        }
+
+        $categories = $query->with('parent')->orderBy('id', 'desc')->paginate(20)->withQueryString();
+
+        return view('admin.components.data-table.categories-table', compact('categories'));
+    }
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'parent_category' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'description' => 'nullable|string|max:255',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
+            'status' => 'required|boolean',
         ]);
         
         if ($validator->fails()) {
@@ -62,10 +72,11 @@ class CategoryController extends Controller
                 'slug' => Str::slug($validatedData['name']),
                 'parent_id' => $parentCategory ? $parentCategory->id : null,
                 'level' => $parentCategory ? $parentCategory->level + 1 : 0,
-                'status' => true, // Default status
-                'meta_title' => $validatedData['meta_title'],
-                'meta_description' => $validatedData['meta_description'],
                 'image' => $validatedData['image'] ?? null,
+                'description' => $validatedData['description'] ?? null,
+                'meta_title' => $validatedData['meta_title'] ?? null,
+                'meta_description' => $validatedData['meta_description'] ?? null,
+                'status' => $validatedData['status'] ?? false,
             ]);
             
             DB::commit();
@@ -93,6 +104,7 @@ class CategoryController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -108,8 +120,9 @@ class CategoryController extends Controller
                 'name' => $validatedData['name'],
                 'slug' => Str::slug($validatedData['name']),
                 'parent_id' => $validatedData['parent_category'] ?? null,
-                'meta_title' => $validatedData['meta_title'],
-                'meta_description' => $validatedData['meta_description'],
+                'meta_title' => $validatedData['meta_title'] ?? null,
+                'meta_description' => $validatedData['meta_description'] ?? null,
+                'description' => $validatedData['description'] ?? null,
             ]);
             DB::commit();
         } catch (\Exception $e) {

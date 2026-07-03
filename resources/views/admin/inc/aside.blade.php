@@ -27,8 +27,8 @@
             <span class="nav-text">Ecom</span>
             <span class="nav-caret"><i class="bi bi-chevron-down"></i></span>
           </a>
-          <div class="collapse {{ $ecomActive ? 'show' : '' }}" id="ecomMenu">
-            <nav class="nav-group-items ml-3">
+          <div class="collapse {{ $ecomActive ? 'show' : '' }} sub-menu" id="ecomMenu">
+            <nav class="nav-group-items">
               <a class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}">
                 <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
                 <span class="nav-text">Categories</span>

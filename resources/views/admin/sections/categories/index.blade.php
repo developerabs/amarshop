@@ -9,58 +9,13 @@
         <h1 class="h3 mb-1">All Categories</h1>
         </div>
     </div>
-    <div class="heading-actions"><a class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#formModal" href="{{ route('admin.categories.create') }}"><i class="bi bi-plus" aria-hidden="true"></i> Add Category</a></div>
+    <div class="heading-actions"><button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#formModal"><i class="bi bi-plus" aria-hidden="true"></i> Add Category</button></div>
     </div>
 
     <section class="panel">
-    <div class="panel-header"><div><h2 class="h5 mb-1 section-title"><i class="bi bi-table" aria-hidden="true"></i><span>All Categories</span></h2></div><input class="form-control form-control-sm table-search" type="search" placeholder="Search orders" data-table-search="ordersTable" aria-label="Search orders"></div>
-    <div class="table-responsive">
-        <table class="table align-middle mb-0" id="ordersTable" data-searchable-table>
-            <thead>
-                <tr>
-                    <th>SL</th>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Parent Category</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th class="text-end">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($categories ?? [] as $category)
-                <tr>
-                    <td class="fw-semibold">{{ $categories->firstItem() + $loop->index }}</td>
-                    <td></td>
-                    <td>{{ $category->name ?? 'N/A' }}</td>
-                    <td>{{ $category->parent ? $category->parent->name : 'None' }}</td>
-                    <td>
-                        @if($category->status)
-                            <span class="badge bg-success">Active</span>
-                        @else
-                            <span class="badge bg-danger">Inactive</span>
-                        @endif
-                    </td>
-                    <td>{{ $category->created_at ?$category->created_at->format('M j, Y') : 'N/A' }}</td>
-                    <td class="text-end">
-                        <a class="btn btn-warning btn-sm" href="{{ route('admin.categories.edit', $category->id) }}"><i class="bi bi-pencil" aria-hidden="true"></i></a>
-                        <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" style="display: inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-danger btn-sm" type="submit"><i class="bi bi-trash" aria-hidden="true"></i></button>
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="7" class="text-center">No categories found.</td>
-                </tr>
-                @endforelse
-             </tbody>
-         </table>
-        <div class="mt-3">
-            {{ $categories->links() }}
-        </div>
+    <div class="panel-header"><div><h2 class="h5 mb-1 section-title"><i class="bi bi-table" aria-hidden="true"></i><span>All Categories</span></h2></div><input id="categorySearch" class="form-control form-control-sm table-search" type="search" placeholder="Search categories" aria-label="Search categories"></div>
+    <div class="table-responsive categoryTableBody" id="categoryTableBody">
+        
      </div>
     </section>
     <div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
@@ -94,11 +49,13 @@
                     </div>
                     <div class="col-md-12">
                         <label class="form-label" for="formBudget">Image</label>
-                        <input class="form-control" id="formBudget" name="image" type="file" accept="image/*" onchange="document.getElementById('image_preview').src=window.URL.createObjectURL(this.files[0]); document.getElementById('image_preview').style.display='block';">
+                        <input class="form-control" id="formBudget" name="image" type="file" accept="image/*"
+                            onchange="if (this.files && this.files[0]) { const preview = document.getElementById('image_preview'); preview.src = window.URL.createObjectURL(this.files[0]); preview.style.display = 'block'; } else { document.getElementById('image_preview').style.display = 'none'; }">
+                        <img id="image_preview" src="#" alt="Image Preview" class="img-fluid fade-in mt-2" style="display: none; max-height: 180px;">
                     </div>
                     <div class="col-12">
                         <label class="form-label" for="formMessage">Description</label>
-                        <textarea class="form-control" id="formMessage" rows="5"></textarea>
+                        <textarea class="form-control" id="formMessage" name="description" rows="5"></textarea>
                     </div>
                     <div class="col-md-12">
                         <label class="form-label" for="formName">Meta Title</label>
@@ -127,3 +84,23 @@
     </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+    const categorySearchInput = document.getElementById('categorySearch');
+    const categoryTableBody = document.getElementById('categoryTableBody');
+
+    function categoryFilter() {
+        categoryTableBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+        $.post("{{ route('admin.categories.search') }}", {
+            "_token": "{{ csrf_token() }}",
+            "query": $("#categorySearch").val(),
+            "page": "{{ request()->get('page', 1) }}"
+        }).done(function(data) {
+            categoryTableBody.innerHTML = data;
+        }).fail(function(xhr, status, error) {
+            console.error("Error:", error);
+        });
+    }
+    categoryFilter();
+</script>
+@endpush

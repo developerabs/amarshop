@@ -21,3 +21,10 @@ function deleteImage($imagePath)
         Storage::disk('public')->delete($imagePath);
     }
 }
+function getImageUrl($imagePath)
+{
+    if ($imagePath && Storage::disk('public')->exists($imagePath)) {
+        return asset('storage/' . $imagePath);
+    }
+    return null;
+}

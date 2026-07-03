@@ -22,7 +22,7 @@ Route::name('admin.')->group(function () {
     // category management
     Route::controller(CategoryController::class)->prefix('categories')->name('categories.')->group(function () {
         Route::get('/', 'index')->name('index');
-        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'search')->name('search');
         Route::post('/create', 'store')->name('store');
         Route::get('/{category}/edit', 'edit')->name('edit');
         Route::put('/{category}/edit', 'update')->name('update');
