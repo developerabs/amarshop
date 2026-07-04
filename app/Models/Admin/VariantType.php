@@ -13,5 +13,10 @@ class VariantType extends Model
     protected $casts = [
         'name' => 'string',
     ];
-    
+
+    public function variantValues()
+    {
+        return $this->hasMany(VariantValue::class);
+    }
+
 }
