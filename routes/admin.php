@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AttributeController;
+use App\Http\Controllers\Admin\AttributeValueController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -34,5 +36,19 @@ Route::name('admin.')->group(function () {
         Route::post('/create', 'store')->name('store');
         Route::put('/update', 'update')->name('update');
         Route::delete('/{brand}', 'destroy')->name('destroy');
+    });
+    Route::controller(AttributeController::class)->prefix('attributes')->name('attributes.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::post('/create', 'store')->name('store');
+        Route::put('/update', 'update')->name('update');
+        Route::delete('/{attribute}', 'destroy')->name('destroy');
+    });
+    Route::controller(AttributeValueController::class)->prefix('attribute-values')->name('attribute-values.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::post('/create', 'storeValue')->name('store');
+        Route::put('/update', 'updateValue')->name('update');
+        Route::delete('/{attributeValue}', 'destroyValue')->name('destroy');
     });
 });
