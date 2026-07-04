@@ -18,7 +18,9 @@
           @php
               $ecomRoutes = [
                 'admin.categories.*', 
-                'admin.brands.*'
+                'admin.brands.*',
+                'admin.variant-types.*',
+                'admin.variant-values.*',
               ];
               $ecomActive = request()->routeIs(...$ecomRoutes);
           @endphp
@@ -36,6 +38,14 @@
               <a class="nav-link {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}" href="{{ route('admin.brands.index') }}">
                 <span class="nav-icon"><i class="bi bi-tag" aria-hidden="true"></i></span>
                 <span class="nav-text">Brands</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.variant-types.*') ? 'active' : '' }}" href="{{ route('admin.variant-types.index') }}">
+                <span class="nav-icon"><i class="bi bi-list-check" aria-hidden="true"></i></span>
+                <span class="nav-text">Variant Types</span>
+              </a>
+              <a href="{{ route('admin.variant-values.index') }}" class="nav-link {{ request()->routeIs('admin.variant-values.*') ? 'active' : '' }}">
+                <span class="nav-icon"><i class="bi bi-list-check" aria-hidden="true"></i></span>
+                <span class="nav-text">Variant Values</span>
               </a>
               {{-- <a class="nav-link {{ request()->routeIs('admin.attributes.*') ? 'active' : '' }}" href="{{ route('admin.attributes.index') }}">
                 <span class="nav-icon"><i class="bi bi-list-check" aria-hidden="true"></i></span>
