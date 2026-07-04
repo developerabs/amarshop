@@ -25,7 +25,7 @@ Route::name('admin.')->group(function () {
         Route::post('/', 'search')->name('search');
         Route::post('/create', 'store')->name('store');
         Route::get('/{category}/edit', 'edit')->name('edit');
-        Route::put('/{category}/edit', 'update')->name('update');
+        Route::put('/update', 'update')->name('update');
         Route::delete('/{category}', 'destroy')->name('destroy');
     });
     // brand management

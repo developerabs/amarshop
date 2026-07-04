@@ -46,7 +46,7 @@ class CategoryController extends Controller
         ]);
         
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return redirect()->back()->withErrors($validator)->withInput()->with('modal','addModal');
         }
         $validatedData = $validator->validated();
 
@@ -63,15 +63,15 @@ class CategoryController extends Controller
         if (isset($validatedData['image']) && $request->hasFile('image')) {
             $validatedData['image'] = uploadImage($request->file('image'), 'categories');
         }
-
+        
         try {
             DB::beginTransaction();
             // Create the category
             $category = Category::create([
                 'name' => $validatedData['name'],
                 'slug' => Str::slug($validatedData['name']),
-                'parent_id' => $parentCategory ? $parentCategory->id : null,
                 'level' => $parentCategory ? $parentCategory->level + 1 : 0,
+                'parent_id' => $parentCategory ? $parentCategory->id : null,
                 'image' => $validatedData['image'] ?? null,
                 'description' => $validatedData['description'] ?? null,
                 'meta_title' => $validatedData['meta_title'] ?? null,
@@ -96,33 +96,52 @@ class CategoryController extends Controller
         return view('admin.sections.categories.edit', compact('category', 'parentCategories'));
     }
 
-    public function update(Request $request, $categoryId)
+    public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
             'parent_category' => 'nullable|exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:255',
+            'status' => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return redirect()->back()->withErrors($validator)->withInput()->with('modal','editModal');
         }
 
         $validatedData = $validator->validated();
-
+        
+        $category = Category::findOrFail($validatedData['category_id']);
+        $parentCategory = null;
+        if (!empty($validatedData['parent_category'])) {
+            $parentCategory = Category::find($validatedData['parent_category']);
+            if (!$parentCategory) {
+                return redirect()->back()->with('error', 'Selected parent category does not exist.')->withInput();
+            }
+        }
+        if ($parentCategory && $parentCategory->level >= 2) {
+            return redirect()->back()->with('error', 'Cannot assign a level 2 category as a parent.')->withInput();
+        }
+        if (isset($validatedData['image']) && $request->hasFile('image')) {
+            $validatedData['image'] = uploadImage($request->file('image'), 'categories');
+            $category->image = $validatedData['image'];
+        }
         try {
             DB::beginTransaction();
-            $category = Category::findOrFail($categoryId);
             $category->update([
                 'name' => $validatedData['name'],
                 'slug' => Str::slug($validatedData['name']),
+                'level' => $parentCategory ? $parentCategory->level + 1 : 0,
                 'parent_id' => $validatedData['parent_category'] ?? null,
+                'image' => $validatedData['image'] ?? $category->image,
                 'meta_title' => $validatedData['meta_title'] ?? null,
                 'meta_description' => $validatedData['meta_description'] ?? null,
                 'description' => $validatedData['description'] ?? null,
+                'status' => $validatedData['status'] ?? false,
             ]);
             DB::commit();
         } catch (\Exception $e) {

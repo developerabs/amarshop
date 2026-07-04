@@ -11,7 +11,7 @@
     </thead>
     <tbody>
         @forelse($categories ?? [] as $category)
-        <tr>
+        <tr data-items="{{ json_encode($category) }}">
             <td><img src="{{ getImageUrl($category->image) ?? "" }}" class="img-thumbnail" width="80" height="40"></td>
             <td>
                 @php $level = (int) ($category->level ?? 0); @endphp
@@ -40,11 +40,11 @@
             </td>
             <td>{{ $category->created_at ?$category->created_at->format('M j, Y') : 'N/A' }}</td>
             <td class="text-end">
-                <a class="btn btn-warning btn-sm" href="{{ route('admin.categories.edit', $category->id) }}"><i class="bi bi-pencil" aria-hidden="true"></i></a>
-                <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" style="display: inline;">
+                <button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#editModal"><i class="bi bi-pencil" aria-hidden="true"></i></button>
+                <button class="btn btn-danger btn-sm delete-btn" type="button" data-id="{{ $category->id }}" data-url="{{ route('admin.categories.destroy', $category->id) }}"><i class="bi bi-trash" aria-hidden="true"></i></button>
+                <form id="delete-form" method="POST" style="display:none;">
                     @csrf
                     @method('DELETE')
-                    <button class="btn btn-danger btn-sm" type="submit"><i class="bi bi-trash" aria-hidden="true"></i></button>
                 </form>
             </td>
         </tr>

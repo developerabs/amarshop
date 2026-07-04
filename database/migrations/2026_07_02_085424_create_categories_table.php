@@ -17,11 +17,11 @@ return new class extends Migration
             $table->string('slug')->unique();
 
             // Parent category reference
+            $table->integer('level')->default(0);
             $table->foreignId('parent_id')
                 ->nullable()
                 ->constrained('categories')
                 ->nullOnDelete();
-            $table->integer('level')->default(0);
             $table->text('description')->nullable();
             $table->string('image')->nullable();
 

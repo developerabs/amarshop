@@ -2,6 +2,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Auth\AuthController;
 
+Route::get('/admin', function () {
+    return redirect()->route('admin.login');
+});
 Route::controller(AuthController::class)->group(function () {
     Route::get('/admin/login', 'showLoginForm')->name('admin.login');
     Route::post('/admin/login', 'login')->name('admin.login.submit');
