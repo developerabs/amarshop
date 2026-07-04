@@ -20,7 +20,6 @@ return new class extends Migration
             $table->boolean('status')->default(true);
             $table->integer('sort_order')->default(0);
             $table->string('meta_title')->nullable();
-            $table->string('meta_keywords')->nullable();
             $table->text('meta_description')->nullable();
             $table->timestamps();
         });

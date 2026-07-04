@@ -16,9 +16,21 @@ class BrandController extends Controller
         $brands = Brand::orderBy('id', 'desc')->paginate(20);
         return view('admin.sections.brands.index', compact('brands'));
     }
-    public function create()
+    public function search(Request $request)
     {
-        return view('admin.sections.brands.create');
+        $query = Brand::query();
+
+        if ($request->has('name') && !empty($request->input('name'))) {
+            $query->where('name', 'like', '%' . $request->input('name') . '%');
+        }
+
+        if ($request->has('status') && $request->input('status') !== '') {
+            $query->where('status', $request->input('status'));
+        }
+
+        $brands = $query->orderBy('id', 'desc')->paginate(20)->withQueryString();
+
+        return view('admin.components.data-table.brands-table', compact('brands'));
     }
     public function store(Request $request)
     {
@@ -27,15 +39,19 @@ class BrandController extends Controller
             'description' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'meta_title' => 'nullable|string|max:255',
-            'meta_keywords' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
+            'status' => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return redirect()->back()->withErrors($validator)->withInput()->with('modal','addModal');
         }
 
         $validatedData = $validator->validated();
+
+        if (isset($validatedData['image']) && $request->hasFile('image')) {
+            $validatedData['image'] = uploadImage($request->file('image'), 'brands');
+        }
 
         try {
             DB::beginTransaction();
@@ -43,10 +59,10 @@ class BrandController extends Controller
                 'name' => $validatedData['name'],
                 'slug' => Str::slug($validatedData['name']),
                 'description' => $validatedData['description'],
+                'image' => $validatedData['image'] ?? null,
                 'meta_title' => $validatedData['meta_title'],
-                'meta_keywords' => $validatedData['meta_keywords'],
                 'meta_description' => $validatedData['meta_description'],
-                'status' => true, // Default status
+                'status' => $validatedData['status'],
             ]);
             DB::commit();
         } catch (\Exception $e) {
@@ -62,34 +78,39 @@ class BrandController extends Controller
         $brand = Brand::findOrFail($brandId);
         return view('admin.sections.brands.edit', compact('brand'));
     }
-    public function update(Request $request, $brandId)
+    public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'brand_id' => 'required|exists:brands,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'meta_title' => 'nullable|string|max:255',
-            'meta_keywords' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
+            'status' => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return redirect()->back()->withErrors($validator)->withInput()->with('modal','editModal');
         }
 
         $validatedData = $validator->validated();
 
+        $brand = Brand::findOrFail($validatedData['brand_id']);
+        if (isset($validatedData['image']) && $request->hasFile('image')) {
+            $validatedData['image'] = updateImage($request->file('image'), 'brands', $brand->image);
+        }
+
         try {
             DB::beginTransaction();
-            $brand = Brand::findOrFail($brandId);
             $brand->update([
                 'name' => $validatedData['name'],
                 'slug' => Str::slug($validatedData['name']),
                 'description' => $validatedData['description'],
                 'meta_title' => $validatedData['meta_title'],
-                'meta_keywords' => $validatedData['meta_keywords'],
                 'meta_description' => $validatedData['meta_description'],
-                'status' => $request->has('status') ? true : false,
+                'image' => $validatedData['image'] ?? $brand->image,
+                'status' => $validatedData['status'] ?? $brand->status,
             ]);
             DB::commit();
         } catch (\Exception $e) {

@@ -14,7 +14,6 @@ class Brand extends Model
         'status',
         'sort_order',
         'meta_title',
-        'meta_keywords',
         'meta_description',
     ];
 
@@ -26,7 +25,6 @@ class Brand extends Model
         'status' => 'boolean',
         'sort_order' => 'integer',
         'meta_title' => 'string',
-        'meta_keywords' => 'string',
         'meta_description' => 'string',
     ];
 }

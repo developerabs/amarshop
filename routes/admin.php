@@ -24,17 +24,15 @@ Route::name('admin.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/', 'search')->name('search');
         Route::post('/create', 'store')->name('store');
-        Route::get('/{category}/edit', 'edit')->name('edit');
         Route::put('/update', 'update')->name('update');
         Route::delete('/{category}', 'destroy')->name('destroy');
     });
     // brand management
     Route::controller(BrandController::class)->prefix('brands')->name('brands.')->group(function () {
         Route::get('/', 'index')->name('index');
-        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'search')->name('search');
         Route::post('/create', 'store')->name('store');
-        Route::get('/{brand}/edit', 'edit')->name('edit');
-        Route::put('/{brand}/edit', 'update')->name('update');
+        Route::put('/update', 'update')->name('update');
         Route::delete('/{brand}', 'destroy')->name('destroy');
     });
 });

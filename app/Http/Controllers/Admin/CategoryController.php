@@ -127,8 +127,7 @@ class CategoryController extends Controller
             return redirect()->back()->with('error', 'Cannot assign a level 2 category as a parent.')->withInput();
         }
         if (isset($validatedData['image']) && $request->hasFile('image')) {
-            $validatedData['image'] = uploadImage($request->file('image'), 'categories');
-            $category->image = $validatedData['image'];
+            $validatedData['image'] = updateImage($request->file('image'), 'categories', $category->image);
         }
         try {
             DB::beginTransaction();
