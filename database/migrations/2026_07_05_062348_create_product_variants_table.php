@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('product_id');
             $table->string('name', 100);
-            $table->string('sku', 50)->unique();
+            $table->string('sku', 50);
             $table->decimal('additional_cost', 10, 2)->default(0);
             $table->decimal('additional_price', 10, 2)->default(0);
             $table->integer('stock')->default(0);

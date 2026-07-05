@@ -69,7 +69,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label" for="formBudget">Stock*</label>
-                        <input class="form-control" id="formBudget" type="number" min="1" name="stock" value="{{ old('stock') }}" required>
+                        <input class="form-control" id="formBudget" type="number" min="1" name="total_stock" value="{{ old('total_stock') }}" required>
                     </div>
                     <div class="col-md-12">
                         <div class="product-variation-select">
@@ -155,7 +155,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="sampleCheck" name="is_active" checked>
+                                <input class="form-check-input" type="checkbox" id="sampleCheck" name="status" checked>
                                 <label class="form-check-label" for="sampleCheck">Active</label>
                             </div>
                         </div>
@@ -188,141 +188,194 @@
     });
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const addVariationBtn = document.querySelector('.add-variation-btn');
-        const variationSelect = document.querySelector('.product-variation-select');
-        const variationTableBody = document.querySelector('#variationTable tbody');
+    document.addEventListener('DOMContentLoaded', function () {
 
-        function getSelectedValues(select) {
-            return $(select).val() || [];
-        }
+    const addVariationBtn = document.querySelector('.add-variation-btn');
+    const variationSelect = document.querySelector('.product-variation-select');
+    const variationTableBody = document.querySelector('#variationTable tbody');
 
-        function buildCombinations(groups) {
-            return groups.reduce((acc, values) => {
-                if (!acc.length) {
-                    return values.map(value => [value]);
-                }
+    function getVariationOptions() {
 
-                return acc.flatMap(previous => values.map(value => [...previous, value]));
-            }, []);
-        }
+        const options = [];
 
-        function updateVariationTable(event) {
-            if (!variationSelect.contains(event.target)) {
-                return;
+        $('input[name="variation_options[]"]').each(function () {
+
+            const value = $(this).val().trim();
+
+            if (value) {
+                options.push(value);
             }
 
-            if (event.target.name !== 'variation_options[]' && event.target.name !== 'variation_values[]' && !event.target.classList.contains('variation-value-select')) {
-                return;
-            }
-
-            const optionInputs = variationSelect.querySelectorAll('input[name="variation_options[]"]');
-            const valueSelects = variationSelect.querySelectorAll('select[name="variation_values[]"]');
-
-            const variationGroups = [];
-
-            for (let i = 0; i < optionInputs.length; i++) {
-                const optionValue = optionInputs[i].value.trim();
-                const valueSelect = valueSelects[i];
-                const values = valueSelect ? getSelectedValues(valueSelect) : [];
-
-                if (optionValue && values.length) {
-                    variationGroups.push(values);
-                }
-            }
-
-            variationTableBody.innerHTML = '';
-
-            if (!variationGroups.length) {
-                return;
-            }
-
-            const combinations = buildCombinations(variationGroups);
-
-            combinations.forEach(combo => {
-
-            const combinationText = combo.join('/');
-
-            const row = document.createElement('tr');
-
-            row.innerHTML = `
-                <td>${combinationText}</td>
-
-                <td>
-                    <input type="text"
-                        class="form-control"
-                        name="sku[]">
-                </td>
-
-                <td>
-                    <input type="number"
-                        class="form-control"
-                        name="additional_cost[]"
-                        value="0">
-                </td>
-
-                <td>
-                    <input type="number"
-                        class="form-control"
-                        name="additional_price[]"
-                        value="0">
-                </td>
-            `;
-
-            variationTableBody.appendChild(row);
         });
-            console.log(variationGroups);
+
+        return options;
+    }
+    // Generate combinations
+    function buildCombinations(groups) {
+        return groups.reduce((acc, values) => {
+
+            if (!acc.length) {
+                return values.map(value => [value]);
+            }
+
+            return acc.flatMap(previous =>
+                values.map(value => [...previous, value])
+            );
+
+        }, []);
+    }
+
+    // Collect all selected values
+    function getVariationGroups() {
+
+        const groups = [];
+
+        $('.variation-value-select').each(function () {
+
+            const values = $(this).val();
+
+            if (values && values.length) {
+                groups.push(values);
+            }
+
+        });
+
+        return groups;
+    }
+
+    // Render variant table
+    function renderVariationTable() {
+
+        const groups = getVariationGroups();
+        const options = getVariationOptions();
+
+        variationTableBody.innerHTML = '';
+
+        if (!groups.length) {
+            return;
         }
 
-        addVariationBtn.addEventListener('click', function() {
-            const variationItems = variationSelect.querySelectorAll('.product-variant-items');
+        const combinations = buildCombinations(groups);
 
-            const newVariationSection = document.createElement('div');
-            newVariationSection.className = 'product-variant-items mt-3';
+        let html = '';
 
-            newVariationSection.innerHTML = `
-                <div class="row">
-                    <div class="col-md-6">
-                        <label class="form-label">Option*</label>
-                        <input type="text"
+        combinations.forEach((combo) => {
+
+            const variantName = combo.join('/');
+
+            const variantAttributes = {};
+
+            options.forEach((option, index) => {
+
+                if (combo[index] !== undefined) {
+                    variantAttributes[option] = combo[index];
+                }
+
+            });
+
+            const jsonAttributes = JSON.stringify(variantAttributes);
+
+            html += `
+                <tr>
+                    <td>
+                        ${variantName}
+
+                        <input type="hidden"
+                            name="variant_name[]"
+                            value="${variantName}">
+
+                        <input type="hidden"
+                            name="variant_attributes[]"
+                            value='${jsonAttributes}'>
+                    </td>
+
+                    <td>
+                        <input type="number"
                             class="form-control"
-                            name="variation_options[]"
-                            placeholder="Color, Size, Material, etc."
-                            required>
-                    </div>
+                            name="additional_cost[]"
+                            value="0"
+                            min="0">
+                    </td>
 
-                    <div class="col-md-6">
-                        <label class="form-label">Value*</label>
-                        <select class="form-control variation-value-select"
-                                name="variation_values[]"
-                                multiple>
-                        </select>
-                    </div>
-                </div>
+                    <td>
+                        <input type="number"
+                            class="form-control"
+                            name="additional_price[]"
+                            value="0"
+                            min="0">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                            class="form-control"
+                            name="stock[]"
+                            value="0"
+                            min="0">
+                    </td>
+                </tr>
             `;
-
-            const lastVariationItems = variationItems[variationItems.length - 1];
-            lastVariationItems.after(newVariationSection);
-
-            $(newVariationSection)
-                .find('.variation-value-select')
-                .select2({
-                    tags: true,
-                    tokenSeparators: [','],
-                    placeholder: 'Enter values'
-                });
         });
 
-        variationSelect.addEventListener('input', updateVariationTable);
-        variationSelect.addEventListener('change', updateVariationTable);
+        variationTableBody.innerHTML = html;
+    }
 
-        variationTableBody.addEventListener('click', function(event) {
-            if (event.target.classList.contains('remove-variation-btn')) {
-                const rowToRemove = event.target.closest('tr');
-                rowToRemove.remove();
-            }
-        });
+    // Add new variation field
+    addVariationBtn.addEventListener('click', function () {
+
+        const variationItems = variationSelect.querySelectorAll('.product-variant-items');
+
+        const newVariationSection = document.createElement('div');
+
+        newVariationSection.className = 'product-variant-items mt-3';
+
+        newVariationSection.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Option*</label>
+                    <input type="text"
+                           class="form-control"
+                           name="variation_options[]"
+                           placeholder="Color, Size, Unit, Storage"
+                           required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Value*</label>
+
+                    <select class="form-control variation-value-select"
+                            name="variation_values[]"
+                            multiple>
+                    </select>
+                </div>
+            </div>
+        `;
+
+        const lastVariationItem = variationItems[variationItems.length - 1];
+
+        lastVariationItem.after(newVariationSection);
+
+        $(newVariationSection)
+            .find('.variation-value-select')
+            .select2({
+                tags: true,
+                tokenSeparators: [','],
+                placeholder: 'Enter values'
+            });
     });
+
+    // Existing select2 init
+    $('.variation-value-select').select2({
+        tags: true,
+        tokenSeparators: [','],
+        placeholder: 'Enter values'
+    });
+
+    // When values change
+    $(document).on('change', '.variation-value-select', function () {
+        renderVariationTable();
+    });
+
+});
 </script>
 <script>
     $('.variation-value-select').select2({
