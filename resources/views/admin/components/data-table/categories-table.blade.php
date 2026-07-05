@@ -12,7 +12,7 @@
     <tbody>
         @forelse($categories ?? [] as $category)
         <tr data-items="{{ json_encode($category) }}">
-            <td><img src="{{ getImageUrl($category->image) ?? "" }}" class="img-thumbnail" width="80" height="40"></td>
+            <td><img src="{{ getImageUrl($category->image) ?? "" }}" class="img-thumbnail" width="40" height="30"></td>
             <td>
                 @php $level = (int) ($category->level ?? 0); @endphp
                 @if($level > 0)

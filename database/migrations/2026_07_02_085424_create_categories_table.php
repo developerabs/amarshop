@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name', 100)->index();
             $table->string('slug')->unique();
 
             // Parent category reference
@@ -21,16 +21,15 @@ return new class extends Migration
             $table->foreignId('parent_id')
                 ->nullable()
                 ->constrained('categories')
-                ->nullOnDelete();
+                ->nullOnDelete()->index();
             $table->text('description')->nullable();
             $table->string('image')->nullable();
-
             $table->boolean('status')->default(true);
-            $table->integer('sort_order')->default(0);
             $table->string('meta_title')->nullable();
             $table->string('meta_keywords')->nullable();
             $table->text('meta_description')->nullable();
             $table->timestamps();
+            
         });
     }
 

@@ -36,6 +36,7 @@
         }).done(function(data) {
             categoryTableBody.innerHTML = data;
         }).fail(function(xhr, status, error) {
+            alert(error);
             console.error("Error:", error);
         });
     }

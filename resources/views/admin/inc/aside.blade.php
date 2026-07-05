@@ -21,6 +21,7 @@
                 'admin.brands.*',
                 'admin.variant-types.*',
                 'admin.variant-values.*',
+                'admin.products.*',
               ];
               $ecomActive = request()->routeIs(...$ecomRoutes);
           @endphp
@@ -39,22 +40,10 @@
                 <span class="nav-icon"><i class="bi bi-tag" aria-hidden="true"></i></span>
                 <span class="nav-text">Brands</span>
               </a>
-              <a class="nav-link {{ request()->routeIs('admin.variant-types.*') ? 'active' : '' }}" href="{{ route('admin.variant-types.index') }}">
-                <span class="nav-icon"><i class="bi bi-list-check" aria-hidden="true"></i></span>
-                <span class="nav-text">Variant Types</span>
+              <a class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}" href="{{ route('admin.products.index') }}">
+                <span class="nav-icon"><i class="bi bi-box" aria-hidden="true"></i></span>
+                <span class="nav-text">Products</span>
               </a>
-              <a href="{{ route('admin.variant-values.index') }}" class="nav-link {{ request()->routeIs('admin.variant-values.*') ? 'active' : '' }}">
-                <span class="nav-icon"><i class="bi bi-list-check" aria-hidden="true"></i></span>
-                <span class="nav-text">Variant Values</span>
-              </a>
-              {{-- <a class="nav-link {{ request()->routeIs('admin.attributes.*') ? 'active' : '' }}" href="{{ route('admin.attributes.index') }}">
-                <span class="nav-icon"><i class="bi bi-list-check" aria-hidden="true"></i></span>
-                <span class="nav-text">Attributes</span>
-              </a>
-              <a class="nav-link {{ request()->routeIs('admin.attribute-values.*') ? 'active' : '' }}" href="{{ route('admin.attribute-values.index') }}">
-                <span class="nav-icon"><i class="bi bi-list-check" aria-hidden="true"></i></span>
-                <span class="nav-text">Attributes Values</span>
-              </a> --}}
             </nav>
           </div>
         </div>
