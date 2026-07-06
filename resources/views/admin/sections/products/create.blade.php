@@ -1,5 +1,11 @@
 @extends('admin.layouts.master')
-
+@push('styles')
+    <style>
+        .product-variation-select {
+            display: none;
+        }
+    </style>
+@endpush
 @section('content')
 <div class="container-fluid px-3 px-lg-4 py-4">
           <div class="page-heading">
@@ -77,12 +83,12 @@
                             <div class="product-variant-items">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <label class="form-label" for="formBudget">Option*</label>
-                                        <input type="text" class="form-control" name="variation_options[]" value="" placeholder="Color, Size, Material, etc." required>
+                                        <label class="form-label" for="variationOptionInput">Option*</label>
+                                        <input type="text" class="form-control" id="variationOptionInput" name="variation_options[]" value="" placeholder="Color, Size, Material, etc." required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label" for="formBudget">Value*</label>
-                                        <select class="form-control variation-value-select" id="variationValueSelect" name="variation_values[]" multiple></select>
+                                        <label class="form-label" for="variationValueSelect">Value*</label>
+                                        <select class="form-select variation-value-select" id="variationValueSelect" name="variation_values[]" multiple></select>
                                     </div>
                                 </div>
                             </div>
@@ -110,14 +116,14 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label" for="formBudget">Image</label>
-                        <input class="form-control" id="formBudget" type="file" name="image" multiple>
+                        <input class="form-control" id="formBudget" type="file" name="image[]" multiple>
                     </div>
                     <div class="col-md-12">
                         <label class="form-label" for="formBudget">Short Description</label>
                         <textarea class="form-control" id="formBudget" name="short_description" required rows="4">{{ old('short_description') }}</textarea>
                     </div>
                     <div class="col-md-12">
-                        <label class="form-label" for="formBudget">Long Description</label>
+                        <label class="form-label" for="formBudget">Description</label>
                         <textarea class="form-control" id="formBudget" name="long_description" required rows="8">{{ old('long_description') }}</textarea>
                     </div>
                 </div>
@@ -143,14 +149,14 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="sampleCheck" name="has_variation">
-                                <label class="form-check-label" for="sampleCheck">Has Variation</label>
+                                <input class="form-check-input" type="checkbox" id="hasVariantCheck" name="has_variation">
+                                <label class="form-check-label" for="hasVariantCheck">Has Variation</label>
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="sampleCheck" name="add_to_flash_deal">
-                                <label class="form-check-label" for="sampleCheck">Add To Flash Deal</label>
+                                <input class="form-check-input" type="checkbox" id="addFlashDealCheck" name="add_to_flash_deal">
+                                <label class="form-check-label" for="addFlashDealCheck">Add To Flash Deal</label>
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -184,7 +190,14 @@
             } else {
                 variationSelect.style.display = 'none';
             }
+            // Existing select2 init
+            $('.variation-value-select').select2({
+                tags: true,
+                tokenSeparators: [','],
+                placeholder: 'Enter values'
+            });
         });
+        
     });
 </script>
 <script>
@@ -341,7 +354,6 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Value*</label>
-
                     <select class="form-control variation-value-select"
                             name="variation_values[]"
                             multiple>

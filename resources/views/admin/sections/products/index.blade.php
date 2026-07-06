@@ -28,7 +28,7 @@
         <tbody>
             @forelse($products ?? [] as $product)
             <tr data-items="{{ json_encode($product) }}">
-                <td><img src="{{ getImageUrl($product->image) ?? "" }}" class="img-thumbnail" width="40" height="30"></td>
+                <td><img src="{{ getImageUrl($product->thumbnail) ?? "" }}" class="img-thumbnail" width="40" height="30"></td>
                 <td>{{ $product->name ?? 'N/A' }}</td>
                 <td>
                     @if($product->status)

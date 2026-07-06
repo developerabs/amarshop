@@ -1,41 +1,42 @@
 <?php
 namespace App\Http\Helpers;
 
-class ApiResponse {
-
-    public static function error($errors,$data = null, $status = 400) {
-        $responseData = [
-            'message'   => [
-                'error'    => $errors,
-            ],
-            'data'      => $data,
-            'type'          => "error",
-        ];
-        
-        return response()->json($responseData,$status);
+class ApiResponse
+{
+    public static function success(
+        string $message = 'Success',
+        mixed $data = null,
+        int $status = 200
+    ) {
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'data'    => $data,
+        ], $status);
     }
 
-    public static function success($success,$data = null,$status = 200) {
-        $responseData = [
-            'message'       => [
-                'success'   => $success,
-            ],
-            'data'          => $data,
-            'type'          => "success",
-        ];
-
-        return response()->json($responseData,$status);
+    public static function error(
+        string|array $message = 'Something went wrong',
+        mixed $errors = null,
+        int $status = 400
+    ) {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+            'errors'  => $errors,
+        ], $status);
     }
 
-    public static function warning($warning,$data = null,$status = 400) {
-        $responseData = [
-            'message'       => [
-                'error'     => $warning,
-            ],
-            'data'          => $data,
-            'type'          => "warning",
-        ];
-
-        return response()->json($responseData,$status);
+    public static function warning(
+        string $message = 'Warning',
+        mixed $data = null,
+        int $status = 422
+    ) {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+            'data'    => $data,
+            'type'    => 'warning',
+        ], $status);
     }
 }

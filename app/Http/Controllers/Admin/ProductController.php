@@ -45,6 +45,9 @@ class ProductController extends Controller
             'additional_cost' => 'nullable|array',
             'additional_price' => 'nullable|array',
             'stock' => 'nullable|array',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'nullable|array',
+            'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -54,9 +57,24 @@ class ProductController extends Controller
         }
         $validatedData = $validator->validated();
         // dd($validatedData);
+        if ($request->has('has_variation') && $request->has('variant_name') && $request->has('variant_attributes')) {
+            if (count($request->variant_name) !== count($request->variant_attributes)) {
+                return redirect()->back()->with('error', 'Variant names and attributes count mismatch.')->withInput();
+            }
+        }
+        if ($request->hasFile('thumbnail')) {
+            $thumbnailPath = uploadImage($request->file('thumbnail'), 'products');
+            $validatedData['thumbnail'] = $thumbnailPath;
+        }
+        if ($request->hasFile('image')) {
+            $imagePaths = [];
+            foreach ($request->file('image') as $image) {
+                $imagePaths[] = uploadImage($image, 'products');
+            }
+            $validatedData['image'] = $imagePaths;
+        }
         try {
             DB::beginTransaction();
-
             $product = Product::create([
                 'code' => 'P' . time(),
                 'admin_id' => auth()->id(),
@@ -71,7 +89,8 @@ class ProductController extends Controller
                 'description' => $validatedData['description'] ?? null,
                 'meta_title' => $validatedData['meta_title'] ?? null,
                 'meta_description' => $validatedData['meta_description'] ?? null,
-                'thumbnail' => "null now",
+                'thumbnail' => $validatedData['thumbnail'] ?? null,
+                'image' => $validatedData['image'] ?? null,
             ]);
 
             foreach ($request->variant_attributes as $index => $attributeJson) {
@@ -79,7 +98,7 @@ class ProductController extends Controller
                 $variant = ProductVariant::create([
                     'product_id' => $product->id,
                     'name' => $request->variant_name[$index],
-                    'sku' => "sdfsaf",
+                    'sku' => $request->variant_name[$index],
                     'additional_cost' => $request->additional_cost[$index],
                     'additional_price' => $request->additional_price[$index],
                     'stock' => $request->stock[$index],
@@ -100,6 +119,14 @@ class ProductController extends Controller
             return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
+            if ($validatedData['thumbnail']) {
+                deleteImage($validatedData['thumbnail']);
+            }
+            if (!empty($validatedData['image'])) {
+                foreach ($validatedData['image'] as $imagePath) {
+                    deleteImage($imagePath);
+                }
+            }
             dd($e);
             return redirect()->back()->with('error', 'An error occurred while creating the product.')->withInput();
         }
