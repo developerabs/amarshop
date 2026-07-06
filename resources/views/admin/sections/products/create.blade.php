@@ -243,7 +243,7 @@
                             <label class="form-label" for="taxAmount">Tax</label>
                             <div class="input-group">
                                 <input class="form-control" id="taxAmount" type="number" min="0" name="tax" value="{{ old('tax') }}" placeholder="Amount">
-                                <select class="form-select" id="taxType" name="tax_type" required>
+                                <select class="form-select" id="taxType" name="tax_type">
                                     <option value="">Type</option>
                                     <option value="fixed" {{ old('tax_type') == 'fixed' ? 'selected' : '' }}>Fixed</option>
                                     <option value="percentage" {{ old('tax_type') == 'percentage' ? 'selected' : '' }}>Percentage</option>
@@ -366,11 +366,9 @@
 
         document.querySelectorAll('.variation-value-select').forEach(initSelect2);
 
-        // call renderVariationTable when variation values change
-        document.addEventListener('change', function(event) {
-            if (event.target.matches('.variation-value-select') || event.target.matches('select[name="variation_values[]"]') || event.target.matches('input[name="variation_options[]"]')) {
-                renderVariationTable();
-            }
+        // When values change
+        $(document).on('change', '.variation-value-select', function () {
+            renderVariationTable();
         });
         
 
