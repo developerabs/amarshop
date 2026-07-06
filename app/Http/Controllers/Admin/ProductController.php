@@ -37,17 +37,27 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'cost' => 'nullable|numeric|min:0',
             'total_stock' => 'required|integer|min:0',
-            'description' => 'nullable|string|max:255',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:255',
             'variant_name' => 'nullable|array',
+            'variant_name.*' => 'required|string|max:255',
+            'additional_cost.*' => 'nullable|numeric|min:0',
+            'additional_price.*' => 'nullable|numeric|min:0',
+            'stock.*' => 'nullable|integer|min:0',
             'variant_attributes' => 'nullable|array',
             'additional_cost' => 'nullable|array',
             'additional_price' => 'nullable|array',
             'stock' => 'nullable|array',
+
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'image' => 'nullable|array',
             'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'short_description' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:255',
+
+            'has_variation' => 'nullable|boolean',
+            'flash_deal' => 'nullable|boolean',
+            'status' => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -56,78 +66,98 @@ class ProductController extends Controller
                 ->withInput();
         }
         $validatedData = $validator->validated();
-        // dd($validatedData);
+        
         if ($request->has('has_variation') && $request->has('variant_name') && $request->has('variant_attributes')) {
             if (count($request->variant_name) !== count($request->variant_attributes)) {
                 return redirect()->back()->with('error', 'Variant names and attributes count mismatch.')->withInput();
             }
         }
-        if ($request->hasFile('thumbnail')) {
-            $thumbnailPath = uploadImage($request->file('thumbnail'), 'products');
-            $validatedData['thumbnail'] = $thumbnailPath;
-        }
-        if ($request->hasFile('image')) {
-            $imagePaths = [];
-            foreach ($request->file('image') as $image) {
-                $imagePaths[] = uploadImage($image, 'products');
-            }
-            $validatedData['image'] = $imagePaths;
-        }
+        $slug = Str::slug($request->name);
+        $count = Product::where('slug', 'like', "{$slug}%")->count();
+        $slug = $count ? "{$slug}-" . ($count + 1) : $slug;
+
         try {
-            DB::beginTransaction();
-            $product = Product::create([
-                'code' => 'P' . time(),
-                'admin_id' => auth()->id(),
-                'name' => $validatedData['name'],
-                'slug' => Str::slug($validatedData['name']),
-                'category_id' => $validatedData['category'],
-                'brand_id' => $validatedData['brand'],
-                'price' => $validatedData['price'],
-                'cost' => $validatedData['cost'] ?? 0,
-                'wholesale_price' => $validatedData['wholesale_price'] ?? 0,
-                'total_stock' => $validatedData['total_stock'],
-                'description' => $validatedData['description'] ?? null,
-                'meta_title' => $validatedData['meta_title'] ?? null,
-                'meta_description' => $validatedData['meta_description'] ?? null,
-                'thumbnail' => $validatedData['thumbnail'] ?? null,
-                'image' => $validatedData['image'] ?? null,
-            ]);
+            DB::transaction(function () use ($validatedData, $request, $slug, &$product) {
+                $product = Product::create([
+                    'code' => 'P-' . Str::uuid(),
+                    'admin_id' => auth()->id(),
+                    'name' => $validatedData['name'],
+                    'slug' => $slug,
+                    'category_id' => $validatedData['category'],
+                    'brand_id' => $validatedData['brand'],
+                    'price' => $validatedData['price'],
+                    'cost' => $validatedData['cost'] ?? 0,
+                    'wholesale_price' => $validatedData['wholesale_price'] ?? 0,
+                    'total_stock' => $validatedData['total_stock'],
 
-            foreach ($request->variant_attributes as $index => $attributeJson) {
-                
-                $variant = ProductVariant::create([
-                    'product_id' => $product->id,
-                    'name' => $request->variant_name[$index],
-                    'sku' => $request->variant_name[$index],
-                    'additional_cost' => $request->additional_cost[$index],
-                    'additional_price' => $request->additional_price[$index],
-                    'stock' => $request->stock[$index],
+                    'thumbnail' => $validatedData['thumbnail'] ?? null,
+                    'image' => $validatedData['image'] ?? null,
+                    'short_description' => $validatedData['short_description'] ?? null,
+                    'description' => $validatedData['description'] ?? null,
+                    'meta_title' => $validatedData['meta_title'] ?? null,
+                    'meta_description' => $validatedData['meta_description'] ?? null,
+
+                    'has_variants' => $validatedData['has_variation'] ?? 0,
+                    'is_flash_deal' => $validatedData['flash_deal'] ?? 0,
+                    'status' => $validatedData['status'] ?? 0,
                 ]);
- 
-                $attributes = json_decode($attributeJson, true);
 
-                foreach ($attributes as $attributeName => $attributeValue) {
+                if ($request->filled('variant_attributes')) {
+                    foreach ($request->variant_attributes as $index => $attributeJson) {
+                        
+                        $variant = ProductVariant::create([
+                            'product_id' => $product->id,
+                            'name' => $request->variant_name[$index],
+                            'sku' => $request->variant_name[$index],
+                            'additional_cost' => $request->additional_cost[$index],
+                            'additional_price' => $request->additional_price[$index],
+                            'stock' => $request->stock[$index],
+                        ]);
+        
+                        $attributes = json_decode($attributeJson, true);
+                        $variantValues = [];
+                        foreach ($attributes as $attributeName => $attributeValue) {
+                            $variantValues[] = [
+                                'product_variant_id' => $variant->id,
+                                'attribute_name' => $attributeName,
+                                'attribute_value' => $attributeValue,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ];
+                        }
 
-                    ProductVariantValue::create([
-                        'product_variant_id' => $variant->id,
-                        'attribute_name' => $attributeName,
-                        'attribute_value' => $attributeValue,
-                    ]);
+                        ProductVariantValue::insert($variantValues);
+                    }
                 }
-            }
-            DB::commit();
+            });
+
+            try {
+                $thumbnailPath = null;
+                $imagePaths = [];
+
+                if ($request->hasFile('thumbnail')) {
+                    $thumbnailPath = uploadImage(
+                        $request->file('thumbnail'),
+                        'products'
+                    );
+                }
+                if ($request->hasFile('image')) {
+                    foreach ($request->file('image') as $image) {
+
+                        $imagePaths[] = uploadImage(
+                            $image,
+                            'products'
+                        );
+                    }
+                }
+                $product->update([
+                    'thumbnail' => $thumbnailPath,
+                    'image' => $imagePaths
+                ]);
+            } catch (\Exception $e) {}
+
             return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
-            DB::rollBack();
-            if ($validatedData['thumbnail']) {
-                deleteImage($validatedData['thumbnail']);
-            }
-            if (!empty($validatedData['image'])) {
-                foreach ($validatedData['image'] as $imagePath) {
-                    deleteImage($imagePath);
-                }
-            }
-            dd($e);
             return redirect()->back()->with('error', 'An error occurred while creating the product.')->withInput();
         }
     }
@@ -144,6 +174,8 @@ class ProductController extends Controller
 
     public function destroy($product)
     {
-        // Logic to delete the product
+        $product = Product::findOrFail($product);
+        $product->delete();
+        return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
     }
 }

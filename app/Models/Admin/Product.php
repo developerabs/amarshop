@@ -58,7 +58,7 @@ class Product extends Model
         'short_description' => 'string',
         'description' => 'string',
         'thumbnail' => 'string',
-        'image' => 'json',
+        'image' => 'array',
         'meta_title' => 'string',
         'meta_description' => 'string',
         'meta_keywords' => 'string',

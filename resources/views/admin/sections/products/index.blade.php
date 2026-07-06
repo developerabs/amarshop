@@ -20,6 +20,12 @@
             <tr>
                 <th></th>
                 <th>Name</th>
+                <th>Code</th>
+                <th>Category</th>
+                <th>Brand</th>
+                <th>Price</th>
+                <th>Cost</th>
+                <th>Total Stock</th>
                 <th>Status</th>
                 <th>Date</th>
                 <th class="text-end">Action</th>
@@ -30,6 +36,12 @@
             <tr data-items="{{ json_encode($product) }}">
                 <td><img src="{{ getImageUrl($product->thumbnail) ?? "" }}" class="img-thumbnail" width="40" height="30"></td>
                 <td>{{ $product->name ?? 'N/A' }}</td>
+                <td>{{ $product->code ?? 'N/A' }}</td>
+                <td>{{ $product->category->name ?? 'N/A' }}</td>
+                <td>{{ $product->brand->name ?? 'N/A' }}</td>
+                <td>{{ $product->price ?? 'N/A' }}</td>
+                <td>{{ $product->cost ?? 'N/A' }}</td>
+                <td>{{ $product->total_stock ?? 'N/A' }}</td>
                 <td>
                     @if($product->status)
                         <span class="badge bg-success">Active</span>
