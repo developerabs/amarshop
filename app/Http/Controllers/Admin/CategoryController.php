@@ -13,7 +13,12 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $parentCategories = Category::with('children', 'children.children')->where('level', 0)->orderBy('id', 'desc')->get();
+        $parentCategories = Category::with(['children' => function ($query) {
+            $query->where('status', true)
+            ->with(['children' => function ($query) {
+                $query->where('status', true);
+            }]);
+        }])->where('status', true)->where('level', 0)->orderBy('id', 'desc')->get();
         
         return view('admin.sections.categories.index', compact('parentCategories'));
     }
@@ -91,7 +96,12 @@ class CategoryController extends Controller
     public function edit($categoryId)
     {
         // Fetch the category by ID
-        $parentCategories = Category::where('level', 0)->orderBy('id', 'desc')->get();
+        $parentCategories = Category::with(['children' => function ($query) {
+            $query->where('status', true)
+            ->with(['children' => function ($query) {
+                $query->where('status', true);
+            }]);
+        }])->where('status', true)->where('level', 0)->orderBy('id', 'desc')->get();
         $category = Category::findOrFail($categoryId);
         return view('admin.sections.categories.edit', compact('category', 'parentCategories'));
     }

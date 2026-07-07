@@ -65,13 +65,20 @@
                         </div>
                     </div>
                     <div class="row g-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label" for="productName">Product Name*</label>
                             <input class="form-control" id="productName" type="text" name="name" value="{{ old('name') }}" required>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label" for="productCode">Product Code*</label>
-                            <input class="form-control" id="productCode" type="text" name="code" value="{{ old('code') }}" required>
+                            <div class="input-group">
+                                <input class="form-control" id="productCode" type="text" name="code" value="{{ old('code') }}" required>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="generateCodeBtn"><i class="bi bi-arrow-clockwise"></i></button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="productModel">Product Model</label>
+                            <input class="form-control" id="productModel" type="text" name="model" value="{{ old('model') }}">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="productCategory">Category*</label>
@@ -110,29 +117,31 @@
                             <input class="form-control" id="productPrice" type="number" min="1" name="price" value="{{ old('price') }}" required>
                         </div>
                         <div class="col-md-4">
+                            <label class="form-label" for="productSalePrice">Sale Price*</label>
+                            <input class="form-control" id="productSalePrice" type="number" min="1" name="sale_price" value="{{ old('sale_price') }}" required>
+                        </div>
+                        <div class="col-md-4">
                             <label class="form-label" for="productAlert">Alert Quantity*</label>
                             <input class="form-control" id="productAlert" type="number" min="1" name="alert_quantity" value="{{ old('alert_quantity') }}" required>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label" for="productStock">Stock*</label>
                             <input class="form-control" id="productStock" type="number" min="1" name="total_stock" value="{{ old('total_stock') }}" required>
-                        </div>
-                        <div class="col-md-6 d-flex align-items-end">
-                            <div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="hasVariationCheck" name="has_variation" value="1" {{ old('has_variation') == 1 ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="hasVariationCheck">Has Variation</label>
-                                </div>
-                                <span class="form-text-muted">Enable product variation options.</span>
-                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="panel mt-4">
-                    <div class="panel-header">
+                    <div class="panel-header d-flex justify-content-between align-items-center">
                         <div>
                             <h2 class="h5 mb-1 section-title"><i class="bi bi-sliders me-2" aria-hidden="true"></i>Product Variations</h2>
                             <p class="text-muted mb-0">Configure variants only when needed.</p>
+                        </div>
+                        <div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="hasVariationCheck" name="has_variation" value="1" {{ old('has_variation') == 1 ? 'checked' : '' }}>
+                                <label class="form-check-label" for="hasVariationCheck">Has Variation</label>
+                            </div>
+                            <span class="form-text-muted">Enable product variation options.</span>
                         </div>
                     </div>
                     <div class="product-variation-select">
@@ -178,8 +187,8 @@
                             <input class="form-control" id="productThumbnail" type="file" name="thumbnail" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" for="productImages">Images</label>
-                            <input class="form-control" id="productImages" type="file" name="image[]" multiple>
+                            <label class="form-label" for="productImages">Images*</label>
+                            <input class="form-control" id="productImages" type="file" name="image[]" required multiple>
                         </div>
                         <div class="col-12">
                             <label class="form-label" for="shortDescription">Short Description</label>
@@ -239,14 +248,25 @@
                                 <label class="form-check-label" for="newArrivalsCheck">New Arrivals</label>
                             </div>
                         </div>
+                        <div class="col-12 mt-4">
+                            <label class="form-label" for="discountAmount">Discount</label>
+                            <div class="input-group">
+                                <input class="form-control" id="discountAmount" type="number" min="0" name="discount_amount" value="{{ old('discount_amount') }}" placeholder="Amount">
+                                <select class="form-select" id="discountType" name="discount_type">
+                                    <option value="">Type</option>
+                                    <option value="fixed" {{ old('discount_type') == 'fixed' ? 'selected' : '' }}>Fixed</option>
+                                    <option value="percentage" {{ old('discount_type') == 'percentage' ? 'selected' : '' }}>Percentage</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-12">
                             <label class="form-label" for="taxAmount">Tax</label>
                             <div class="input-group">
-                                <input class="form-control" id="taxAmount" type="number" min="0" name="tax" value="{{ old('tax') }}" placeholder="Amount">
+                                <input class="form-control" id="taxAmount" type="number" min="0" name="tax_amount" value="{{ old('tax_amount') }}" placeholder="Tax Amount">
                                 <select class="form-select" id="taxType" name="tax_type">
                                     <option value="">Type</option>
-                                    <option value="fixed" {{ old('tax_type') == 'fixed' ? 'selected' : '' }}>Fixed</option>
-                                    <option value="percentage" {{ old('tax_type') == 'percentage' ? 'selected' : '' }}>Percentage</option>
+                                    <option value="inclusive" {{ old('tax_type') == 'inclusive' ? 'selected' : '' }}>Inclusive</option>
+                                    <option value="exclusive" {{ old('tax_type') == 'exclusive' ? 'selected' : '' }}>Exclusive</option>
                                 </select>
                             </div>
                         </div>
@@ -394,6 +414,23 @@
 
         hasVariationCheckbox.addEventListener('change', toggleVariationSection);
         toggleVariationSection();
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        function randCode(){
+            var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            var out = '';
+            for(var i=0;i<8;i++) out += chars.charAt(Math.floor(Math.random()*chars.length));
+            return out;
+        }
+        var btn = document.getElementById('generateCodeBtn');
+        if(btn){
+            btn.addEventListener('click', function(){
+                var input = document.getElementById('productCode');
+                if(input) input.value = randCode();
+            });
+        }
     });
 </script>
 @endpush

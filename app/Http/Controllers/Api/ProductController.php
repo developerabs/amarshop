@@ -11,7 +11,7 @@ class ProductController extends Controller
 {
     public function flashDeals()
     {
-        $products = Product::take(10)->get()->map(function ($product) {
+        $products = Product::take(10)->orderBy('created_at', 'desc')->get()->map(function ($product) {
             return [
                 'id' => $product->id,
                 'name' => $product->name,

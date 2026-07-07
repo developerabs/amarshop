@@ -19,13 +19,20 @@ return new class extends Migration
             $table->unsignedBigInteger('brand_id')->nullable()->index();
             $table->string('name', 100)->index();
             $table->string('slug')->unique();
+            $table->string('model', 100)->nullable();
             $table->decimal('cost', 8, 2);
             $table->decimal('price', 8, 2);
+            $table->decimal('sale_price', 8, 2)->nullable();
             $table->decimal('wholesale_price', 8, 2);
             $table->integer('alert_quantity')->default(0);
             $table->decimal('tax_rate', 5, 2)->default(0);
             $table->string('tax_type', 50)->nullable();
             $table->integer('total_stock')->default(0);
+
+            $table->decimal('discount_amount', 10, 2)->default(0);
+            $table->enum('discount_type', ['fixed', 'percentage'])->nullable();
+            $table->timestamp('discount_start_at')->nullable();
+            $table->timestamp('discount_end_at')->nullable();
 
             $table->text('short_description')->nullable();
             $table->text('description')->nullable();

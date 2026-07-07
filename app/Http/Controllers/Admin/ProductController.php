@@ -23,8 +23,13 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = Category::with('children', 'children.children')->where('level', 0)->orderBy('id', 'desc')->get();
-        $brands = Brand::all();
+        $categories = Category::with(['children' => function ($query) {
+            $query->where('status', true)
+            ->with(['children' => function ($query) {
+                $query->where('status', true);
+            }]);
+        }])->where('status', true)->where('level', 0)->orderBy('id', 'desc')->get();
+        $brands = Brand::where('status', true)->orderBy('id', 'desc')->get();
         return view('admin.sections.products.create', compact('categories', 'brands'));
     }
 
@@ -34,11 +39,13 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'category' => 'required|exists:categories,id',
             'brand' => 'required|exists:brands,id',
+            'code' => 'required|string|max:50|unique:products,code',
             'price' => 'required|numeric|min:0',
-            'cost' => 'nullable|numeric|min:0',
+            'sale_price' => 'nullable|numeric|min:0',
+            'cost' => 'required|numeric|min:0',
             'total_stock' => 'required|integer|min:0',
             'variant_name' => 'nullable|array',
-            'variant_name.*' => 'required|string|max:255',
+            'variant_name.*' => 'nullable|string|max:255',
             'additional_cost.*' => 'nullable|numeric|min:0',
             'additional_price.*' => 'nullable|numeric|min:0',
             'stock.*' => 'nullable|integer|min:0',
@@ -46,9 +53,15 @@ class ProductController extends Controller
             'additional_cost' => 'nullable|array',
             'additional_price' => 'nullable|array',
             'stock' => 'nullable|array',
+            'model' => 'nullable|string|max:100',
+
+            'discount_amount' => 'nullable|numeric|min:0',
+            'discount_type' => 'nullable|in:fixed,percentage',
+            'tax_amount' => 'nullable|numeric|min:0',
+            'tax_type' => 'nullable|in:inclusive,exclusive',
 
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'image' => 'nullable|array',
+            'image' => 'required|array',
             'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'short_description' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:255',
@@ -72,6 +85,13 @@ class ProductController extends Controller
                 return redirect()->back()->with('error', 'Variant names and attributes count mismatch.')->withInput();
             }
         }
+        if ($validatedData['discount_amount'] && $validatedData['discount_amount'] > 0 && $validatedData['discount_type'] == null) {
+            return redirect()->back()->with('error', 'Discount type must be specified when discount amount is provided.')->withInput();
+        }
+        if ($validatedData['tax_amount'] && $validatedData['tax_amount'] > 0 && $validatedData['tax_type'] == null) {
+            return redirect()->back()->with('error', 'Tax type must be specified when tax amount is provided.')->withInput();
+        }
+
         $slug = Str::slug($request->name);
         $count = Product::where('slug', 'like', "{$slug}%")->count();
         $slug = $count ? "{$slug}-" . ($count + 1) : $slug;
@@ -79,16 +99,23 @@ class ProductController extends Controller
         try {
             DB::transaction(function () use ($validatedData, $request, $slug, &$product) {
                 $product = Product::create([
-                    'code' => 'P-' . Str::uuid(),
+                    'code' => $validatedData['code'],
                     'admin_id' => auth()->id(),
                     'name' => $validatedData['name'],
                     'slug' => $slug,
                     'category_id' => $validatedData['category'],
                     'brand_id' => $validatedData['brand'],
                     'price' => $validatedData['price'],
+                    'sale_price' => $validatedData['sale_price'] ?? null,
                     'cost' => $validatedData['cost'] ?? 0,
                     'wholesale_price' => $validatedData['wholesale_price'] ?? 0,
                     'total_stock' => $validatedData['total_stock'],
+                    'model' => $validatedData['model'] ?? null,
+
+                    'discount_amount' => $validatedData['discount_amount'] ?? null,
+                    'discount_type' => $validatedData['discount_type'] ?? null,
+                    'tax_amount' => $validatedData['tax_amount'] ?? null,
+                    'tax_type' => $validatedData['tax_type'] ?? null,
 
                     'thumbnail' => $validatedData['thumbnail'] ?? null,
                     'image' => $validatedData['image'] ?? null,
