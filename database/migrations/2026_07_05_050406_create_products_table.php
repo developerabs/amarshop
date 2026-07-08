@@ -36,7 +36,7 @@ return new class extends Migration
 
             $table->text('short_description')->nullable();
             $table->text('description')->nullable();
-            $table->string('thumbnail');
+            $table->string('thumbnail')->nullable();
             $table->string('image')->nullable();
             $table->string('meta_title')->nullable();
             $table->text('meta_description')->nullable();

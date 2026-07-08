@@ -17,6 +17,7 @@ class Product extends Model
         'slug',
         'cost',
         'price',
+        'sale_price',
         'wholesale_price',
         'alert_quantity',
         'model',

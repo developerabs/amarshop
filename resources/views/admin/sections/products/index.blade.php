@@ -51,7 +51,7 @@
                 </td>
                 <td>{{ $product->created_at ? $product->created_at->format('M j, Y') : 'N/A' }}</td>
                 <td class="text-end">
-                    <button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#editModal"><i class="bi bi-pencil" aria-hidden="true"></i></button>
+                    <a class="btn btn-warning btn-sm" href="{{ route('admin.products.edit', $product->id) }}"><i class="bi bi-pencil" aria-hidden="true"></i></a>
                     <button class="btn btn-danger btn-sm delete-btn" type="button" data-id="{{ $product->id }}" data-url="{{ route('admin.products.destroy', $product->id) }}"><i class="bi bi-trash" aria-hidden="true"></i></button>
                     <form id="delete-form" method="POST" style="display:none;">
                         @csrf

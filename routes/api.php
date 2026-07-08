@@ -14,7 +14,7 @@ Route::controller(SiteSettingsController::class)->prefix('site-settings')->group
     Route::get('/', 'index');
 });
 Route::controller(ProductController::class)->prefix('product')->group(function () {
-    Route::get('/flash-deals', 'flashDeals');
+    Route::get('/home-products', 'homeProducts');
     Route::get('/details/{slug}', 'details');
 });
 

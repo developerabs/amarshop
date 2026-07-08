@@ -42,7 +42,7 @@ Route::name('admin.')->group(function () {
         Route::get('/create', 'create')->name('create');
         Route::post('/create', 'store')->name('store');
         Route::get('/edit/{product}', 'edit')->name('edit');
-        Route::put('/update', 'update')->name('update');
+        Route::put('/update/{product}', 'update')->name('update');
         Route::delete('/{product}', 'destroy')->name('destroy');
     });
 });

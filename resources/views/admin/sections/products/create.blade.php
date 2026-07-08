@@ -83,15 +83,21 @@
                         <div class="col-md-6">
                             <label class="form-label" for="productCategory">Category*</label>
                             <select class="form-select" id="productCategory" name="category" required>
-                                <option value="">Choose category</option>
+                                <option value="" disabled selected>Choose category</option>
                                 @foreach($categories ?? [] as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}" {{ old('category') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
                                     @if($category->children)
                                         @foreach($category->children as $child)
-                                            <option value="{{ $child->id }}">-- {{ $child->name }}</option>
+                                            <option value="{{ $child->id }}" {{ old('category') == $child->id ? 'selected' : '' }}>
+                                                -- {{ $child->name }}
+                                            </option>
                                             @if($child->children)
                                                 @foreach($child->children as $grandchild)
-                                                    <option value="{{ $grandchild->id }}">---- {{ $grandchild->name }}</option>
+                                                    <option value="{{ $grandchild->id }}" {{ old('category') == $grandchild->id ? 'selected' : '' }}>
+                                                        ---- {{ $grandchild->name }}
+                                                    </option>
                                                 @endforeach
                                             @endif
                                         @endforeach
@@ -102,9 +108,11 @@
                         <div class="col-md-6">
                             <label class="form-label" for="productBrand">Brand*</label>
                             <select class="form-select" id="productBrand" name="brand" required>
-                                <option value="">Choose brand</option>
+                                <option value="" disabled selected>Choose brand</option>
                                 @foreach($brands ?? [] as $brand)
-                                    <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                    <option value="{{ $brand->id }}" {{ old('brand') == $brand->id ? 'selected' : '' }}>
+                                        {{ $brand->name }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -138,8 +146,8 @@
                         </div>
                         <div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="hasVariationCheck" name="has_variation" value="1" {{ old('has_variation') == 1 ? 'checked' : '' }}>
-                                <label class="form-check-label" for="hasVariationCheck">Has Variation</label>
+                                <input class="form-check-input" type="checkbox" id="hasVariationCheck" name="has_variations" value="1" {{ old('has_variations') == 1 ? 'checked' : '' }}>
+                                <label class="form-check-label" for="hasVariationCheck">Has Variations</label>
                             </div>
                             <span class="form-text-muted">Enable product variation options.</span>
                         </div>
@@ -192,11 +200,11 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label" for="shortDescription">Short Description</label>
-                            <textarea class="form-control" id="shortDescription" name="short_description" required rows="4">{{ old('short_description') }}</textarea>
+                            <textarea class="form-control" id="shortDescription" name="short_description" rows="4">{{ old('short_description') }}</textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label" for="longDescription">Description</label>
-                            <textarea class="form-control" id="longDescription" name="description" required rows="8">{{ old('description') }}</textarea>
+                            <textarea class="form-control" id="longDescription" name="description" rows="8">{{ old('description') }}</textarea>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="metaTitle">Meta Title</label>
@@ -238,7 +246,13 @@
                         </div>
                         <div class="col-12">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="bestDealsCheck" name="best_deals" value="1" {{ old('best_deals') == 1 ? 'checked' : '' }}>
+                                <input class="form-check-input" type="checkbox" id="bestDealOfferCheck" name="best_deal" value="1" {{ old('best_deal', $product->is_best_deal ?? '') == 1 ? 'checked' : '' }}>
+                                <label class="form-check-label" for="bestDealOfferCheck">Best Deal</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="bestDealsCheck" name="top_sale" value="1" {{ old('top_sale') == 1 ? 'checked' : '' }}>
                                 <label class="form-check-label" for="bestDealsCheck">Top Sale</label>
                             </div>
                         </div>
@@ -291,7 +305,7 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const hasVariationCheckbox = document.querySelector('input[name="has_variation"]');
+        const hasVariationCheckbox = document.querySelector('input[name="has_variations"]');
         const variationSelect = document.querySelector('.product-variation-select');
         const variationTableBody = document.querySelector('#variationTable tbody');
 
@@ -404,12 +418,30 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Value*</label>
-                        <select class="form-select variation-value-select" name="variation_values[]" multiple></select>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-10">
+                                <select class="form-select variation-value-select" name="variation_values[]" multiple></select>
+                            </div>
+                            <div class="col-2">
+                                <button type="button" class="btn btn-outline-danger btn-sm remove-variation-btn"><i class="bi bi-trash" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
             variationItems[variationItems.length - 1].after(newVariationSection);
             initSelect2(newVariationSection.querySelector('.variation-value-select'));
+        });
+
+        document.addEventListener('click', function(event) {
+            const removeBtn = event.target.closest('.remove-variation-btn');
+            if (removeBtn) {
+                const section = removeBtn.closest('.product-variant-items');
+                if (section) {
+                    section.remove();
+                    renderVariationTable();
+                }
+            }
         });
 
         hasVariationCheckbox.addEventListener('change', toggleVariationSection);
