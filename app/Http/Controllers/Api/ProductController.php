@@ -60,9 +60,11 @@ class ProductController extends Controller
 
         if ($sortBy) {
             $query->orderBy($sortBy);
+        } else {
+            $query->latest();
         }
 
-        $products = $query->latest()->paginate(12);
+        $products = $query->paginate(12);
 
         $products->getCollection()->transform(function ($product) {
             return [
@@ -92,6 +94,39 @@ class ProductController extends Controller
         return ApiResponse::success(
             'Products fetched successfully',
             $data
+        );
+    }
+    public function getProductById($id)
+    {
+        $product = Product::with(['category', 'brand'])->find($id);
+
+        if (!$product) {
+            return ApiResponse::error('Product not found', 404);
+        }
+
+        $productData = [
+            'id' => $product->id,
+            'category_name' => $product->category->name ?? null,
+            'brand_name' => $product->brand->name ?? null,
+            'name' => $product->name,
+            'slug' => $product->slug,
+            'price' => $product->price,
+            'sale_price' => $product->sale_price,
+            'total_stock' => $product->total_stock,
+            'description' => $product->description,
+            'meta_title' => $product->meta_title,
+            'meta_description' => $product->meta_description,
+            'discount_amount' => $product->discount_amount,
+            'discount_type' => $product->discount_type,
+            'thumbnail' => $product->thumbnail ? getImageUrl($product->thumbnail) : null,
+            'images' => collect($product->image)->map(function ($image) {
+                return $image ? getImageUrl($image) : null;
+            }),
+        ];
+
+        return ApiResponse::success(
+            'Product fetched successfully',
+            ['product' => $productData]
         );
     }
     public function details($slug)

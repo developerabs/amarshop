@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\RegistrationController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\HomeController;
@@ -13,6 +15,11 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:api');
 
+Route::prefix('auth')->group(function () {
+    Route::post('/register', [RegistrationController::class, 'register']);
+    Route::post('/login', [LoginController::class, 'login']);
+});
+
 Route::controller(SiteSettingsController::class)->prefix('site-settings')->group(function () {
     Route::get('/', 'index');
 });
@@ -21,6 +28,7 @@ Route::controller(HomeController::class)->prefix('home')->group(function () {
 });
 Route::controller(ProductController::class)->prefix('products')->group(function () {
     Route::get('/all-products', 'allProducts');
+    Route::get('/{id}', 'getProductById');
     Route::get('/details/{slug}', 'details');
 });
 Route::controller(CategoryController::class)->prefix('categories')->group(function () {
