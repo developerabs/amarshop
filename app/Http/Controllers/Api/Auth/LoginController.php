@@ -25,4 +25,13 @@ class LoginController extends Controller
             'user' => $user,
         ]);
     }
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+        if ($user) {
+            $user->token()->revoke();
+            return ApiResponse::success('Logout successful');
+        }
+        return ApiResponse::error('User not authenticated', [], 401);
+    }
 }
