@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_no')->unique();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable();
+            $table->text('guest_id')->nullable();
             $table->decimal('subtotal', 12, 2);
             $table->decimal('discount_amount', 12, 2)->default(0);
             $table->decimal('coupon_discount', 12, 2)->default(0);
@@ -46,8 +47,15 @@ return new class extends Migration
                 'returned'
             ])->default('pending');
             $table->text('notes')->nullable();
+            $table->text('shipping_address')->nullable();
+            $table->text('billing_address')->nullable();
+            $table->string('shipping_method')->nullable();
+            $table->json('user_info')->nullable();
             $table->timestamp('placed_at')->nullable();
             $table->timestamps();
+
+            $table->index('order_no');
+            $table->index('user_id');
         });
     }
 

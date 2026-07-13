@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProductDetailsController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\SiteSettingsController;
+use App\Http\Controllers\Api\WishListController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -60,6 +61,11 @@ Route::middleware('auth:api')->group(function () {
     Route::controller(CheckOutController::class)->prefix('checkout')->group(function () {
         Route::post('/place-order', 'placeOrder');
         Route::get('/payment-methods', 'paymentMethods');
+    });
+    Route::controller(WishListController::class)->prefix('wishlist')->group(function () {
+        Route::get('/', 'index');
+        Route::post('/add', 'addToWishlist');
+        Route::delete('/remove/{id}', 'removeFromWishlist');
     });
 });
 
