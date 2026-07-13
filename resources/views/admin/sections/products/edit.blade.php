@@ -259,6 +259,10 @@
                             <label class="form-label" for="longDescription">Description</label>
                             <textarea class="form-control" id="longDescription" name="description" rows="8">{{ old('description', $product->description) }}</textarea>
                         </div>
+                        <div class="col-md-12">
+                            <label class="form-label" for="descImage">Description Image</label>
+                            <input class="form-control" id="descImage" type="file" name="desc_image">
+                        </div>
                         <div class="col-md-6">
                             <label class="form-label" for="metaTitle">Meta Title</label>
                             <input class="form-control" id="metaTitle" type="text" name="meta_title" value="{{ old('meta_title', $product->meta_title) }}">

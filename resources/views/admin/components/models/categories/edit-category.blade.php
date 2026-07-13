@@ -47,6 +47,10 @@
                     <label class="form-label" for="formMetaDescription">Meta Description</label>
                     <textarea class="form-control" id="formMetaDescription" name="meta_description" rows="3">{{ old('meta_description') }}</textarea>
                 </div>
+                <div class="col-md-12">
+                    <label class="form-label" for="formIcon">Icon</label>
+                    <input class="form-control" id="formIcon" name="icon" value="{{ old('icon') }}">
+                </div>
                 <div class="col-md-6">
                     <label class="form-label" for="formStatus">Status</label>
                     <input type="hidden" name="status" value="0">
@@ -105,6 +109,7 @@
                 editModal.querySelector('input[name="meta_title"]').value = categoryData.meta_title || '';
                 editModal.querySelector('textarea[name="meta_description"]').value = categoryData.meta_description || '';
                 editModal.querySelector('input[type="checkbox"][name="status"]').checked = categoryData.status === true || categoryData.status === 1;
+                editModal.querySelector('input[name="icon"]').value = categoryData.icon || '';
 
                 if (categoryData.image) {
                     imagePreview.src = imageUrl + '/' + categoryData.image;

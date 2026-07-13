@@ -47,6 +47,7 @@ class CategoryController extends Controller
             'description' => 'nullable|string|max:255',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
+            'icon' => 'nullable|string|max:255',
             'status' => 'required|boolean',
         ]);
         
@@ -81,6 +82,7 @@ class CategoryController extends Controller
                 'description' => $validatedData['description'] ?? null,
                 'meta_title' => $validatedData['meta_title'] ?? null,
                 'meta_description' => $validatedData['meta_description'] ?? null,
+                'icon' => $validatedData['icon'] ?? null,
                 'status' => $validatedData['status'] ?? false,
             ]);
             
@@ -116,6 +118,7 @@ class CategoryController extends Controller
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:255',
+            'icon' => 'nullable|string|max:255',
             'status' => 'required|boolean',
         ]);
 
@@ -150,6 +153,7 @@ class CategoryController extends Controller
                 'meta_title' => $validatedData['meta_title'] ?? null,
                 'meta_description' => $validatedData['meta_description'] ?? null,
                 'description' => $validatedData['description'] ?? null,
+                'icon' => $validatedData['icon'] ?? null,
                 'status' => $validatedData['status'] ?? false,
             ]);
             DB::commit();

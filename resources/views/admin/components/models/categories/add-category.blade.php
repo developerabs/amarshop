@@ -46,6 +46,10 @@
                     <label class="form-label" for="formPlan">Meta Description</label>
                     <textarea class="form-control" id="formPlan" name="meta_description" rows="3">{{ old('meta_description') }}</textarea>
                 </div>
+                <div class="col-md-12">
+                    <label class="form-label" for="formIcon">Icon</label>
+                    <input class="form-control" id="formIcon" name="icon" value="{{ old('icon') }}">
+                </div>
                 <div class="col-md-6">
                     <label class="form-label" for="formStatus">Status</label>
                     <input type="hidden" name="status" value="0">

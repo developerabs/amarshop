@@ -34,10 +34,12 @@ return new class extends Migration
             $table->timestamp('discount_start_at')->nullable();
             $table->timestamp('discount_end_at')->nullable();
 
-            $table->text('short_description')->nullable();
-            $table->text('description')->nullable();
             $table->string('thumbnail')->nullable();
             $table->string('image')->nullable();
+            $table->text('short_description')->nullable();
+            $table->text('description')->nullable();
+            $table->string('video')->nullable();
+            $table->string('desc_image')->nullable();
             $table->string('meta_title')->nullable();
             $table->text('meta_description')->nullable();
             $table->string('meta_keywords')->nullable();

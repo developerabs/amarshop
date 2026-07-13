@@ -66,6 +66,7 @@ class ProductController extends Controller
             'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'short_description' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:255',
+            'desc_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
 
@@ -171,6 +172,7 @@ class ProductController extends Controller
             try {
                 $thumbnailPath = null;
                 $imagePaths = [];
+                $descImagePath = null;
 
                 if ($request->hasFile('thumbnail')) {
                     $thumbnailPath = uploadImage(
@@ -187,9 +189,16 @@ class ProductController extends Controller
                         );
                     }
                 }
+                if ($request->hasFile('desc_image')) {
+                    $descImagePath = uploadImage(
+                        $request->file('desc_image'),
+                        'products'
+                    );
+                }
                 $product->update([
                     'thumbnail' => $thumbnailPath,
-                    'image' => $imagePaths
+                    'image' => $imagePaths,
+                    'desc_image' => $descImagePath
                 ]);
             } catch (\Exception $e) {}
 
@@ -266,6 +275,7 @@ class ProductController extends Controller
             'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'short_description' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:255',
+            'desc_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
 
@@ -391,6 +401,16 @@ class ProductController extends Controller
                         );
                     }
                     $product->update(['image' => $imagePaths]);
+                }
+                if ($request->hasFile('desc_image')) {
+                    if ($product->desc_image) {
+                        deleteImage($product->desc_image);
+                    }
+                    $descImagePath = uploadImage(
+                        $request->file('desc_image'),
+                        'products'
+                    );
+                    $product->update(['desc_image' => $descImagePath]);
                 }
             } catch (\Exception $e) {
                 return redirect()->back()->with('error', 'An error occurred while updating the product images.')->withInput();
