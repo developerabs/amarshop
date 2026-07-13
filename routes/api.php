@@ -46,6 +46,7 @@ Route::middleware('auth:api')->group(function () {
     Route::controller(ProfileController::class)->prefix('profile')->group(function () {
         Route::get('/', 'index');
         Route::put('/update', 'update');
+        Route::get('/orders', 'orders');
     });
     // order routes
     Route::controller(OrderController::class)->prefix('orders')->group(function () {

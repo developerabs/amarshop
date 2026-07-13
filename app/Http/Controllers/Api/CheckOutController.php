@@ -61,7 +61,7 @@ class CheckOutController extends Controller
         if ($subtotal <= 0) {
             return ApiResponse::error('Invalid order subtotal', ['subtotal' => $subtotal], 400);
         }
-        $shippingCharge = 100;
+        $shippingCharge = 0;
         // Create a new order
         try {
             DB::beginTransaction();
@@ -98,6 +98,20 @@ class CheckOutController extends Controller
                 $orderAddressData = $request->input('shipping_address');
             }
             $order->orderAddress()->create($orderAddressData);
+
+            // Update product stock
+            foreach ($validatedData['products'] as $product) {
+                $productModel = Product::find($product['product_id']);
+                $productModel->decrement('total_stock', $product['quantity']);
+                
+                // Update product variant stock if variant_id is provided
+                if (!empty($product['product_variant_id'])) {
+                    DB::table('product_variants')
+                        ->where('id', $product['product_variant_id'])
+                        ->decrement('stock', $product['quantity']);
+                }
+            }
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
