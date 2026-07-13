@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SiteSettingsController;
 use Illuminate\Support\Facades\Route;
@@ -45,4 +46,16 @@ Route::name('admin.')->group(function () {
         Route::put('/update/{product}', 'update')->name('update');
         Route::delete('/{product}', 'destroy')->name('destroy');
     });
-});
+    // order management
+    Route::controller(OrderController::class)->prefix('orders')->name('orders.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{order}', 'show')->name('show');
+        Route::get('/active', 'active')->name('active');
+        Route::get('/pending', 'pending')->name('pending');
+        Route::get('/completed', 'completed')->name('completed');
+        Route::get('/cancelled', 'cancelled')->name('cancelled');
+        Route::put('/update-status/{order}', 'updateStatus')->name('update-status');
+        Route::delete('/{order}', 'destroy')->name('destroy');
+        Route::get('details/{order}', 'details')->name('details');
+    });
+});   

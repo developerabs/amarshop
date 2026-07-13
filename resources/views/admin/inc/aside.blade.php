@@ -47,6 +47,42 @@
             </nav>
           </div>
         </div>
+        <div class="nav-group">
+          @php
+              $orderRoutes = [
+                'admin.orders.*', 
+              ];
+              $orderActive = request()->routeIs(...$orderRoutes);
+          @endphp
+          <a class="nav-link nav-group-toggle {{ $orderActive ? 'active' : '' }}" href="#ordersMenu" data-bs-toggle="collapse" aria-expanded="{{ $orderActive ? 'true' : 'false' }}">
+            <span class="nav-icon"><i class="bi bi-cart" aria-hidden="true"></i></span>
+            <span class="nav-text">Orders</span>
+          </a>
+          <div class="collapse {{ $orderActive ? 'show' : '' }} sub-menu" id="ordersMenu">
+            <nav class="nav-group-items">
+              <a class="nav-link {{ request()->routeIs('admin.orders.index') ? 'active' : '' }}" href="{{ route('admin.orders.index') }}">
+                <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+                <span class="nav-text">All Orders</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.orders.active') ? 'active' : '' }}" href="{{ route('admin.orders.active') }}">
+                <span class="nav-icon"><i class="bi bi-plus" aria-hidden="true"></i></span>
+                <span class="nav-text">Active Order</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.orders.pending') ? 'active' : '' }}" href="{{ route('admin.orders.pending') }}">
+                <span class="nav-icon"><i class="bi bi-plus" aria-hidden="true"></i></span>
+                <span class="nav-text">Pending Order</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.orders.completed') ? 'active' : '' }}" href="{{ route('admin.orders.completed') }}">
+                <span class="nav-icon"><i class="bi bi-plus" aria-hidden="true"></i></span>
+                <span class="nav-text">Completed Order</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.orders.cancelled') ? 'active' : '' }}" href="{{ route('admin.orders.cancelled') }}">
+                <span class="nav-icon"><i class="bi bi-plus" aria-hidden="true"></i></span>
+                <span class="nav-text">Cancelled Order</span>
+              </a>
+            </nav>
+          </div>
+        </div>
         <a class="nav-link" href="profile.html">
           <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
           <span class="nav-text">Profile</span>
