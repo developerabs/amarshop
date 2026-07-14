@@ -21,6 +21,9 @@ class HomeController extends Controller
             'featured'    => 'is_featured',
             'trending'    => 'is_trending',
             'daily-offer' => 'is_daily_offer',
+            'best-deal' => 'is_best_deal',
+            'top-sale' => 'is_top_sale',
+            'new-arrivals' => 'is_new_arrival',
         ];
         $productTypes = array_keys($typeMappings);
 

@@ -57,16 +57,17 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/{id}', 'update');
         Route::delete('/{id}', 'destroy');
     });
-    // user checkout routes
-    Route::controller(CheckOutController::class)->prefix('checkout')->group(function () {
-        Route::post('/place-order', 'placeOrder');
-        Route::get('/payment-methods', 'paymentMethods');
-    });
-    Route::controller(WishListController::class)->prefix('wishlist')->group(function () {
-        Route::get('/', 'index');
-        Route::post('/add', 'addToWishlist');
-        Route::delete('/remove/{id}', 'removeFromWishlist');
-    });
+    
+});
+// user checkout routes
+Route::controller(CheckOutController::class)->prefix('checkout')->group(function () {
+    Route::post('/place-order', 'placeOrder');
+    Route::get('/payment-methods', 'paymentMethods');
+});
+Route::controller(WishListController::class)->prefix('wishlist')->group(function () {
+    Route::get('/', 'index');
+    Route::post('/add', 'addToWishlist');
+    Route::delete('/remove/{id}', 'removeFromWishlist');
 });
 
 

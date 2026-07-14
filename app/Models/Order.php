@@ -9,6 +9,7 @@ class Order extends Model
     protected $fillable = [
         'order_no',
         'user_id',
+        'guest_id',
         'subtotal',
         'discount_amount',
         'coupon_discount',
@@ -23,6 +24,7 @@ class Order extends Model
     ];
     protected $casts = [
         'user_id' => 'integer',
+        'guest_id' => 'string',
         'order_no' => 'string',
         'subtotal' => 'decimal:2',
         'discount_amount' => 'decimal:2',

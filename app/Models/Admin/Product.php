@@ -2,6 +2,7 @@
 
 namespace App\Models\Admin;
 
+use App\Models\OrderItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -99,5 +100,8 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class);
     }
 
-    
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }

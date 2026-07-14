@@ -34,7 +34,7 @@ class CategoryController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $categories = $query->with('parent')->orderBy('id', 'desc')->paginate(20)->withQueryString();
+        $categories = $query->with('parent')->orderBy('id', 'desc')->paginate(10)->withQueryString();
 
         return view('admin.components.data-table.categories-table', compact('categories'));
     }

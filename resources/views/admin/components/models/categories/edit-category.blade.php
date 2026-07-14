@@ -7,11 +7,11 @@
             <input type="hidden" name="category_id" id="category_id">
             <div class="panel-header"><div><h2 class="h5 mb-1 section-title"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i><span>Edit Category</span></h2></div></div>
             <div class="row g-3">
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <label class="form-label" for="formName">Name*</label>
                     <input class="form-control" id="formName" name="name" value="{{ old('name') }}" required>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <label class="form-label" for="formPlan">Parent Category</label>
                     <select class="form-select" id="formPlan" name="parent_category">
                         <option value="">Choose Parent Category</option>
@@ -30,26 +30,26 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-6">
+                    <label class="form-label" for="formIcon">Icon</label>
+                    <input class="form-control" id="formIcon" name="icon" value="{{ old('icon') }}">
+                </div>
+                <div class="col-md-6">
                     <label class="form-label" for="formImage">Image</label>
                     <input class="form-control" id="formImage" name="image" type="file" accept="image/*">
-                    <img id="image_preview" src="#" alt="Image Preview" class="img-fluid fade-in mt-2" style="display: none; max-height: 180px;">
+                    <img id="image_preview" src="#" alt="Image Preview" class="img-fluid fade-in mt-2" style="display: none; max-height: 40px; max-width: 80px; object-fit: cover;">
                 </div>
                 <div class="col-12">
                     <label class="form-label" for="formMessage">Description</label>
                     <textarea class="form-control" id="formMessage" name="description" rows="5">{{ old('description') }}</textarea>
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <label class="form-label" for="formMetaTitle">Meta Title</label>
                     <input class="form-control" id="formMetaTitle" name="meta_title" value="{{ old('meta_title') }}">
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <label class="form-label" for="formMetaDescription">Meta Description</label>
                     <textarea class="form-control" id="formMetaDescription" name="meta_description" rows="3">{{ old('meta_description') }}</textarea>
-                </div>
-                <div class="col-md-12">
-                    <label class="form-label" for="formIcon">Icon</label>
-                    <input class="form-control" id="formIcon" name="icon" value="{{ old('icon') }}">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label" for="formStatus">Status</label>

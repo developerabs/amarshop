@@ -1,5 +1,13 @@
 @extends('admin.layouts.master')
-
+@push('styles')
+<style>
+    .modal-dialog {
+        max-width: 800px !important;
+        margin-right: auto;
+        margin-left: auto;
+    }
+</style>
+@endpush
 @section('content')
 <div class="container-fluid px-3 px-lg-4 py-4">
     <div class="page-heading">

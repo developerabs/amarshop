@@ -5,25 +5,25 @@
             @csrf
             <div class="panel-header"><div><h2 class="h5 mb-1 section-title"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i><span>Add New Brand</span></h2></div></div>
             <div class="row g-3">
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <label class="form-label" for="formName">Name*</label>
                     <input class="form-control" id="formName" name="name" value="{{ old('name') }}" required>
                 </div>
-                <div class="col-12">
-                    <label class="form-label" for="formMessage">Description</label>
-                    <textarea class="form-control" id="formMessage" name="description" rows="5">{{ old('description') }}</textarea>
-                </div>
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <label class="form-label" for="formBudget">Image</label>
                     <input class="form-control" id="formBudget" name="image" type="file" accept="image/*"
                         onchange="if (this.files && this.files[0]) { const preview = document.getElementById('image_preview'); preview.src = window.URL.createObjectURL(this.files[0]); preview.style.display = 'block'; } else { document.getElementById('image_preview').style.display = 'none'; }">
-                    <img id="image_preview" src="#" alt="Image Preview" class="img-fluid fade-in mt-2" style="display: none; max-height: 180px;">
+                    <img id="image_preview" src="#" alt="Image Preview" class="img-fluid fade-in mt-2" style="display: none; max-height: 40px; max-width: 80px; object-fit: cover;">
                 </div>
-                <div class="col-md-12">
+                <div class="col-12">
+                    <label class="form-label" for="formMessage">Description</label>
+                    <textarea class="form-control" id="formMessage" name="description" rows="3">{{ old('description') }}</textarea>
+                </div>
+                <div class="col-md-6">
                     <label class="form-label" for="formName">Meta Title</label>
                     <input class="form-control" id="formName" name="meta_title" value="{{ old('meta_title') }}">
                 </div>
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <label class="form-label" for="formPlan">Meta Description</label>
                     <textarea class="form-control" id="formPlan" name="meta_description" rows="3">{{ old('meta_description') }}</textarea>
                 </div>

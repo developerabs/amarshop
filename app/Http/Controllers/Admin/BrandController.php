@@ -13,7 +13,7 @@ class BrandController extends Controller
 {
     public function index()
     {
-        $brands = Brand::orderBy('id', 'desc')->paginate(20);
+        $brands = Brand::orderBy('id', 'desc')->paginate(10);
         return view('admin.sections.brands.index', compact('brands'));
     }
     public function search(Request $request)
@@ -28,7 +28,7 @@ class BrandController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $brands = $query->orderBy('id', 'desc')->paginate(20)->withQueryString();
+        $brands = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
 
         return view('admin.components.data-table.brands-table', compact('brands'));
     }

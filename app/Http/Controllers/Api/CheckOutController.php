@@ -52,6 +52,17 @@ class CheckOutController extends Controller
             if ($productModel->total_stock < $product['quantity']) {
                 return ApiResponse::error('Insufficient stock for product', ['product_id' => $product['product_id']], 400);
             }
+            if (!empty($product['product_variant_id'])) {
+                $variantStock = DB::table('product_variants')
+                    ->where('id', $product['product_variant_id'])
+                    ->value('stock');
+                if ($variantStock === null) {
+                    return ApiResponse::error('Product variant not found', ['product_variant_id' => $product['product_variant_id']], 404);
+                }
+                if ($variantStock < $product['quantity']) {
+                    return ApiResponse::error('Insufficient stock for product variant', ['product_variant_id' => $product['product_variant_id']], 400);
+                }
+            }
             $subtotal += $productModel->sale_price * $product['quantity'];
             $grandTotal += $productModel->sale_price * $product['quantity'];
         }
@@ -61,13 +72,17 @@ class CheckOutController extends Controller
         if ($subtotal <= 0) {
             return ApiResponse::error('Invalid order subtotal', ['subtotal' => $subtotal], 400);
         }
+        if ($user == null && empty($request->guest_id)) {
+            return ApiResponse::error('User not authenticated and guest ID not provided', [], 401);
+        }
         $shippingCharge = 0;
         // Create a new order
         try {
             DB::beginTransaction();
             $order = Order::create([
                 'order_no' => 'ORD-' . strtoupper(uniqid()),
-                'user_id' => $user->id,
+                'user_id' => $user->id ?? null,
+                'guest_id' => $request->guest_id ?? null,
                 'subtotal' => $subtotal,
                 'discount_amount' =>  0,
                 'coupon_discount' =>  0,

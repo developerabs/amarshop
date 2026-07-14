@@ -15,15 +15,17 @@ class ProductController extends Controller
     {
         $categories = Category::latest()->get();
         $brands = Brand::latest()->get();
-
+        // return $request->all();
         $type = $request->get('type');
         $categoryId = $request->get('category_id');
+        $categorySlug = $request->get('category_slug');
         $brandId = $request->get('brand_id');
+        $brandSlug = $request->get('brand_slug');
         $minPrice = $request->get('min_price');
         $maxPrice = $request->get('max_price');
         $search = $request->get('search');
         $sortBy = $request->get('sort_by');
-
+        
         $typeMappings = [
             'flash-deals' => 'is_flash_deal',
             'featured'    => 'is_featured',
@@ -38,13 +40,36 @@ class ProductController extends Controller
             $query->where($typeMappings[$type], true);
         }
 
-        if ($categoryId) {
-            $query->where('category_id', $categoryId);
+        if ($categorySlug) {
+            $category = Category::with(['children', 'children.children'])->where('slug', $categorySlug)->first();
+            if ($category) {
+                $categoryIds = [$category->id];
+                $categoryIds = array_merge($categoryIds, $category->children->pluck('id')->toArray());
+                foreach ($category->children as $child) {
+                    $categoryIds = array_merge($categoryIds, $child->children->pluck('id')->toArray());
+                }
+                $query->whereIn('category_id', $categoryIds);
+            }
+        }else if ($categoryId) {
+            $category = Category::with(['children', 'children.children'])->where('id', $categoryId)->first();
+            if ($category) {
+                $categoryIds = [$category->id];
+                $categoryIds = array_merge($categoryIds, $category->children->pluck('id')->toArray());
+                foreach ($category->children as $child) {
+                    $categoryIds = array_merge($categoryIds, $child->children->pluck('id')->toArray());
+                }
+                $query->whereIn('category_id', $categoryIds);
+            }
         }
-
-        if ($brandId) {
+        if ($brandSlug) {
+            $brand = Brand::where('slug', $brandSlug)->first();
+            if ($brand) {
+                $query->where('brand_id', $brand->id);
+            }
+        } else if ($brandId) {
             $query->where('brand_id', $brandId);
         }
+
 
         if ($minPrice) {
             $query->where('sale_price', '>=', $minPrice);
@@ -98,7 +123,7 @@ class ProductController extends Controller
     }
     public function getProductById($id)
     {
-        $product = Product::with(['category', 'brand'])->find($id);
+        $product = Product::with(['category', 'brand', 'variants', 'variants.variantValues'])->find($id);
 
         if (!$product) {
             return ApiResponse::error('Product not found', 404);
@@ -121,6 +146,18 @@ class ProductController extends Controller
             'thumbnail' => $product->thumbnail ? getImageUrl($product->thumbnail) : null,
             'images' => collect($product->image)->map(function ($image) {
                 return $image ? getImageUrl($image) : null;
+            }),
+            'variants' => $product->variants->map(function ($variant) {
+                return [
+                    'id' => $variant->id,
+                    'name' => $variant->name,
+                    'price' => $variant->additional_price,
+                    'cost' => $variant->additional_cost,
+                    'stock' => $variant->stock,
+                    'image' => $variant->image ? getImageUrl($variant->image) : null,
+                    'attributes' => $variant->variantValues
+                        ->pluck('attribute_value', 'attribute_name')
+                ];
             }),
         ];
 
