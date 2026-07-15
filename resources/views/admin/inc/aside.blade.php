@@ -87,6 +87,23 @@
             </nav>
           </div>
         </div>
+        <div class="nav-group">
+          @php
+          
+          @endphp
+          <a class="nav-link nav-group-toggle " href="#siteSectionsMenu" data-bs-toggle="collapse" aria-expanded="">
+            <span class="nav-icon"><i class="bi bi-cart" aria-hidden="true"></i></span>
+            <span class="nav-text">Site Sections</span>
+          </a>
+          <div class="collapse sub-menu" id="siteSectionsMenu">
+            <nav class="nav-group-items">
+              <a class="nav-link " href="{{ route('admin.sliders.index') }}">
+                <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+                <span class="nav-text">Sliders</span>
+              </a>
+            </nav>
+          </div>
+        </div>
         <a class="nav-link" href="profile.html">
           <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
           <span class="nav-text">Profile</span>

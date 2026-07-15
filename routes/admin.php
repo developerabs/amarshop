@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ShippingChargeController;
 use App\Http\Controllers\Admin\SiteSettingsController;
+use App\Http\Controllers\Admin\SliderController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -67,4 +69,20 @@ Route::name('admin.')->group(function () {
         Route::put('/update', 'update')->name('update');
         Route::delete('/{shippingCharge}', 'destroy')->name('destroy'); 
     });
-});   
+    // slider management
+    Route::controller(SliderController::class)->prefix('sliders')->name('sliders.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::post('/create', 'store')->name('store');
+        Route::put('/update', 'update')->name('update');
+        Route::delete('/{slider}', 'destroy')->name('destroy');
+    });
+    // banner management
+    Route::controller(BannerController::class)->prefix('banners')->name('banners.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::post('/create', 'store')->name('store');
+        Route::put('/update', 'update')->name('update');
+        Route::delete('/{banner}', 'destroy')->name('destroy');
+    });
+});
