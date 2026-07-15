@@ -333,7 +333,7 @@
                         <div class="col-12">
                             <label class="form-label" for="taxAmount">Tax</label>
                             <div class="input-group">
-                                <input class="form-control" id="taxAmount" type="number" min="0" name="tax_amount" value="{{ old('tax_amount', $product->tax_amount ?? '') }}" placeholder="Tax Amount">
+                                <input class="form-control" id="taxAmount" type="number" min="0" name="tax_amount" value="{{ old('tax_amount', $product->tax_rate ?? '') }}" placeholder="Tax Amount">
                                 <select class="form-select" id="taxType" name="tax_type">
                                     <option value="">Type</option>
                                     <option value="inclusive" {{ old('tax_type', $product->tax_type ?? '') == 'inclusive' ? 'selected' : '' }}>Inclusive</option>

@@ -44,6 +44,10 @@
                 <span class="nav-icon"><i class="bi bi-box" aria-hidden="true"></i></span>
                 <span class="nav-text">Products</span>
               </a>
+              <a class="nav-link {{ request()->routeIs('admin.shipping-charges.*') ? 'active' : '' }}" href="{{ route('admin.shipping-charges.index') }}">
+                <span class="nav-icon"><i class="bi bi-box" aria-hidden="true"></i></span>
+                <span class="nav-text">Shipping Charges</span>
+              </a>
             </nav>
           </div>
         </div>

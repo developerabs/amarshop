@@ -122,7 +122,7 @@ class ProductController extends Controller
 
                     'discount_amount' => $validatedData['discount_amount'] ?? null,
                     'discount_type' => $validatedData['discount_type'] ?? null,
-                    'tax_amount' => $validatedData['tax_amount'] ?? null,
+                    'tax_rate' => $validatedData['tax_amount'] ?? null,
                     'tax_type' => $validatedData['tax_type'] ?? null,
 
                     'short_description' => $validatedData['short_description'] ?? null,
@@ -328,7 +328,7 @@ class ProductController extends Controller
 
                     'discount_amount' => $validatedData['discount_amount'] ?? null,
                     'discount_type' => $validatedData['discount_type'] ?? null,
-                    'tax_amount' => $validatedData['tax_amount'] ?? null,
+                    'tax_rate' => $validatedData['tax_amount'] ?? null,
                     'tax_type' => $validatedData['tax_type'] ?? null,
 
                     'short_description' => $validatedData['short_description'],

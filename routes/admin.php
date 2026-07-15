@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ShippingChargeController;
 use App\Http\Controllers\Admin\SiteSettingsController;
 use Illuminate\Support\Facades\Route;
 
@@ -57,5 +58,13 @@ Route::name('admin.')->group(function () {
         Route::put('/update-status/{order}', 'updateStatus')->name('update-status');
         Route::delete('/{order}', 'destroy')->name('destroy');
         Route::get('details/{order}', 'details')->name('details');
+    });
+    // shipping charges management
+    Route::controller(ShippingChargeController::class)->prefix('shipping-charges')->name('shipping-charges.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::post('/create', 'store')->name('store');
+        Route::put('/update', 'update')->name('update');
+        Route::delete('/{shippingCharge}', 'destroy')->name('destroy'); 
     });
 });   

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
 use App\Models\Admin\Product;
+use App\Models\Admin\ShippingCharges;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -163,5 +164,30 @@ class CheckOutController extends Controller
             ],
         ];
         return ApiResponse::success('Order placed successfully', $data);
+    }
+    public function paymentMethods()
+    {
+        $paymentMethods = [
+            ['id' => 'cash_on_delivery', 'name' => 'Cash on Delivery'],
+            ['id' => 'bkash', 'name' => 'Bkash'],
+            ['id' => 'nagad', 'name' => 'Nagad'],
+            ['id' => 'stripe', 'name' => 'Stripe'],
+            ['id' => 'paypal', 'name' => 'PayPal'],
+        ];
+        return ApiResponse::success('Payment methods fetched successfully', $paymentMethods);
+    }
+    public function shippingCharges()
+    {
+        $shippingCharges = ShippingCharges::all()->map(function ($charge) {
+            return [
+                'id' => $charge->id,
+                'name' => $charge->name,
+                'charge' => $charge->charge,
+            ];
+        });
+        $data = [
+            'shipping_charges' => $shippingCharges,
+        ];
+        return ApiResponse::success('Shipping charges fetched successfully', $data);
     }
 }

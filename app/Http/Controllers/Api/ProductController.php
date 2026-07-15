@@ -144,6 +144,8 @@ class ProductController extends Controller
             'meta_description' => $product->meta_description,
             'discount_amount' => $product->discount_amount,
             'discount_type' => $product->discount_type,
+            'tax_rate' => $product->tax_rate,
+            'tax_type' => $product->tax_type,
             'thumbnail' => $product->thumbnail ? getImageUrl($product->thumbnail) : null,
             'images' => collect($product->image)->map(function ($image) {
                 return $image ? getImageUrl($image) : null;

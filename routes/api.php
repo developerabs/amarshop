@@ -65,6 +65,7 @@ Route::middleware('auth:api')->group(function () {
 Route::controller(CheckOutController::class)->prefix('checkout')->group(function () {
     Route::post('/place-order', 'placeOrder');
     Route::get('/payment-methods', 'paymentMethods');
+    Route::get('/shipping-charges', 'shippingCharges');
 });
 Route::controller(WishListController::class)->prefix('wishlist')->group(function () {
     Route::get('/', 'index');
