@@ -106,6 +106,7 @@ class ProductController extends Controller
                 'meta_description' => $product->meta_description,
                 'discount_amount' => $product->discount_amount,
                 'discount_type' => $product->discount_type,
+                'thumbnail' => $product->thumbnail ? getImageUrl($product->thumbnail) : null,
                 'images' => collect($product->image)->map(function ($image) {
                     return $image ? getImageUrl($image) : null;
                 }),
@@ -192,6 +193,8 @@ class ProductController extends Controller
             ],
             'name' => $product->name,
             'slug' => $product->slug,
+            'code' => $product->code,
+            'model' => $product->model,
             'price' => $product->price,
             'sale_price' => $product->sale_price,
             'total_stock' => $product->total_stock,
@@ -210,6 +213,7 @@ class ProductController extends Controller
             'images' => collect($product->image)->map(function ($image) {
                 return $image ? getImageUrl($image) : null;
             }),
+            'details_image' => $product->desc_image ? getImageUrl($product->desc_image) : null,
             'created_at' => optional($product->created_at)->toDateTimeString(),
             'updated_at' => optional($product->updated_at)->toDateTimeString(),
         ];
@@ -245,5 +249,53 @@ class ProductController extends Controller
             'attributes' => $attributes,
             'variants' => $variants,
         ]);
+    }
+    public function relatedProducts($productId)
+    {
+        $product = Product::find($productId);
+
+        if (!$product) {
+            return ApiResponse::error('Product not found', 404);
+        }
+        $category = Category::with(['children', 'children.children'])->where('id', $product->category_id)->first();
+        if ($category) {
+            $categoryIds = [$category->id];
+            $categoryIds = array_merge($categoryIds, $category->children->pluck('id')->toArray());
+            foreach ($category->children as $child) {
+                $categoryIds = array_merge($categoryIds, $child->children->pluck('id')->toArray());
+            }
+        }
+        $relatedProducts = Product::with(['category', 'brand'])
+            ->where('status', true)
+            ->whereIn('category_id', $categoryIds)
+            ->where('id', '!=', $product->id)
+            ->latest()
+            ->take(10)
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'category_name' => $product->category->name ?? null,
+                    'brand_name' => $product->brand->name ?? null,
+                    'name' => $product->name,
+                    'slug' => $product->slug,
+                    'price' => $product->price,
+                    'sale_price' => $product->sale_price,
+                    'total_stock' => $product->total_stock,
+                    'description' => $product->description,
+                    'meta_title' => $product->meta_title,
+                    'meta_description' => $product->meta_description,
+                    'discount_amount' => $product->discount_amount,
+                    'discount_type' => $product->discount_type,
+                    'thumbnail' => $product->thumbnail ? getImageUrl($product->thumbnail) : null,
+                    'images' => collect($product->image)->map(function ($image) {
+                        return $image ? getImageUrl($image) : null;
+                    }),
+                ];
+            });
+        $data = [
+            'products' => $relatedProducts,
+        ];
+        return ApiResponse::success('Related products fetched successfully', $data);
     }
 }

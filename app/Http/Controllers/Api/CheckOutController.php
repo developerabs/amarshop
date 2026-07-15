@@ -97,14 +97,26 @@ class CheckOutController extends Controller
             $orderItemsData = [];
             $orderAddressData = [];
             foreach ($request->input('products', []) as $item) {
+                $product = Product::find($item['product_id']);
+                if (!$product) {
+                    return ApiResponse::error('Product not found', ['product_id' => $item['product_id']], 404);
+                }
+                $variant = null;
+                if (!empty($item['product_variant_id'])) {
+                    $variant = DB::table('product_variants')->where('id', $item['product_variant_id'])->first();
+                    if (!$variant) {
+                        return ApiResponse::error('Product variant not found', ['product_variant_id' => $item['product_variant_id']], 404);
+                    }
+                }
                 $orderItemsData[] = [
                     'product_id' => $item['product_id'],
+                    'product_variant_id' => $item['product_variant_id'] ?? null,
                     'quantity' => $item['quantity'],
-                    'price' => Product::find($item['product_id'])->sale_price ?? 0,
-                    'subtotal' => (Product::find($item['product_id'])->sale_price ?? 0) * $item['quantity'],
-                    'product_name' =>   Product::find($item['product_id'])->name ?? 'Unknown Product',
-                    'variant_name' => null,
-                    'sku' => null,
+                    'price' => $variant->price ?? $product->sale_price,
+                    'subtotal' => ($variant->price ?? $product->sale_price) * $item['quantity'],
+                    'product_name' =>   $product->name ?? 'Unknown Product',
+                    'variant_name' => $variant->name ?? null,
+                    'sku' => $variant->sku ?? null,
                 ];
             }
             $order->orderItems()->createMany($orderItemsData);
@@ -132,7 +144,24 @@ class CheckOutController extends Controller
             DB::rollBack();
             return ApiResponse::error('Failed to place order', ['error' => $e->getMessage()], 500);
         }
-
-        return ApiResponse::success('Order placed successfully', ['order_id' => $order->id]);
+        $data = [
+            'order' => [
+                'id' => $order->id,
+                'order_no' => $order->order_no,
+                'user_id' => $order->user_id,
+                'guest_id' => $order->guest_id,
+                'subtotal' => $order->subtotal,
+                'discount_amount' => $order->discount_amount,
+                'coupon_discount' => $order->coupon_discount,
+                'tax_amount' => $order->tax_amount,
+                'shipping_charge' => $order->shipping_charge,
+                'grand_total' => $order->grand_total,
+                'payment_method' => $order->payment_method,
+                'notes' => $order->notes,
+                'placed_at' => optional($order->placed_at)->toDateTimeString(),
+                'est_delivery' => optional($order->placed_at)->addDays(7)->toDateTimeString(),
+            ],
+        ];
+        return ApiResponse::success('Order placed successfully', $data);
     }
 }

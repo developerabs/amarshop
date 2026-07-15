@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
+use App\Models\Admin\Brand;
+use App\Models\Admin\Category;
 use App\Models\Admin\Product;
 use Illuminate\Http\Request;
 
@@ -50,6 +52,7 @@ class HomeController extends Controller
                     'meta_description' => $product->meta_description,
                     'discount_amount' => $product->discount_amount,
                     'discount_type' => $product->discount_type,
+                    'thumbnail' => $product->thumbnail ? getImageUrl($product->thumbnail) : null,
                     'images' => collect($product->image)->map(function ($image) {
                         return $image ? getImageUrl($image) : null;
                     }),
@@ -63,6 +66,92 @@ class HomeController extends Controller
 
         return ApiResponse::success(
             'Products fetched successfully',
+            $data
+        );
+    }
+    public function searchAll(Request $request)
+    {
+        $searchTerm = $request->input('search');
+
+        $categories = Category::with('children', 'children.children')->where('name', 'like', '%' . $searchTerm . '%')
+            ->where('status', true)
+            ->latest()
+            ->take(10)
+            ->get()
+            ->map(function ($category) {
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'slug' => $category->slug,
+                    'image' => $category->image ? getImageUrl($category->image) : null,
+                ];
+            });
+        $brands = Brand::where('name', 'like', '%' . $searchTerm . '%')
+            ->where('status', true)
+            ->latest()
+            ->take(10)
+            ->get()
+            ->map(function ($brand) {
+                return [
+                    'id' => $brand->id,
+                    'name' => $brand->name,
+                    'slug' => $brand->slug,
+                    'image' => $brand->image ? getImageUrl($brand->image) : null,
+                ];
+            });
+        $products = Product::with(['category', 'brand'])
+            ->where('status', true)
+            ->where(function ($query) use ($searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%')
+                    ->orWhereIn('category_id', function ($subQuery) use ($searchTerm) {
+                        $subQuery->select('id')
+                            ->from('categories')
+                            ->where('name', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhereIn('brand_id', function ($subQuery) use ($searchTerm) {
+                        $subQuery->select('id')
+                            ->from('brands')
+                            ->where('name', 'like', '%' . $searchTerm . '%');
+                    })
+                    ->orWhere('slug', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('code', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('model', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('short_description', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('meta_title', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('meta_description', 'like', '%' . $searchTerm . '%');
+            })
+            ->latest()
+            ->take(10)
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'category_name' => $product->category->name ?? null,
+                    'brand_name' => $product->brand->name ?? null,
+                    'name' => $product->name,
+                    'slug' => $product->slug,
+                    'price' => $product->price,
+                    'sale_price' => $product->sale_price,
+                    'total_stock' => $product->total_stock,
+                    'description' => $product->description,
+                    'meta_title' => $product->meta_title,
+                    'meta_description' => $product->meta_description,
+                    'discount_amount' => $product->discount_amount,
+                    'discount_type' => $product->discount_type,
+                    'thumbnail' => $product->thumbnail ? getImageUrl($product->thumbnail) : null,
+                    'images' => collect($product->image)->map(function ($image) {
+                        return $image ? getImageUrl($image) : null;
+                    }),
+                ];
+            });
+        $data = [
+            'categories' => $categories,
+            'brands' => $brands,
+            'products' => $products,
+        ];
+        return ApiResponse::success(
+            'Search results fetched successfully',
             $data
         );
     }

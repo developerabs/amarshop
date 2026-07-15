@@ -30,11 +30,13 @@ Route::controller(SiteSettingsController::class)->prefix('site-settings')->group
 });
 Route::controller(HomeController::class)->prefix('home')->group(function () {
     Route::get('/products', 'homeProducts');
+    Route::get('search-all', 'searchAll');
 });
 Route::controller(ProductController::class)->prefix('products')->group(function () {
     Route::get('/all-products', 'allProducts');
     Route::get('/{id}', 'getProductById');
     Route::get('/details/{slug}', 'details');
+    Route::get('related-products/{productId}', 'relatedProducts');
 });
 Route::controller(CategoryController::class)->prefix('categories')->group(function () {
     Route::get('/', 'index');

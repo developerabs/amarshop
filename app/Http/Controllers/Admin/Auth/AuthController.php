@@ -17,7 +17,11 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (auth()->attempt($credentials)) {
-            return redirect()->route('admin.dashboard');
+            if (auth()->user()->role === 'superadmin') {
+                return redirect()->route('admin.dashboard');
+            }
+            auth()->logout();
+            return redirect()->back()->withErrors(['email' => 'Invalid credentials']);
         }
 
         return redirect()->back()->withErrors(['email' => 'Invalid credentials']);

@@ -43,6 +43,7 @@ class Product extends Model
         'is_new_arrival',
         'is_wholesale',
         'has_variants',
+        'desc_image',
         'status',
     ];
     protected $casts = [
@@ -67,6 +68,7 @@ class Product extends Model
         'description' => 'string',
         'thumbnail' => 'string',
         'image' => 'array',
+        'desc_image' => 'string',
         'meta_title' => 'string',
         'meta_description' => 'string',
         'meta_keywords' => 'string',

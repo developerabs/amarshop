@@ -42,7 +42,9 @@
                     <tr>
                         <th>Product Name</th>
                         <th>Quantity</th>
+                        <th>Variant Name</th>
                         <th>Price</th>
+                        <th>Subtotal</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,7 +52,9 @@
                     <tr data-items="{{ json_encode($item) }}">
                         <td>{{ $item->product_name ?? 'N/A' }}</td>
                         <td>{{ $item->quantity ?? 'N/A' }}</td>
+                        <td>{{ $item->variant_name ?? 'N/A' }}</td>
                         <td>{{ $item->price ?? 'N/A' }}</td>
+                        <td>{{ $item->subtotal ?? 'N/A' }}</td>
                     </tr>
                     @empty
                     <tr>
