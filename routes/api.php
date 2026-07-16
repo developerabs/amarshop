@@ -31,6 +31,8 @@ Route::controller(SiteSettingsController::class)->prefix('site-settings')->group
 Route::controller(HomeController::class)->prefix('home')->group(function () {
     Route::get('/products', 'homeProducts');
     Route::get('search-all', 'searchAll');
+    Route::get('/sliders', 'sliders');
+    Route::get('/banners', 'banners');
 });
 Route::controller(ProductController::class)->prefix('products')->group(function () {
     Route::get('/all-products', 'allProducts');

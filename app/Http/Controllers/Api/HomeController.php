@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
+use App\Models\Admin\Banner;
 use App\Models\Admin\Brand;
 use App\Models\Admin\Category;
 use App\Models\Admin\Product;
+use App\Models\Admin\Slider;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -153,6 +155,43 @@ class HomeController extends Controller
         return ApiResponse::success(
             'Search results fetched successfully',
             $data
+        );
+    }
+    public function sliders()
+    {
+        $sliders = Slider::latest()
+            ->take(10)
+            ->get()
+            ->map(function ($slider) {
+                return [
+                    'id' => $slider->id,
+                    'title' => $slider->title,
+                    'description' => $slider->description,
+                    'image' => $slider->image ? getImageUrl($slider->image) : null,
+                    'button_text' => $slider->button_text,
+                    'button_link' => $slider->button_link,
+                ];
+            });
+
+        return ApiResponse::success(
+            'Sliders fetched successfully',
+            ['sliders' => $sliders]
+        );
+    }
+    public function banners()
+    {
+        $banners = Banner::latest()
+            ->take(10)
+            ->get()
+            ->map(function ($banner) {
+                return [
+                    'image' => $banner->image ? getImageUrl($banner->image) : null,
+                ];
+            });
+
+        return ApiResponse::success(
+            'Banners fetched successfully',
+            ['banners' => $banners]
         );
     }
 }

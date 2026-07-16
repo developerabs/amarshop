@@ -44,9 +44,11 @@ class CheckOutController extends Controller
 
         $subtotal = 0;
         $grandTotal = 0;
+        $totalTaxAmount = 0;
+        $totalDiscountAmount = 0;
 
         foreach ($validatedData['products'] as $product) {
-            $productModel = Product::find($product['product_id']);
+            $productModel = Product::with('variants')->find($product['product_id']);
             if (!$productModel) {
                 return ApiResponse::error('Product not found', ['product_id' => $product['product_id']], 404);
             }
@@ -54,19 +56,64 @@ class CheckOutController extends Controller
                 return ApiResponse::error('Insufficient stock for product', ['product_id' => $product['product_id']], 400);
             }
             if (!empty($product['product_variant_id'])) {
-                $variantStock = DB::table('product_variants')
-                    ->where('id', $product['product_variant_id'])
-                    ->value('stock');
-                if ($variantStock === null) {
+                $variantProduct = $productModel->variants()->where('id', $product['product_variant_id'])->first();
+                if (!$variantProduct) {
                     return ApiResponse::error('Product variant not found', ['product_variant_id' => $product['product_variant_id']], 404);
                 }
-                if ($variantStock < $product['quantity']) {
+                if ($variantProduct->stock < $product['quantity']) {
                     return ApiResponse::error('Insufficient stock for product variant', ['product_variant_id' => $product['product_variant_id']], 400);
                 }
+                $productPrice = $variantProduct->price * $product['quantity'];
+                $subtotal += $productPrice;
+
+                if ($productModel->discount_amount > 0) {
+                    if ($productModel->discount_type === 'fixed') {
+                        $discountAmount = $productModel->discount_amount * $product['quantity'];
+                        $productPrice -= $discountAmount; // Subtract discount from the product price
+                        $totalDiscountAmount += $discountAmount;
+                    } elseif ($productModel->discount_type === 'percentage') {
+                        $discountAmount = ($variantProduct->price * ($productModel->discount_amount / 100)) * $product['quantity'];
+                        $productPrice -= $discountAmount; // Subtract discount from the product price
+                        $totalDiscountAmount += $discountAmount;
+                    }
+                }
+                if ($productModel->tax_rate > 0) {
+                    if ($productModel->tax_type == 'inclusive') {
+                        $taxAmount = 0; // Tax is already included in the price
+                    } elseif ($productModel->tax_type == 'exclusive') {
+                        $taxAmount = $productPrice * ($productModel->tax_rate / 100);
+                        $productPrice += $taxAmount; // Add tax to the product price
+                        $totalTaxAmount += $taxAmount;
+                    }
+                }
+                $grandTotal += $productPrice; // Add the final product price to the grand total
+            } else {
+                $productPrice = $productModel->sale_price * $product['quantity'];
+                $subtotal += $productPrice;
+                
+                if ($productModel->discount_amount > 0) {
+                    if ($productModel->discount_type === 'fixed') {
+                        $discountAmount = $productModel->discount_amount * $product['quantity'];
+                        $productPrice -= $discountAmount; // Subtract discount from the product price
+                        $totalDiscountAmount += $discountAmount;
+                    } elseif ($productModel->discount_type === 'percentage') {
+                        $discountAmount = ($productModel->sale_price * ($productModel->discount_amount / 100)) * $product['quantity'];
+                        $productPrice -= $discountAmount; // Subtract discount from the product price
+                        $totalDiscountAmount += $discountAmount;
+                    }
+                }
+                if ($productModel->tax_rate > 0) {
+                    if ($productModel->tax_type == 'inclusive') {
+                        $taxAmount = 0; // Tax is already included in the price
+                    } elseif ($productModel->tax_type == 'exclusive') {
+                        $taxAmount = $productPrice * ($productModel->tax_rate / 100);
+                        $productPrice += $taxAmount; // Add tax to the product price
+                        $totalTaxAmount += $taxAmount;
+                    }
+                }
+                $grandTotal += $productPrice; // Add the final product price to the grand total
             }
-            $subtotal += $productModel->sale_price * $product['quantity'];
-            $grandTotal += $productModel->sale_price * $product['quantity'];
-        }
+        }    
         if ($grandTotal <= 0) {
             return ApiResponse::error('Invalid order total', ['grand_total' => $grandTotal], 400);
         }
@@ -77,6 +124,12 @@ class CheckOutController extends Controller
             return ApiResponse::error('User not authenticated and guest ID not provided', [], 401);
         }
         $shippingCharge = 0;
+        if ($request->has('shipping_id')) {
+            $shippingCharge = ShippingCharges::where('id', $request->shipping_id)->value('charge');
+            if ($shippingCharge === null) {
+                return ApiResponse::error('Invalid shipping ID', ['shipping_id' => $request->shipping_id], 400);
+            }
+        }
         // Create a new order
         try {
             DB::beginTransaction();
@@ -85,9 +138,9 @@ class CheckOutController extends Controller
                 'user_id' => $user->id ?? null,
                 'guest_id' => $request->guest_id ?? null,
                 'subtotal' => $subtotal,
-                'discount_amount' =>  0,
+                'discount_amount' =>  $totalDiscountAmount,
                 'coupon_discount' =>  0,
-                'tax_amount' =>  0,
+                'tax_amount' =>  $totalTaxAmount,
                 'shipping_charge' =>  $shippingCharge,
                 'grand_total' => $grandTotal + $shippingCharge,
                 'payment_method' => $validatedData['payment_method'],
