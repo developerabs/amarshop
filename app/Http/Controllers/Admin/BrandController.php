@@ -20,12 +20,8 @@ class BrandController extends Controller
     {
         $query = Brand::query();
 
-        if ($request->has('name') && !empty($request->input('name'))) {
-            $query->where('name', 'like', '%' . $request->input('name') . '%');
-        }
-
-        if ($request->has('status') && $request->input('status') !== '') {
-            $query->where('status', $request->input('status'));
+        if ($request->has('query') && !empty($request->input('query'))) {
+            $query->where('name', 'like', '%' . $request->input('query') . '%');
         }
 
         $brands = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();

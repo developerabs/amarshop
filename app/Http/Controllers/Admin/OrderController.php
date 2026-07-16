@@ -10,8 +10,26 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('orderItems')->latest()->paginate(20);
-        return view('admin.sections.orders.index', compact('orders'));
+        return view('admin.sections.orders.index');
+    }
+    public function search(Request $request)
+    {
+        $request->validate([
+            'query' => 'nullable|string|max:255',
+        ]);
+
+        $query = Order::with('orderItems');
+
+        if ($request->has('query') && !empty($request->input('query'))) {
+            $searchTerm = $request->input('query');
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('order_no', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        $orders = $query->latest()->paginate(20)->withQueryString();
+
+        return view('admin.components.data-table.orders-table', compact('orders'));
     }
 
     public function active()

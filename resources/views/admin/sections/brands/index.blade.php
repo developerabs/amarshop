@@ -32,14 +32,16 @@
 @endsection
 @push('scripts')
 <script>
-    const brandSearchInput = document.getElementById('brandSearch');
+    const brandSearchInput = document.querySelector('.table-search[data-table-search="brandsTable"]');
     const brandTableBody = document.getElementById('brandTableBody');
+
+    brandSearchInput.addEventListener('input', brandFilter);
 
     function brandFilter() {
         brandTableBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
         $.post("{{ route('admin.brands.search') }}", {
             "_token": "{{ csrf_token() }}",
-            "query": $("#brandSearch").val(),
+            "query": brandSearchInput.value,
             "page": "{{ request()->get('page', 1) }}"
         }).done(function(data) {
             brandTableBody.innerHTML = data;
@@ -48,5 +50,10 @@
         });
     }
     brandFilter();
+</script>
+<script>
+    $(document).ready(function() {
+        brandSearchInput.addEventListener('input', brandFilter);
+    });
 </script>
 @endpush

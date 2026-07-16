@@ -15,9 +15,9 @@ class BannerController extends Controller
     public function search(Request $request)
     {
         $request->validate([
-            'search' => 'nullable|string|max:255',
+            'query' => 'nullable|string|max:255',
         ]);
-        $searchTerm = $request->input('search');
+        $searchTerm = $request->input('query');
         $banners = Banner::query()
             ->when($searchTerm, function ($query) use ($searchTerm) {
                 $query->where('title', 'like', '%' . $searchTerm . '%')

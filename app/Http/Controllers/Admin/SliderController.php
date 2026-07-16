@@ -15,12 +15,12 @@ class SliderController extends Controller
     public function search(Request $request)
     {
         $request->validate([
-            'search' => 'nullable|string|max:255',
+            'query' => 'nullable|string|max:255',
         ]);
         $sliders = Slider::query()
-            ->when($request->input('search'), function ($query, $search) {
-                $query->where('title', 'like', '%' . $search . '%')
-                      ->orWhere('description', 'like', '%' . $search . '%');
+            ->when($request->input('query'), function ($query, $queryString) {
+                $query->where('title', 'like', '%' . $queryString . '%')
+                      ->orWhere('description', 'like', '%' . $queryString . '%');
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);

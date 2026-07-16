@@ -17,10 +17,32 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::orderBy('id', 'desc')->paginate(20);
-        return view('admin.sections.products.index', compact('products'));
+        return view('admin.sections.products.index');
     }
+    public function search(Request $request)
+    {
+        $query = Product::with('category', 'brand');
 
+        if ($request->has('query') && !empty($request->input('query'))) {
+            $query->where('name', 'like', '%' . $request->input('query') . '%')
+                  ->orWhere('code', 'like', '%' . $request->input('query') . '%')
+                  ->orWhere('model', 'like', '%' . $request->input('query') . '%')
+                  ->orWhere('description', 'like', '%' . $request->input('query') . '%')
+                  ->orWhere('short_description', 'like', '%' . $request->input('query') . '%')
+                  ->orWhere('meta_title', 'like', '%' . $request->input('query') . '%')
+                  ->orWhere('meta_description', 'like', '%' . $request->input('query') . '%')
+                  ->orWhereHas('category', function ($q) use ($request) {
+                      $q->where('name', 'like', '%' . $request->input('query') . '%');
+                  })
+                  ->orWhereHas('brand', function ($q) use ($request) {
+                      $q->where('name', 'like', '%' . $request->input('query') . '%');
+                  });
+        }
+
+        $products = $query->with(['category', 'brand'])->orderBy('id', 'desc')->paginate(10)->withQueryString();
+
+        return view('admin.components.data-table.products-table', compact('products'));
+    }
     public function create()
     {
         $categories = Category::with(['children' => function ($query) {

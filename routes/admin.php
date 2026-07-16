@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ShippingChargeController;
 use App\Http\Controllers\Admin\SiteSettingsController;
 use App\Http\Controllers\Admin\SliderController;
+use App\Http\Controllers\Admin\UserCareController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -43,6 +44,7 @@ Route::name('admin.')->group(function () {
     // product management
     Route::controller(ProductController::class)->prefix('products')->name('products.')->group(function () {
         Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
         Route::get('/create', 'create')->name('create');
         Route::post('/create', 'store')->name('store');
         Route::get('/edit/{product}', 'edit')->name('edit');
@@ -52,6 +54,7 @@ Route::name('admin.')->group(function () {
     // order management
     Route::controller(OrderController::class)->prefix('orders')->name('orders.')->group(function () {
         Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
         Route::get('/{order}', 'show')->name('show');
         Route::get('/active', 'active')->name('active');
         Route::get('/pending', 'pending')->name('pending');
@@ -84,5 +87,13 @@ Route::name('admin.')->group(function () {
         Route::post('/create', 'store')->name('store');
         Route::put('/update', 'update')->name('update');
         Route::delete('/{banner}', 'destroy')->name('destroy');
+    });
+    // user management
+    Route::controller(UserCareController::class)->prefix('users')->name('users.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::post('/create', 'store')->name('store');
+        Route::put('/update', 'update')->name('update');
+        Route::delete('/{user}', 'destroy')->name('destroy');
     });
 });

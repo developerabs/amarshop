@@ -68,22 +68,6 @@
                 <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
                 <span class="nav-text">All Orders</span>
               </a>
-              <a class="nav-link {{ request()->routeIs('admin.orders.active') ? 'active' : '' }}" href="{{ route('admin.orders.active') }}">
-                <span class="nav-icon"><i class="bi bi-plus" aria-hidden="true"></i></span>
-                <span class="nav-text">Active Order</span>
-              </a>
-              <a class="nav-link {{ request()->routeIs('admin.orders.pending') ? 'active' : '' }}" href="{{ route('admin.orders.pending') }}">
-                <span class="nav-icon"><i class="bi bi-plus" aria-hidden="true"></i></span>
-                <span class="nav-text">Pending Order</span>
-              </a>
-              <a class="nav-link {{ request()->routeIs('admin.orders.completed') ? 'active' : '' }}" href="{{ route('admin.orders.completed') }}">
-                <span class="nav-icon"><i class="bi bi-plus" aria-hidden="true"></i></span>
-                <span class="nav-text">Completed Order</span>
-              </a>
-              <a class="nav-link {{ request()->routeIs('admin.orders.cancelled') ? 'active' : '' }}" href="{{ route('admin.orders.cancelled') }}">
-                <span class="nav-icon"><i class="bi bi-plus" aria-hidden="true"></i></span>
-                <span class="nav-text">Cancelled Order</span>
-              </a>
             </nav>
           </div>
         </div>
@@ -112,47 +96,19 @@
             </nav>
           </div>
         </div>
-        <a class="nav-link" href="profile.html">
+        <a class="nav-link" href="{{ route('admin.users.index') }}">
           <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
-          <span class="nav-text">Profile</span>
-        </a>
-        <a class="nav-link" href="charts.html">
-          <span class="nav-icon"><i class="bi bi-bar-chart-line" aria-hidden="true"></i></span>
-          <span class="nav-text">Charts</span>
-        </a>
-        <a class="nav-link" href="tables.html">
-          <span class="nav-icon"><i class="bi bi-table" aria-hidden="true"></i></span>
-          <span class="nav-text">Tables</span>
-        </a>
-        <a class="nav-link" href="forms.html">
-          <span class="nav-icon"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i></span>
-          <span class="nav-text">Forms</span>
-        </a>
-        <a class="nav-link" href="components.html">
-          <span class="nav-icon"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i></span>
-          <span class="nav-text">Components</span>
-        </a>
-        <a class="nav-link" href="alerts.html">
-          <span class="nav-icon"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></span>
-          <span class="nav-text">Alerts</span>
-        </a>
-        <a class="nav-link" href="modals.html">
-          <span class="nav-icon"><i class="bi bi-window-stack" aria-hidden="true"></i></span>
-          <span class="nav-text">Modals</span>
+          <span class="nav-text">Users</span>
         </a>
         <a class="nav-link" href="{{ route('admin.site-settings') }}">
           <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
           <span class="nav-text">Settings</span>
         </a>
-        <a class="nav-link" href="blank.html">
-          <span class="nav-icon"><i class="bi bi-file-earmark" aria-hidden="true"></i></span>
-          <span class="nav-text">Blank Page</span>
-        </a>
       </nav>
 
       <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="{{ asset('admin/images/avatar/avatar.jpg') }}" alt="Admin Hasan">
-        <strong>Admin Hasan</strong>
+        <img class="avatar-img avatar-md sidebar-user-avatar" src="{{ asset('admin/images/avatar/avatar.jpg') }}" alt="{{ auth()->user()->name }}">
+        <strong>{{ auth()->user()->name }}</strong>
         <small>Active Workspace</small>
       </div>
 

@@ -163,7 +163,7 @@
       Array.prototype.forEach.call(profileAvatarEls, function (img) { if (user.avatar) img.src = user.avatar; if (user.name) img.alt = user.name; });
     }
 
-    initUserProfile();
+    // initUserProfile();
 
     if (!sidebarToggle) {
       return;
