@@ -40,7 +40,7 @@ class CheckOutController extends Controller
             return ApiResponse::error('Validation failed', $validator->errors()->all(), 422);
         }
         $validatedData = $validator->validated();
-        $user = auth()->user();
+        $user = auth('api')->user();
 
         $subtotal = 0;
         $grandTotal = 0;
@@ -90,7 +90,7 @@ class CheckOutController extends Controller
             } else {
                 $productPrice = $productModel->sale_price * $product['quantity'];
                 $subtotal += $productPrice;
-                
+
                 if ($productModel->discount_amount > 0) {
                     if ($productModel->discount_type === 'fixed') {
                         $discountAmount = $productModel->discount_amount * $product['quantity'];
@@ -136,7 +136,7 @@ class CheckOutController extends Controller
             $order = Order::create([
                 'order_no' => 'ORD-' . strtoupper(uniqid()),
                 'user_id' => $user->id ?? null,
-                'guest_id' => $request->guest_id ?? null,
+                'guest_id' => $user->id ? null : ($request->guest_id ?? null),
                 'subtotal' => $subtotal,
                 'discount_amount' =>  $totalDiscountAmount,
                 'coupon_discount' =>  0,

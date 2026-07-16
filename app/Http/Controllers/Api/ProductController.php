@@ -84,7 +84,17 @@ class ProductController extends Controller
         }
 
         if ($sortBy) {
-            $query->orderBy($sortBy);
+            if ($sortBy == 'created_at') {
+                $query->latest();
+            } elseif ($sortBy == 'sale_price' && $request->get('order') == 'asc') {
+                $query->orderBy('sale_price', 'asc');
+            } elseif ($sortBy == 'sale_price' && $request->get('order') == 'desc') {
+                $query->orderBy('sale_price', 'desc');
+            } elseif ($sortBy == 'rating' && $request->get('order') == 'desc') {
+                $query->orderBy('rating', 'desc');
+            } elseif ($sortBy == 'rating' && $request->get('order') == 'asc') {
+                $query->orderBy('rating', 'asc');
+            }
         } else {
             $query->latest();
         }

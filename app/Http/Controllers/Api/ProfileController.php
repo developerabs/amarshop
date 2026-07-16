@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
 use App\Models\Order;
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
 
 class ProfileController extends Controller
@@ -45,7 +46,7 @@ class ProfileController extends Controller
         
         $totalOrders = $orders->count();
         $totalSpent = $orders->sum('grand_total');
-        $totalWishlistItems = 10;
+        $totalWishlistItems = Wishlist::where('user_id', $user->id)->count();
 
         $data = [
             'user' => $userData,

@@ -17,6 +17,8 @@ class RegistrationController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -33,11 +35,23 @@ class RegistrationController extends Controller
 
         try {
             DB::transaction(function () use ($validatedData, &$token) {
+                $baseUsername = strtolower(preg_replace('/[^a-z0-9]/', '', $validatedData['first_name'].$validatedData['last_name']));
+                $username = $baseUsername;
+                $counter = 1;
+                
+                while (User::where('username', $username)->exists()) {
+                    $username = $baseUsername . $counter;
+                    $counter++;
+                }
+                
                 $user = User::create([
                     'first_name' => $validatedData['first_name'],
                     'last_name' => $validatedData['last_name'],
                     'name' => $validatedData['first_name'] . ' ' . $validatedData['last_name'],
+                    'username' => $username,
                     'email' => $validatedData['email'],
+                    'phone' => $validatedData['phone'] ?? null,
+                    'address' => $validatedData['address'] ?? null,
                     'password' => bcrypt($validatedData['password']),
                 ]);
 
