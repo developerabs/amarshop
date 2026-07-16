@@ -36,7 +36,11 @@ class SliderController extends Controller
             'button_text' => 'nullable|string|max:255',
             'button_link' => 'nullable|url|max:255',
         ]);
-        $imagePath = $request->file('image')->store('sliders', 'public');
+        
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = uploadImage($request->file('image'), 'sliders');
+        }
         Slider::create([
             'title' => $request->input('title'),
             'description' => $request->input('description'),
@@ -58,7 +62,7 @@ class SliderController extends Controller
         ]);
         $slider = Slider::findOrFail($request->input('id'));
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('sliders', 'public');
+            $imagePath = updateImage($request->file('image'), 'sliders', $slider->image);
             $slider->image = $imagePath;
         }
         $slider->title = $request->input('title');

@@ -4,6 +4,7 @@
         <form class="panel needs-validation" novalidate method="POST" action="{{ route('admin.sliders.update') }}" enctype="multipart/form-data">
             @method('PUT')
             @csrf
+            <input type="hidden" name="id" value="{{ old('id') }}">
             <div class="panel-header"><div><h2 class="h5 mb-1 section-title"><i class="bi bi-ui-checks-grid" aria-hidden="true"></i><span>Edit Slider</span></h2></div></div>
             <div class="row g-3">
                 <div class="col-md-6">
@@ -36,3 +37,23 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const editModal = document.getElementById('editModal');
+
+        editModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const shippingChargeData = button.closest('tr').dataset.items ? JSON.parse(button.closest('tr').dataset.items) : null;
+
+            if (shippingChargeData) {
+                editModal.querySelector('input[name="id"]').value = shippingChargeData.id || '';
+                editModal.querySelector('input[name="title"]').value = shippingChargeData.title || '';
+                editModal.querySelector('input[name="description"]').value = shippingChargeData.description || '';
+                editModal.querySelector('input[name="button_text"]').value = shippingChargeData.button_text || '';
+                editModal.querySelector('input[name="button_link"]').value = shippingChargeData.button_link || '';
+            }
+        });
+    });
+</script>
+@endpush

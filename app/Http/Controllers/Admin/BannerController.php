@@ -25,7 +25,7 @@ class BannerController extends Controller
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-        return view('admin.sections.banners.index', compact('banners', 'searchTerm'));
+        return view('admin.components.data-table.banner-table', compact('banners', 'searchTerm'));
     }
     public function store(Request $request)
     {
@@ -35,7 +35,11 @@ class BannerController extends Controller
             'description' => 'nullable|string|max:255',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-        $imagePath = $request->file('image')->store('banners', 'public');
+        if ($request->hasFile('image')) {
+            $imagePath = uploadImage($request->file('image'), 'banners');
+        } else {
+            $imagePath = null;
+        }
         Banner::create([
             'type' => $request->input('type'),
             'title' => $request->input('title'),
@@ -55,7 +59,7 @@ class BannerController extends Controller
         ]);
         $banner = Banner::findOrFail($request->input('id'));
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('banners', 'public');
+            $imagePath = updateImage($request->file('image'), 'banners', $banner->image);
             $banner->image = $imagePath;
         }
         $banner->type = $request->input('type');

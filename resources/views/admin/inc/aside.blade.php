@@ -89,17 +89,25 @@
         </div>
         <div class="nav-group">
           @php
-          
+              $siteSectionRoutes = [
+                'admin.sliders.*', 
+                'admin.banners.*',
+              ];
+              $siteSectionActive = request()->routeIs(...$siteSectionRoutes);
           @endphp
-          <a class="nav-link nav-group-toggle " href="#siteSectionsMenu" data-bs-toggle="collapse" aria-expanded="">
+          <a class="nav-link nav-group-toggle {{ $siteSectionActive ? 'active' : '' }}" href="#siteSectionsMenu" data-bs-toggle="collapse" aria-expanded="{{ $siteSectionActive ? 'true' : 'false' }}">
             <span class="nav-icon"><i class="bi bi-cart" aria-hidden="true"></i></span>
             <span class="nav-text">Site Sections</span>
           </a>
-          <div class="collapse sub-menu" id="siteSectionsMenu">
+          <div class="collapse sub-menu {{ $siteSectionActive ? 'show' : '' }}" id="siteSectionsMenu">
             <nav class="nav-group-items">
-              <a class="nav-link " href="{{ route('admin.sliders.index') }}">
+              <a class="nav-link {{ request()->routeIs('admin.sliders.*') ? 'active' : '' }}" href="{{ route('admin.sliders.index') }}">
                 <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
                 <span class="nav-text">Sliders</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}" href="{{ route('admin.banners.index') }}">
+                <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+                <span class="nav-text">Banners</span>
               </a>
             </nav>
           </div>
