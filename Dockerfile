@@ -8,6 +8,13 @@ RUN apt-get update && apt-get install -y \
     zip \
     && docker-php-ext-install zip
 
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    libzip-dev \
+    unzip \
+    git \
+    && docker-php-ext-install pdo pdo_mysql mysqli zip
+
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
