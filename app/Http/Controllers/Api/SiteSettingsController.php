@@ -3,27 +3,29 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Helpers\ApiResponse;
 use App\Models\Admin\SiteSettings;
+use Illuminate\Http\Request;
 
 class SiteSettingsController extends Controller
 {
-    public function index()
+    public function generalSettings()
     {
-        $siteSettings = SiteSettings::first();
+        $generalSettings = SiteSettings::where('group', 'general')->get()->pluck('value', 'key')->toArray();
 
         $data = [
-            'site_name' => $siteSettings->site_name ?? null,
-            'site_title' => $siteSettings->site_title ?? null,
-            'site_description' => $siteSettings->site_description ?? null,
-            'site_email' => $siteSettings->site_email ?? null,
-            'site_phone' => $siteSettings->site_phone ?? null,
-            'site_address' => $siteSettings->site_address ?? null,
-            'copyright_text' => $siteSettings->copyright_text ?? null,
-            'site_logo' => $siteSettings->site_logo ? asset('storage/' . $siteSettings->site_logo) : null,
-            'site_favicon' => $siteSettings->site_favicon ? asset('storage/' . $siteSettings->site_favicon) : null,
+            'site_name' => $generalSettings['site_name'] ?? null,
+            'site_title' => $generalSettings['site_title'] ?? null,
+            'site_description' => $generalSettings['site_description'] ?? null,
+            'site_email' => $generalSettings['site_email'] ?? null,
+            'site_phone' => $generalSettings['site_phone'] ?? null,
+            'site_address' => $generalSettings['site_address'] ?? null,
+            'free_shipping_amount' => $generalSettings['free_shipping_amount'] ?? null,
+            'copyright_text' => $generalSettings['copyright_text'] ?? null,
+            'site_logo' => $generalSettings['site_logo'] ? asset('storage/' . $generalSettings['site_logo']) : null,
+            'site_favicon' => $generalSettings['site_favicon'] ? asset('storage/' . $generalSettings['site_favicon']) : null,
         ];
 
-        return response()->json($data);
+        return ApiResponse::success('General settings retrieved successfully.', $data);
     }
 }

@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Admin\ShippingCharges;
+use App\Models\Admin\SiteSettings;
+use Illuminate\Http\Request;
 
 class ShippingChargeController extends Controller
 {
     public function index()
     {
         $shippingCharges = ShippingCharges::all();
-        return view('admin.sections.shipping-charges.index', compact('shippingCharges'));
+        $setting = SiteSettings::where('key', 'free_shipping_amount')->first();
+        return view('admin.sections.shipping-charges.index', compact('shippingCharges', 'setting'));
     }
     public function search(Request $request)
     {
@@ -48,5 +50,18 @@ class ShippingChargeController extends Controller
     {
         $shippingCharge->delete();
         return redirect()->back()->with('success', 'Shipping charge deleted successfully.');
+    }
+    public function updateFreeShippingAmount(Request $request)
+    {
+        $request->validate([
+            'free_shipping_amount' => 'required|numeric|min:0',
+        ]);
+
+        $setting = SiteSettings::updateOrCreate(
+            ['key' => 'free_shipping_amount'],
+            ['value' => $request->input('free_shipping_amount')]
+        );
+
+        return redirect()->back()->with('success', 'Free shipping amount updated successfully.');
     }
 }

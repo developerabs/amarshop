@@ -13,15 +13,10 @@ return new class extends Migration
     {
         Schema::create('site_settings', function (Blueprint $table) {
             $table->id();
-            $table->string('site_name');
-            $table->string('site_title');
-            $table->string('site_description')->nullable();
-            $table->string('site_logo')->nullable();
-            $table->string('site_favicon')->nullable();
-            $table->string('site_email');
-            $table->string('site_phone');
-            $table->string('site_address');
-            $table->string('copyright_text')->nullable();
+            $table->string('key')->unique();
+            $table->text('value')->nullable();
+            $table->string('group')->nullable();
+            $table->string('type')->default('string')->nullable();
             $table->timestamps();
         });
     }

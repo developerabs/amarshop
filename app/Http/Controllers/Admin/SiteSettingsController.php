@@ -10,19 +10,19 @@ use Illuminate\Support\Facades\Validator;
 
 class SiteSettingsController extends Controller
 {   
-    public function index()
+    public function generalSettings()
     {
-        $siteSetting = SiteSettings::first();
-        return view('admin.sections.site-settings.index', compact('siteSetting'));
+        $generalSetting = SiteSettings::where('group', 'general')->get()->pluck('value', 'key')->toArray();
+        return view('admin.sections.site-settings.general-settings', compact('generalSetting'));
     }
 
-    public function update(Request $request)
+    public function generalSettingsUpdate(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'site_name' => 'required|string|max:255',
             'site_title' => 'required|string|max:255',
             'site_description' => 'nullable|string|max:255',
-            'site_email' => 'required|email|max:255',
+            'site_email' => 'nullable|email|max:255',
             'site_phone' => 'nullable|string|max:20',
             'site_address' => 'nullable|string|max:255',
             'copyright_text' => 'nullable|string|max:255',
@@ -36,28 +36,20 @@ class SiteSettingsController extends Controller
 
         $validatedData = $validator->validated();
 
-        $siteSetting = SiteSettings::first();
-
-        $data = $request->except(['site_logo', 'site_favicon']);
-
-        if ($request->hasFile('site_logo')) {
-            if ($siteSetting && $siteSetting->site_logo) {
-                Storage::disk('public')->delete($siteSetting->site_logo);
+        foreach ($validatedData as $key => $value) {
+            if (in_array($key, ['site_logo', 'site_favicon']) && $request->hasFile($key)) {
+                $setting = SiteSettings::where('key', $key)->first();
+                $value = updateImage($request->file($key), 'site-settings', $setting ? $setting->value : null);
+                SiteSettings::updateOrCreate(
+                    ['key' => $key],
+                    ['value' => $value, 'group' => 'general', 'type' => 'string']
+                );
+                continue;
             }
-            $data['site_logo'] = $request->file('site_logo')->store('site-settings', 'public');
-        }
-
-        if ($request->hasFile('site_favicon')) {
-            if ($siteSetting && $siteSetting->site_favicon) {
-                Storage::disk('public')->delete($siteSetting->site_favicon);
-            }
-            $data['site_favicon'] = $request->file('site_favicon')->store('site-settings', 'public');
-        }
-
-        if ($siteSetting) {
-            $siteSetting->update($data);
-        } else {
-            SiteSettings::create($data);
+            SiteSettings::updateOrCreate(
+                ['key' => $key],
+                ['value' => $value, 'group' => 'general', 'type' => 'string']
+            );
         }
 
         return redirect()->back()->with('success', 'Site settings updated successfully.');

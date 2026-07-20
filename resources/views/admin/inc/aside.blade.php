@@ -44,10 +44,6 @@
                 <span class="nav-icon"><i class="bi bi-box" aria-hidden="true"></i></span>
                 <span class="nav-text">Products</span>
               </a>
-              <a class="nav-link {{ request()->routeIs('admin.shipping-charges.*') ? 'active' : '' }}" href="{{ route('admin.shipping-charges.index') }}">
-                <span class="nav-icon"><i class="bi bi-box" aria-hidden="true"></i></span>
-                <span class="nav-text">Shipping Charges</span>
-              </a>
             </nav>
           </div>
         </div>
@@ -100,10 +96,32 @@
           <span class="nav-icon"><i class="bi bi-person-badge" aria-hidden="true"></i></span>
           <span class="nav-text">Users</span>
         </a>
-        <a class="nav-link" href="{{ route('admin.site-settings') }}">
-          <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
-          <span class="nav-text">Settings</span>
-        </a>
+        <div class="nav-group">
+          @php
+              $settingsRoutes = [
+                'admin.settings.*',
+                'admin.shipping-charges.*',
+              ];
+              $settingsActive = request()->routeIs(...$settingsRoutes);
+          @endphp
+          <a class="nav-link nav-group-toggle {{ $settingsActive ? 'active' : '' }}" href="#settingsMenu" data-bs-toggle="collapse" aria-expanded="{{ $settingsActive ? 'true' : 'false' }}">
+            <span class="nav-icon"><i class="bi bi-gear" aria-hidden="true"></i></span>
+            <span class="nav-text">Settings</span>
+            <span class="nav-caret"><i class="bi bi-chevron-down"></i></span>
+          </a>
+          <div class="collapse {{ $settingsActive ? 'show' : '' }} sub-menu" id="settingsMenu">
+            <nav class="nav-group-items">
+              <a class="nav-link {{ request()->routeIs('admin.settings.general-settings') ? 'active' : '' }}" href="{{ route('admin.settings.general-settings') }}">
+                <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+                <span class="nav-text">General Settings</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.shipping-charges.*') ? 'active' : '' }}" href="{{ route('admin.shipping-charges.index') }}">
+                <span class="nav-icon"><i class="bi bi-box" aria-hidden="true"></i></span>
+                <span class="nav-text">Shipping Charges</span>
+              </a>
+            </nav>
+          </div>
+        </div>
       </nav>
 
       <div class="sidebar-user">

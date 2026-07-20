@@ -6,6 +6,11 @@
         margin-right: auto;
         margin-left: auto;
     }
+    .modal-dialog-small {
+        max-width: 400px !important;
+        margin-right: auto;
+        margin-left: auto;
+    }
 </style>
 @endpush
 @section('content')
@@ -17,7 +22,10 @@
         <h1 class="h3 mb-1">All Shipping Charges</h1>
         </div>
     </div>
-    <div class="heading-actions"><button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addModal"><i class="bi bi-plus" aria-hidden="true"></i> Add Shipping Charge</button></div>
+    <div class="heading-actions">
+        <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#freeShippingModal"><i class="bi bi-plus" aria-hidden="true"></i> Max Free Shipping Amount({{ $setting->value ?? '0' }})</button>
+        <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addModal"><i class="bi bi-plus" aria-hidden="true"></i> Add Shipping Charge</button>
+    </div>
     </div>
 
     <section class="panel">
@@ -29,6 +37,7 @@
 </div>
 @include('admin.components.models.shipping-charges.add-shipping-charge')
 @include('admin.components.models.shipping-charges.edit-shipping-charge')
+@include('admin.components.models.shipping-charges.free-shipping-amount', ['setting' => $setting])
 @endsection
 @push('scripts')
 <script>

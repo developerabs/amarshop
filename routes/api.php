@@ -25,8 +25,8 @@ Route::prefix('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth:api');
 });
 
-Route::controller(SiteSettingsController::class)->prefix('site-settings')->group(function () {
-    Route::get('/', 'index');
+Route::controller(SiteSettingsController::class)->prefix('settings')->group(function () {
+    Route::get('/general-settings', 'generalSettings');
 });
 Route::controller(HomeController::class)->prefix('home')->group(function () {
     Route::get('/products', 'homeProducts');

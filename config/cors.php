@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://amarshop-reactjs-o8zi.vercel.app', 'http://localhost:3000'],
+    'allowed_origins' => ['https://amarshop-reactjs-o8zi.vercel.app', 'http://localhost:3000', 'http://localhost:5173','http://localhost:3001'],
 
     'allowed_origins_patterns' => [],
 
