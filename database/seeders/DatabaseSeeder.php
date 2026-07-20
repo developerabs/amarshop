@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Database\Seeders\Admin\AdminSeeder;
+use Database\Seeders\Admin\BrandSeeder;
 use Database\Seeders\Admin\CategorySeeder;
 use Database\Seeders\Admin\SiteSettingsSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -22,6 +23,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             SiteSettingsSeeder::class,
             CategorySeeder::class,
+            BrandSeeder::class,
         ]);
     }
 }

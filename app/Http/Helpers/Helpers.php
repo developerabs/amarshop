@@ -26,5 +26,5 @@ function getImageUrl($imagePath)
     if ($imagePath && Storage::disk('public')->exists($imagePath)) {
         return asset('storage/' . $imagePath);
     }
-    return null;
+    return asset('storage/default/default-image.png'); // Return a default image if the specified image doesn't exist
 }

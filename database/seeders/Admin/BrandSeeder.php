@@ -1,8 +1,8 @@
 <?php
 namespace Database\Seeders\Admin;
 
+use App\Models\Admin\Brand;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class BrandSeeder extends Seeder
 {
@@ -11,10 +11,68 @@ class BrandSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('brands')->insert([
-            ['name' => 'Brand A', 'slug' => 'brand-a', 'description' => 'Description for Brand A', 'image' => 'brand-a.jpg', 'status' => true, 'sort_order' => 1, 'meta_title' => 'Brand A Meta Title', 'meta_keywords' => 'brand a, electronics, gadgets', 'meta_description' => 'Meta description for Brand A', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Brand B', 'slug' => 'brand-b', 'description' => 'Description for Brand B', 'image' => 'brand-b.jpg', 'status' => true, 'sort_order' => 2, 'meta_title' => 'Brand B Meta Title', 'meta_keywords' => 'brand b, books, literature', 'meta_description' => 'Meta description for Brand B', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Brand C', 'slug' => 'brand-c', 'description' => 'Description for Brand C', 'image' => 'brand-c.jpg', 'status' => true, 'sort_order' => 3, 'meta_title' => 'Brand C Meta Title', 'meta_keywords' => 'brand c, toys, games', 'meta_description' => 'Meta description for Brand C', 'created_at' => now(), 'updated_at' => now()], 
-        ]);
+        $brands = [
+            [
+                'name' => "Nike",
+                'slug' => 'nike',
+                'image' => 'seeder/brands/nike.jpeg',
+            ],
+            [
+                'name' => "Adidas",
+                'slug' => 'adidas',
+                'image' => 'seeder/brands/adidas.jpeg',
+            ],
+            [
+                'name' => "Samsung",
+                'slug' => 'samsung',
+                'image' => 'seeder/brands/samsung.png',
+            ],
+            [
+                'name' => "Apple",
+                'slug' => 'apple',
+                'image' => 'seeder/brands/apple.png',
+            ],
+            [
+                'name' => "Sony",
+                'slug' => 'sony',
+                'image' => 'seeder/brands/sony.png',
+            ],
+            [
+                'name' => "Puma",
+                'slug' => 'puma',
+                'image' => 'seeder/brands/puma.png',
+            ],
+            [
+                'name' => "Gucci",
+                'slug' => 'gucci',
+                'image' => 'seeder/brands/gucci.png',
+            ],
+            [
+                'name' => "Prada",
+                'slug' => 'prada',
+                'image' => 'seeder/brands/prada.jpeg',
+            ],
+            [
+                'name' => "Zara",
+                'slug' => 'zara',
+                'image' => 'seeder/brands/zara.png',
+            ],
+            [
+                'name' => "H&M",
+                'slug' => 'h-m',
+                'image' => 'seeder/brands/hm.png',
+            ],
+            [
+                'name' => "Levi's",
+                'slug' => "levis",
+                'image' => "seeder/brands/levis.png",
+            ],
+            [
+                'name' => "Rolex",
+                'slug' => "rolex",
+                'image' => "seeder/brands/rolex.png",
+            ],
+        ];
+        Brand::insert($brands);
     }
 }
