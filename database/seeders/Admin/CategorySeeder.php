@@ -497,6 +497,8 @@ class CategorySeeder extends Seeder
                 'icon' => $categoryData['icon'],
                 'image' => $categoryData['image'],
                 'status' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             foreach ($categoryData['subCategories'] as $subCategoryData) {
@@ -507,6 +509,8 @@ class CategorySeeder extends Seeder
                     'level' => 1,
                     'parent_id' => $parent->id,
                     'status' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
 
                 foreach ($subCategoryData['childCategories'] as $childCategory) {
@@ -517,6 +521,8 @@ class CategorySeeder extends Seeder
                         'level' => 2,
                         'parent_id' => $sub->id,
                         'status' => true,
+                        'created_at' => now(),
+                        'updated_at' => now(),
                     ]);
                 }
             }
