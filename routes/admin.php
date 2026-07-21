@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ShippingChargeController;
 use App\Http\Controllers\Admin\SiteSettingsController;
@@ -85,6 +86,16 @@ Route::name('admin.')->group(function () {
         Route::post('/create', 'store')->name('store');
         Route::put('/update', 'update')->name('update');
         Route::delete('/{banner}', 'destroy')->name('destroy');
+    });
+    // page management
+    Route::controller(PageController::class)->prefix('pages')->name('pages.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/create', 'store')->name('store');
+        Route::get('/edit/{page}', 'edit')->name('edit');
+        Route::put('/update', 'update')->name('update');
+        Route::delete('/{page}', 'destroy')->name('destroy');
     });
     // user management
     Route::controller(UserCareController::class)->prefix('users')->name('users.')->group(function () {

@@ -72,12 +72,14 @@
               $siteSectionRoutes = [
                 'admin.sliders.*', 
                 'admin.banners.*',
+                'admin.pages.*',
               ];
               $siteSectionActive = request()->routeIs(...$siteSectionRoutes);
           @endphp
           <a class="nav-link nav-group-toggle {{ $siteSectionActive ? 'active' : '' }}" href="#siteSectionsMenu" data-bs-toggle="collapse" aria-expanded="{{ $siteSectionActive ? 'true' : 'false' }}">
             <span class="nav-icon"><i class="bi bi-cart" aria-hidden="true"></i></span>
             <span class="nav-text">Site Sections</span>
+            <span class="nav-caret"><i class="bi bi-chevron-down"></i></span>
           </a>
           <div class="collapse sub-menu {{ $siteSectionActive ? 'show' : '' }}" id="siteSectionsMenu">
             <nav class="nav-group-items">
@@ -88,6 +90,10 @@
               <a class="nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}" href="{{ route('admin.banners.index') }}">
                 <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
                 <span class="nav-text">Banners</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.pages.*') ? 'active' : '' }}" href="{{ route('admin.pages.index') }}">
+                <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+                <span class="nav-text">Pages</span>
               </a>
             </nav>
           </div>

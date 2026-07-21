@@ -75,7 +75,7 @@ class HomeController extends Controller
     {
         $searchTerm = $request->input('search');
 
-        $categories = Category::with('children', 'children.children')->where('name', 'like', '%' . $searchTerm . '%')
+        $categories = Category::with('children', 'children.children')->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
             ->where('status', true)
             ->latest()
             ->take(10)
@@ -88,7 +88,7 @@ class HomeController extends Controller
                     'image' => $category->image ? getImageUrl($category->image) : null,
                 ];
             });
-        $brands = Brand::where('name', 'like', '%' . $searchTerm . '%')
+        $brands = Brand::whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
             ->where('status', true)
             ->latest()
             ->take(10)
@@ -104,24 +104,24 @@ class HomeController extends Controller
         $products = Product::with(['category', 'brand'])
             ->where('status', true)
             ->where(function ($query) use ($searchTerm) {
-                $query->where('name', 'like', '%' . $searchTerm . '%')
+                $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
                     ->orWhereIn('category_id', function ($subQuery) use ($searchTerm) {
                         $subQuery->select('id')
                             ->from('categories')
-                            ->where('name', 'like', '%' . $searchTerm . '%');
+                            ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
                     })
                     ->orWhereIn('brand_id', function ($subQuery) use ($searchTerm) {
                         $subQuery->select('id')
                             ->from('brands')
-                            ->where('name', 'like', '%' . $searchTerm . '%');
+                            ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
                     })
-                    ->orWhere('slug', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('code', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('model', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('short_description', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('meta_title', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('meta_description', 'like', '%' . $searchTerm . '%');
+                    ->orWhereRaw('LOWER(slug) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                    ->orWhereRaw('LOWER(code) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                    ->orWhereRaw('LOWER(model) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                    ->orWhereRaw('LOWER(short_description) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                    ->orWhereRaw('LOWER(description) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                    ->orWhereRaw('LOWER(meta_title) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                    ->orWhereRaw('LOWER(meta_description) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
             })
             ->latest()
             ->take(10)
@@ -141,9 +141,9 @@ class HomeController extends Controller
                     'meta_description' => $product->meta_description,
                     'discount_amount' => $product->discount_amount,
                     'discount_type' => $product->discount_type,
-                    'thumbnail' => $product->thumbnail ? getImageUrl($product->thumbnail) : null,
+                    'thumbnail' => getImageUrl($product->thumbnail),
                     'images' => collect($product->image)->map(function ($image) {
-                        return $image ? getImageUrl($image) : null;
+                        return getImageUrl($image);
                     }),
                 ];
             });
@@ -167,7 +167,7 @@ class HomeController extends Controller
                     'id' => $slider->id,
                     'title' => $slider->title,
                     'description' => $slider->description,
-                    'image' => $slider->image ? getImageUrl($slider->image) : null,
+                    'image' => getImageUrl($slider->image),
                     'button_text' => $slider->button_text,
                     'button_link' => $slider->button_link,
                 ];
@@ -185,7 +185,7 @@ class HomeController extends Controller
             ->get()
             ->map(function ($banner) {
                 return [
-                    'image' => $banner->image ? getImageUrl($banner->image) : null,
+                    'image' => getImageUrl($banner->image),
                 ];
             });
 

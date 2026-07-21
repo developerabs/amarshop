@@ -7,6 +7,7 @@ use Database\Seeders\Admin\AdminSeeder;
 use Database\Seeders\Admin\BrandSeeder;
 use Database\Seeders\Admin\CategorySeeder;
 use Database\Seeders\Admin\SiteSettingsSeeder;
+use Database\Seeders\Admin\SliderSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -24,6 +25,7 @@ class DatabaseSeeder extends Seeder
             SiteSettingsSeeder::class,
             CategorySeeder::class,
             BrandSeeder::class,
+            SliderSeeder::class,
         ]);
     }
 }

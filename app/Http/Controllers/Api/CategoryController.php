@@ -26,21 +26,21 @@ class CategoryController extends Controller
                     'name' => $category->name,
                     'slug' => $category->slug,
                     'icon' => $category->icon,
-                    'image' => $category->image ? getImageUrl($category->image) : null,
+                    'image' => getImageUrl($category->image),
                     'children' => $category->children->map(function ($child) {
                         return [
                             'id' => $child->id,
                             'name' => $child->name,
                             'slug' => $child->slug,
                             'icon' => $child->icon,
-                            'image' => $child->image ? getImageUrl($child->image) : null,
+                            'image' => getImageUrl($child->image),
                             'children' => $child->children->map(function ($subChild) {
                                 return [
                                     'id' => $subChild->id,
                                     'name' => $subChild->name,
                                     'slug' => $subChild->slug,
                                     'icon' => $subChild->icon,
-                                    'image' => $subChild->image ? getImageUrl($subChild->image) : null,
+                                    'image' => getImageUrl($subChild->image),
                                 ];
                             }),
                         ];
