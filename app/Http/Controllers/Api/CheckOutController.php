@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
 use App\Models\Admin\Product;
 use App\Models\Admin\ShippingCharges;
+use App\Models\Admin\SiteSettings;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,7 +45,7 @@ class CheckOutController extends Controller
         $grandTotal = 0;
         $totalTaxAmount = 0;
         $totalDiscountAmount = 0;
-
+        
         foreach ($validatedData['products'] as $product) {
             $productModel = Product::with('variants')->find($product['product_id']);
             if (!$productModel) {
@@ -61,7 +62,7 @@ class CheckOutController extends Controller
                 if ($variantProduct->stock < $product['quantity']) {
                     return ApiResponse::error('Insufficient stock for product variant', ['product_variant_id' => $product['product_variant_id']], 400);
                 }
-                $productPrice = $variantProduct->price * $product['quantity'];
+                $productPrice = $variantProduct->additional_price * $product['quantity'];
                 $subtotal += $productPrice;
 
                 if ($productModel->discount_amount > 0) {
@@ -70,7 +71,7 @@ class CheckOutController extends Controller
                         $productPrice -= $discountAmount; // Subtract discount from the product price
                         $totalDiscountAmount += $discountAmount;
                     } elseif ($productModel->discount_type === 'percentage') {
-                        $discountAmount = ($variantProduct->price * ($productModel->discount_amount / 100)) * $product['quantity'];
+                        $discountAmount = ($variantProduct->additional_price * ($productModel->discount_amount / 100)) * $product['quantity'];
                         $productPrice -= $discountAmount; // Subtract discount from the product price
                         $totalDiscountAmount += $discountAmount;
                     }
@@ -122,11 +123,15 @@ class CheckOutController extends Controller
             return ApiResponse::error('User not authenticated and guest ID not provided', [], 401);
         }
         $shippingCharge = 0;
-        if ($request->has('shipping_id')) {
+        $shippingSettings = SiteSettings::where('key', 'free_shipping_amount')->pluck('value')->first();
+        if ($request->has('shipping_id') && !empty($request->shipping_id)) {
             $shippingCharge = ShippingCharges::where('id', $request->shipping_id)->value('charge');
             if ($shippingCharge === null) {
                 return ApiResponse::error('Invalid shipping ID', ['shipping_id' => $request->shipping_id], 400);
             }
+        }
+        if ($shippingSettings && $subtotal >= $shippingSettings) {
+            $shippingCharge = 0; // Free shipping
         }
         // Create a new order
         try {
