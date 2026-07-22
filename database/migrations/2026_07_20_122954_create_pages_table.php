@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->enum('type', ['fixed', 'dynamic']);
             $table->string('name');
-            $table->string('slug')->unique();
             $table->string('permalink');
             $table->string('title');
             $table->string('banner')->nullable();

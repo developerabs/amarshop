@@ -73,6 +73,7 @@
                 'admin.sliders.*', 
                 'admin.banners.*',
                 'admin.pages.*',
+                'admin.menus.*',
               ];
               $siteSectionActive = request()->routeIs(...$siteSectionRoutes);
           @endphp
@@ -90,6 +91,10 @@
               <a class="nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}" href="{{ route('admin.banners.index') }}">
                 <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
                 <span class="nav-text">Banners</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.menus.*') ? 'active' : '' }}" href="{{ route('admin.menus.index') }}">
+                <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+                <span class="nav-text">Menus</span>
               </a>
               <a class="nav-link {{ request()->routeIs('admin.pages.*') ? 'active' : '' }}" href="{{ route('admin.pages.index') }}">
                 <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>

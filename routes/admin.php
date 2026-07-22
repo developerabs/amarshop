@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\ProductController;
@@ -93,9 +94,22 @@ Route::name('admin.')->group(function () {
         Route::post('/', 'search')->name('search');
         Route::get('/create', 'create')->name('create');
         Route::post('/create', 'store')->name('store');
-        Route::get('/edit/{page}', 'edit')->name('edit');
-        Route::put('/update', 'update')->name('update');
+        Route::get('/edit/{id}', 'edit')->name('edit');
+        Route::put('/update/{id}', 'update')->name('update');
         Route::delete('/{page}', 'destroy')->name('destroy');
+    });
+    // menu management
+    Route::controller(MenuController::class)->prefix('menus')->name('menus.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::post('/create', 'store')->name('store');
+        Route::put('/update', 'update')->name('update');
+        Route::delete('/{menu}', 'destroy')->name('destroy');
+        // menu items management
+        Route::get('/{menu}/items', 'getMenuItems')->name('items.index');
+        Route::post('/{menu}/items', 'storeMenuItem')->name('items.store');
+        Route::put('/{menu}/items/{item}', 'updateMenuItem')->name('items.update');
+        Route::delete('/{menu}/items/{item}', 'destroyMenuItem')->name('items.destroy');
     });
     // user management
     Route::controller(UserCareController::class)->prefix('users')->name('users.')->group(function () {

@@ -2,7 +2,7 @@
     <thead>
         <tr>
             <th>Name</th>
-            <th>Type</th>
+            <th>Title</th>
             <th>Status</th>
             <th>Date</th>
             <th class="text-end">Action</th>
@@ -12,7 +12,7 @@
         @forelse($pages ?? [] as $page)
         <tr data-items="{{ json_encode($page) }}">
             <td>{{ $page->name ?? 'N/A' }}</td>
-            <td>{{ $page->type ?? 'N/A' }}</td>
+            <td>{{ $page->title ?? 'N/A' }}</td>
             <td>
                 @if($page->status)
                     <span class="badge bg-success">Active</span>
@@ -22,7 +22,7 @@
             </td>
             <td>{{ $page->created_at ? $page->created_at->format('M j, Y') : 'N/A' }}</td>
             <td class="text-end">
-                <button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#editModal"><i class="bi bi-pencil" aria-hidden="true"></i></button>
+                <a class="btn btn-warning btn-sm" type="button" href="{{ route('admin.pages.edit', $page->id) }}"><i class="bi bi-pencil" aria-hidden="true"></i></a>
                 <button class="btn btn-danger btn-sm delete-btn" type="button" data-id="{{ $page->id }}" data-url="{{ route('admin.pages.destroy', $page->id) }}"><i class="bi bi-trash" aria-hidden="true"></i></button>
                 <form id="delete-form" method="POST" style="display:none;">
                     @csrf
