@@ -19,10 +19,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('phone');
             $table->string('email')->nullable();
-            $table->string('country');
-            $table->string('division');
-            $table->string('district');
-            $table->string('thana');
+            $table->string('country')->nullable();
+            $table->string('division')->nullable();
+            $table->string('district')->nullable();
+            $table->string('thana')->nullable();
             $table->text('address');
             $table->string('postal_code')->nullable();
             $table->timestamps();

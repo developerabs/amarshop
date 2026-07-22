@@ -45,8 +45,6 @@ class RegistrationController extends Controller
                 }
                 
                 $user = User::create([
-                    'first_name' => $validatedData['first_name'],
-                    'last_name' => $validatedData['last_name'],
                     'name' => $validatedData['first_name'] . ' ' . $validatedData['last_name'],
                     'username' => $username,
                     'email' => $validatedData['email'],

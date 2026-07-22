@@ -17,15 +17,9 @@ class CheckOutController extends Controller
     {
         // Validate the request data
         $validator = Validator::make($request->all(), [
-            'shipping_address.name' => 'required|string|max:255',
-            'shipping_address.phone' => 'required|string|max:20',
-            'shipping_address.email' => 'nullable|email',
-            'shipping_address.country' => 'required|string',
-            'shipping_address.division' => 'required|string',
-            'shipping_address.district' => 'required|string',
-            'shipping_address.thana' => 'required|string',
+            'shipping_address.fullname' => 'required|string|max:255',
+            'shipping_address.phone' => 'required|numeric',
             'shipping_address.address' => 'required|string',
-            'shipping_address.postal_code' => 'nullable|string',
 
             'payment_method' => 'required|in:cash_on_delivery,bkash,nagad,stripe,paypal',
             'notes' => 'nullable|string',
@@ -41,6 +35,10 @@ class CheckOutController extends Controller
         }
         $validatedData = $validator->validated();
         $user = auth('api')->user();
+
+        if (strlen($validatedData['shipping_address']['phone']) < 10 || strlen($validatedData['shipping_address']['phone']) > 14) {
+            return ApiResponse::error('Phone number must be between 10 and 14 digits', [], 400);
+        }
 
         $subtotal = 0;
         $grandTotal = 0;
@@ -136,7 +134,7 @@ class CheckOutController extends Controller
             $order = Order::create([
                 'order_no' => 'ORD-' . strtoupper(uniqid()),
                 'user_id' => $user->id ?? null,
-                'guest_id' => $user->id ? null : ($request->guest_id ?? null),
+                'guest_id' => $user ? null : ($request->guest_id ?? null),
                 'subtotal' => $subtotal,
                 'discount_amount' =>  $totalDiscountAmount,
                 'coupon_discount' =>  0,
@@ -177,8 +175,20 @@ class CheckOutController extends Controller
 
             if ($request->has('shipping_address')) {
                 $orderAddressData = $request->input('shipping_address');
+            } else {
+                return ApiResponse::error('Shipping address is required', [], 400);
             }
-            $order->orderAddress()->create($orderAddressData);
+            $order->orderAddress()->create([
+                'name' => $orderAddressData['fullname'] ?? null,
+                'phone' => $orderAddressData['phone'] ?? null,
+                'email' => $orderAddressData['email'] ?? null,
+                'country' => $orderAddressData['country'] ?? null,
+                'division' => $orderAddressData['division'] ?? null,
+                'district' => $orderAddressData['district'] ?? null,
+                'thana' => $orderAddressData['thana'] ?? null,
+                'address' => $orderAddressData['address'] ?? null,
+                'postal_code' => $orderAddressData['postal_code'] ?? null,
+            ]);
 
             // Update product stock
             foreach ($validatedData['products'] as $product) {
@@ -196,6 +206,7 @@ class CheckOutController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            return $e;
             return ApiResponse::error('Failed to place order', ['error' => $e->getMessage()], 500);
         }
         $data = [
