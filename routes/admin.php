@@ -108,6 +108,7 @@ Route::name('admin.')->group(function () {
         // menu items management
         Route::get('/{menu}/items', 'getMenuItems')->name('items.index');
         Route::post('/{menu}/items', 'storeMenuItem')->name('items.store');
+        Route::post('/{menu}/items/reorder', 'reorderMenuItems')->name('items.reorder');
         Route::put('/{menu}/items/{item}', 'updateMenuItem')->name('items.update');
         Route::delete('/{menu}/items/{item}', 'destroyMenuItem')->name('items.destroy');
     });

@@ -15,10 +15,6 @@
                 <a class="btn btn-warning btn-sm" type="button" href="{{ route('admin.menus.items.index', $menu->id) }}"><i class="bi bi-eye" aria-hidden="true"></i></a>
                 <button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#editModal"><i class="bi bi-pencil" aria-hidden="true"></i></button>
                 <button class="btn btn-danger btn-sm delete-btn" type="button" data-id="{{ $menu->id }}" data-url="{{ route('admin.menus.destroy', $menu->id) }}"><i class="bi bi-trash" aria-hidden="true"></i></button>
-                <form id="delete-form" method="POST" style="display:none;">
-                    @csrf
-                    @method('DELETE')
-                </form>
             </td>
         </tr>
         @empty
@@ -28,4 +24,8 @@
         @endforelse
     </tbody>
 </table>
+<form id="delete-form" method="POST" style="display:none;">
+    @csrf
+    @method('DELETE')
+</form>
 {{ $menus->links() }}
