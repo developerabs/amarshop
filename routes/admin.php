@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\BlogCategoryController;
+use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -98,6 +100,22 @@ Route::name('admin.')->group(function () {
         Route::get('/edit/{id}', 'edit')->name('edit');
         Route::put('/update/{id}', 'update')->name('update');
         Route::delete('/{page}', 'destroy')->name('destroy');
+    });
+    // blog category management
+    Route::controller(BlogCategoryController::class)->prefix('blog-categories')->name('blog-categories.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::post('/create', 'store')->name('store');
+        Route::put('/update', 'update')->name('update');
+        Route::delete('/{blogCategory}', 'destroy')->name('destroy');
+    });
+    // blog management
+    Route::controller(BlogController::class)->prefix('blogs')->name('blogs.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::post('/create', 'store')->name('store');
+        Route::put('/update', 'update')->name('update');
+        Route::delete('/{blog}', 'destroy')->name('destroy');
     });
     // menu management
     Route::controller(MenuController::class)->prefix('menus')->name('menus.')->group(function () {

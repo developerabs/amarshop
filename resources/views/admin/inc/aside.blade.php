@@ -73,6 +73,8 @@
                 'admin.sliders.*', 
                 'admin.banners.*',
                 'admin.pages.*',
+                'admin.blog-categories.*',
+                'admin.blogs.*',
                 'admin.menus.*',
               ];
               $siteSectionActive = request()->routeIs(...$siteSectionRoutes);
@@ -99,6 +101,14 @@
               <a class="nav-link {{ request()->routeIs('admin.pages.*') ? 'active' : '' }}" href="{{ route('admin.pages.index') }}">
                 <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
                 <span class="nav-text">Pages</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.blog-categories.*') ? 'active' : '' }}" href="{{ route('admin.blog-categories.index') }}">
+                <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+                <span class="nav-text">Blog Categories</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.blogs.*') ? 'active' : '' }}" href="{{ route('admin.blogs.index') }}">
+                <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+                <span class="nav-text">Blogs</span>
               </a>
             </nav>
           </div>
