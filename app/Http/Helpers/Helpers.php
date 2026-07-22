@@ -1,30 +1,81 @@
 <?php
 
+use Illuminate\Http\UploadedFile;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
-function uploadImage($image, $path)
+function mediaDisk(): string
 {
-    $imageName = time() . '_' . $image->getClientOriginalName();
-    $image->storeAs($path, $imageName, 'public');
-    return $path . '/' . $imageName;
+    static $resolvedDisk = null;
+
+    if ($resolvedDisk !== null) {
+        return $resolvedDisk;
+    }
+
+    $fallbackDisk = config('filesystems.default', 'public');
+    if (!in_array($fallbackDisk, ['public', 's3'], true)) {
+        $fallbackDisk = 'public';
+    }
+
+    $configuredDisk = env('MEDIA_DISK', $fallbackDisk);
+    $resolvedDisk = array_key_exists($configuredDisk, config('filesystems.disks', [])) ? $configuredDisk : 'public';
+
+    return $resolvedDisk;
 }
-function updateImage($image, $path, $oldImagePath = null)
+
+function uploadImage(UploadedFile $image, string $path): string
 {
-    if ($oldImagePath) {
+    $disk = mediaDisk();
+    $safePath = trim($path, '/');
+    $extension = strtolower((string) $image->getClientOriginalExtension());
+    $fileName = now()->format('YmdHis') . '_' . Str::random(16) . ($extension ? '.' . $extension : '');
+
+    return $image->storeAs($safePath, $fileName, $disk);
+}
+
+function updateImage(UploadedFile $image, string $path, ?string $oldImagePath = null): string
+{
+    if (!empty($oldImagePath)) {
         deleteImage($oldImagePath);
     }
+
     return uploadImage($image, $path);
 }
-function deleteImage($imagePath)
+
+function deleteImage(?string $imagePath): void
 {
-    if (Storage::disk('public')->exists($imagePath)) {
-        Storage::disk('public')->delete($imagePath);
+    if (empty($imagePath)) {
+        return;
+    }
+
+    $disk = mediaDisk();
+
+    if (Storage::disk($disk)->exists($imagePath)) {
+        Storage::disk($disk)->delete($imagePath);
     }
 }
-function getImageUrl($imagePath)
+
+function getImageUrl(?string $imagePath): string
 {
-    if ($imagePath && Storage::disk('public')->exists($imagePath)) {
-        return asset('storage/' . $imagePath);
+    $defaultImage = asset('storage/default/default-image.png');
+
+    if (empty($imagePath)) {
+        return $defaultImage;
     }
-    return asset('storage/default/default-image.png'); // Return a default image if the specified image doesn't exist
+
+    try {
+        $disk = mediaDisk();
+
+        if ($disk === 'public') {
+            return asset('storage/' . ltrim($imagePath, '/'));
+        }
+
+        /** @var FilesystemAdapter $filesystem */
+        $filesystem = Storage::disk($disk);
+
+        return $filesystem->url($imagePath);
+    } catch (Throwable $e) {
+        return $defaultImage;
+    }
 }

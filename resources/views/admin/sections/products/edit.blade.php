@@ -40,6 +40,31 @@
             font-size: .875rem;
             color: #6c757d;
         }
+        .image-preview-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            margin-top: .75rem;
+        }
+        .image-preview-grid img {
+            width: 90px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: .5rem;
+            border: 1px solid #dfe3e8;
+            background: #fff;
+        }
+        .image-preview-single {
+            margin-top: .75rem;
+        }
+        .image-preview-single img {
+            width: 120px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: .5rem;
+            border: 1px solid #dfe3e8;
+            background: #fff;
+        }
     </style>
 @endpush
 @section('content')
@@ -85,7 +110,7 @@
                             <label class="form-label" for="productCategory">Category*</label>
                             <select class="form-select" id="productCategory" name="category" required>
                                 <option value="">Choose category</option>
-                                @foreach($categories ?? [] as $category)
+                                @foreach(($categories ?? collect()) as $category)
                                     <option {{ old('category', $product->category_id ?? '') == $category->id ? 'selected' : '' }} value="{{ $category->id }}">{{ $category->name }}</option>
                                     @if($category->children)
                                         @foreach($category->children as $child)
@@ -104,7 +129,7 @@
                             <label class="form-label" for="productBrand">Brand*</label>
                             <select class="form-select" id="productBrand" name="brand" required>
                                 <option value="">Choose brand</option>
-                                @foreach($brands ?? [] as $brand)
+                                @foreach(($brands ?? collect()) as $brand)
                                     <option {{ old('brand', $product->brand_id ?? '') == $brand->id ? 'selected' : '' }} value="{{ $brand->id }}">{{ $brand->name }}</option>
                                 @endforeach
                             </select>
@@ -246,10 +271,18 @@
                         <div class="col-md-6">
                             <label class="form-label" for="productThumbnail">Thumbnail</label>
                             <input class="form-control" id="productThumbnail" type="file" name="thumbnail">
+                            <div class="image-preview-single" id="productThumbnailPreviewWrap" style="{{ !empty($product->thumbnail) ? '' : 'display: none;' }}">
+                                <img id="productThumbnailPreview" src="{{ !empty($product->thumbnail) ? getImageUrl($product->thumbnail) : '#' }}" alt="Thumbnail preview">
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="productImages">Images</label>
                             <input class="form-control" id="productImages" type="file" name="image[]" multiple>
+                            <div class="image-preview-grid" id="productImagesPreview">
+                                @foreach(($product->image ?? []) as $image)
+                                    <img src="{{ getImageUrl($image) }}" alt="Product image preview">
+                                @endforeach
+                            </div>
                         </div>
                         <div class="col-12">
                             <label class="form-label" for="shortDescription">Short Description</label>
@@ -262,6 +295,9 @@
                         <div class="col-md-12">
                             <label class="form-label" for="descImage">Description Image</label>
                             <input class="form-control" id="descImage" type="file" name="desc_image">
+                            <div class="image-preview-single" id="productDescImagePreviewWrap" style="{{ !empty($product->desc_image) ? '' : 'display: none;' }}">
+                                <img id="productDescImagePreview" src="{{ !empty($product->desc_image) ? getImageUrl($product->desc_image) : '#' }}" alt="Description image preview">
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="metaTitle">Meta Title</label>
@@ -520,6 +556,58 @@
                 if(input) input.value = randCode();
             });
         }
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function bindSinglePreview(inputId, previewId, wrapperId) {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            const wrapper = document.getElementById(wrapperId);
+
+            if (!input || !preview || !wrapper) {
+                return;
+            }
+
+            input.addEventListener('change', function () {
+                const file = this.files && this.files[0] ? this.files[0] : null;
+
+                if (!file) {
+                    return;
+                }
+
+                preview.src = URL.createObjectURL(file);
+                wrapper.style.display = 'block';
+            });
+        }
+
+        function bindMultiPreview(inputId, containerId) {
+            const input = document.getElementById(inputId);
+            const container = document.getElementById(containerId);
+
+            if (!input || !container) {
+                return;
+            }
+
+            input.addEventListener('change', function () {
+                const files = this.files ? Array.from(this.files) : [];
+                if (!files.length) {
+                    return;
+                }
+
+                container.innerHTML = '';
+                files.forEach(function (file) {
+                    const image = document.createElement('img');
+                    image.src = URL.createObjectURL(file);
+                    image.alt = 'Product image preview';
+                    container.appendChild(image);
+                });
+            });
+        }
+
+        bindSinglePreview('productThumbnail', 'productThumbnailPreview', 'productThumbnailPreviewWrap');
+        bindSinglePreview('descImage', 'productDescImagePreview', 'productDescImagePreviewWrap');
+        bindMultiPreview('productImages', 'productImagesPreview');
     });
 </script>
 @endpush

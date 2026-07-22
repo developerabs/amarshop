@@ -121,6 +121,11 @@ class BrandController extends Controller
         try {
             DB::beginTransaction();
             $brand = Brand::findOrFail($brandId);
+
+            if (!empty($brand->image)) {
+                deleteImage($brand->image);
+            }
+
             $brand->delete();
             DB::commit();
         } catch (\Exception $e) {

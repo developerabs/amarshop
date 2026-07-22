@@ -197,36 +197,32 @@ class ProductController extends Controller
                 $descImagePath = null;
 
                 if ($request->hasFile('thumbnail')) {
-                    $thumbnailPath = uploadImage(
-                        $request->file('thumbnail'),
-                        'products'
-                    );
+                    $thumbnailPath = uploadImage($request->file('thumbnail'), 'products');
                 }
+
                 if ($request->hasFile('image')) {
                     foreach ($request->file('image') as $image) {
-
-                        $imagePaths[] = uploadImage(
-                            $image,
-                            'products'
-                        );
+                        $imagePaths[] = uploadImage($image, 'products');
                     }
                 }
+
                 if ($request->hasFile('desc_image')) {
-                    $descImagePath = uploadImage(
-                        $request->file('desc_image'),
-                        'products'
-                    );
+                    $descImagePath = uploadImage($request->file('desc_image'), 'products');
                 }
+
                 $product->update([
                     'thumbnail' => $thumbnailPath,
                     'image' => $imagePaths,
-                    'desc_image' => $descImagePath
+                    'desc_image' => $descImagePath,
                 ]);
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+                report($e);
+                return redirect()->back()->with('error', 'Product created, but image upload failed. Please try re-uploading images.')->withInput();
+            }
 
             return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
-            dd($e);
+            report($e);
             return redirect()->back()->with('error', 'An error occurred while creating the product.')->withInput();
         }
     }
@@ -439,7 +435,7 @@ class ProductController extends Controller
             }
             return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
         } catch (\Exception $e) {
-            dd($e);
+            report($e);
             return redirect()->back()->with('error', 'An error occurred while updating the product.')->withInput();
         }
     }
@@ -447,6 +443,21 @@ class ProductController extends Controller
     public function destroy($product)
     {
         $product = Product::findOrFail($product);
+
+        if (!empty($product->thumbnail)) {
+            deleteImage($product->thumbnail);
+        }
+
+        if (!empty($product->desc_image)) {
+            deleteImage($product->desc_image);
+        }
+
+        if (!empty($product->image) && is_array($product->image)) {
+            foreach ($product->image as $imagePath) {
+                deleteImage($imagePath);
+            }
+        }
+
         $product->delete();
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
     }

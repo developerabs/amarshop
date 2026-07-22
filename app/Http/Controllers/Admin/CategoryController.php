@@ -166,6 +166,11 @@ class CategoryController extends Controller
         try {
             DB::beginTransaction();
             $category = Category::findOrFail($categoryId);
+
+            if (!empty($category->image)) {
+                deleteImage($category->image);
+            }
+
             $category->delete();
             DB::commit();
         } catch (\Exception $e) {

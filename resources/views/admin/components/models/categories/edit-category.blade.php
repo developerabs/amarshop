@@ -15,7 +15,7 @@
                     <label class="form-label" for="formPlan">Parent Category</label>
                     <select class="form-select" id="formPlan" name="parent_category">
                         <option value="">Choose Parent Category</option>
-                        @foreach($parentCategories ?? [] as $parentCategory)
+                        @foreach(($parentCategories ?? collect()) as $parentCategory)
                             <option value="{{ $parentCategory->id }}" {{ old('parent_category') == $parentCategory->id ? 'selected' : '' }}>{{ $parentCategory->name }}</option>
                             @if($parentCategory->children->count() > 0)
                                 @foreach ($parentCategory->children as $childCategory)
@@ -37,7 +37,7 @@
                 <div class="col-md-6">
                     <label class="form-label" for="formImage">Image</label>
                     <input class="form-control" id="formImage" name="image" type="file" accept="image/*">
-                    <img id="image_preview" src="#" alt="Image Preview" class="img-fluid fade-in mt-2" style="display: none; max-height: 40px; max-width: 80px; object-fit: cover;">
+                    <img id="edit_category_image_preview" src="#" alt="Image Preview" class="img-fluid fade-in mt-2" style="display: none; max-height: 60px; max-width: 120px; object-fit: cover; border-radius: 6px;">
                 </div>
                 <div class="col-12">
                     <label class="form-label" for="formMessage">Description</label>
@@ -73,20 +73,15 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const editModal = document.getElementById('editModal');
-        const imageUrl = "{{ asset('storage') }}"; // Base URL for category images
         const imageInput = editModal.querySelector('input[name="image"]');
-        const imagePreview = editModal.querySelector('#image_preview');
+        const imagePreview = editModal.querySelector('#edit_category_image_preview');
 
         imageInput.addEventListener('change', function (event) {
             const file = event.target.files[0];
 
             if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    imagePreview.src = e.target.result;
-                    imagePreview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
+                imagePreview.src = URL.createObjectURL(file);
+                imagePreview.style.display = 'block';
             } else {
                 imagePreview.src = '#';
                 imagePreview.style.display = 'none';
@@ -111,8 +106,9 @@
                 editModal.querySelector('input[type="checkbox"][name="status"]').checked = categoryData.status === true || categoryData.status === 1;
                 editModal.querySelector('input[name="icon"]').value = categoryData.icon || '';
 
-                if (categoryData.image) {
-                    imagePreview.src = imageUrl + '/' + categoryData.image;
+                const rowImage = button.closest('tr')?.querySelector('td img');
+                if (rowImage && rowImage.getAttribute('src')) {
+                    imagePreview.src = rowImage.getAttribute('src');
                     imagePreview.style.display = 'block';
                 }
             }

@@ -54,14 +54,15 @@ Route::name('admin.')->group(function () {
     Route::controller(OrderController::class)->prefix('orders')->name('orders.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::post('/', 'search')->name('search');
-        Route::get('/{order}', 'show')->name('show');
         Route::get('/active', 'active')->name('active');
         Route::get('/pending', 'pending')->name('pending');
         Route::get('/completed', 'completed')->name('completed');
         Route::get('/cancelled', 'cancelled')->name('cancelled');
         Route::put('/update-status/{order}', 'updateStatus')->name('update-status');
+        Route::put('/update-payment-status/{order}', 'updatePaymentStatus')->name('update-payment-status');
         Route::delete('/{order}', 'destroy')->name('destroy');
         Route::get('details/{order}', 'details')->name('details');
+        Route::get('/{order}', 'show')->name('show');
     });
     // shipping charges management
     Route::controller(ShippingChargeController::class)->prefix('shipping-charges')->name('shipping-charges.')->group(function () {

@@ -11,9 +11,8 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label" for="formBudget">Image</label>
-                    <input class="form-control" id="formBudget" name="image" type="file" accept="image/*"
-                        onchange="if (this.files && this.files[0]) { const preview = document.getElementById('image_preview'); preview.src = window.URL.createObjectURL(this.files[0]); preview.style.display = 'block'; } else { document.getElementById('image_preview').style.display = 'none'; }">
-                    <img id="image_preview" src="#" alt="Image Preview" class="img-fluid fade-in mt-2" style="display: none; max-height: 40px; max-width: 80px; object-fit: cover;">
+                    <input class="form-control" id="formBudget" name="image" type="file" accept="image/*">
+                    <img id="add_brand_image_preview" src="#" alt="Image Preview" class="img-fluid fade-in mt-2" style="display: none; max-height: 60px; max-width: 120px; object-fit: cover; border-radius: 6px;">
                 </div>
                 <div class="col-12">
                     <label class="form-label" for="formMessage">Description</label>
@@ -45,3 +44,30 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addModal = document.getElementById('addModal');
+        if (!addModal) {
+            return;
+        }
+
+        const imageInput = addModal.querySelector('input[name="image"]');
+        const preview = addModal.querySelector('#add_brand_image_preview');
+
+        if (imageInput && preview) {
+            imageInput.addEventListener('change', function () {
+                const file = this.files && this.files[0] ? this.files[0] : null;
+                if (!file) {
+                    preview.src = '#';
+                    preview.style.display = 'none';
+                    return;
+                }
+
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = 'block';
+            });
+        }
+    });
+</script>
+@endpush

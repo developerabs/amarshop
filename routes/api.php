@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CheckOutController;
 use App\Http\Controllers\Api\HomeController;
+use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProductDetailsController;
@@ -45,6 +46,9 @@ Route::controller(CategoryController::class)->prefix('categories')->group(functi
 });
 Route::controller(BrandController::class)->prefix('brands')->group(function () {
     Route::get('/', 'index');
+});
+Route::controller(MenuController::class)->prefix('menus')->group(function () {
+    Route::get('/location/{location}', 'byLocation');
 });
 Route::middleware('auth:api')->group(function () {
     // user profile routes
