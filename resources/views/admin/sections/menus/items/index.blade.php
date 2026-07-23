@@ -279,6 +279,19 @@
                             @endforelse
                         </div>
                     </div>
+                    <div class="source-category collapsed" data-category="custom">
+                        <div class="source-category-title" data-toggle="category">
+                            <div><i class="bi bi-pencil-square me-2"></i>Custom Links</div>
+                            <i class="bi bi-chevron-down source-category-toggle"></i>
+                        </div>
+                        <div class="source-category-items">
+                            <div class="menu-source-item d-block" data-type="custom">
+                                <input type="text" class="form-control form-control-sm" placeholder="Custom Link Title" id="custom-link-title">
+                                <input type="text" class="form-control form-control-sm mt-2" placeholder="Custom Link URL" id="custom-link-url">
+                                <button class="btn btn-sm btn-outline-primary mt-2" type="button" id="custom-link-add-btn"><i class="bi bi-plus"></i> Add</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -426,9 +439,17 @@
     async function addMenuItemFromSource(data) {
         const type = data.type;
         const referenceId = normalizeReferenceId(data.id);
+        const payloadTitle = (data.title || '').trim();
+        const payloadUrl = (data.url || '').trim();
 
-        const alreadyExists = menuItems.some((item) => item.type === type && normalizeReferenceId(item.reference_id) === referenceId);
+        const shouldPreventDuplicate = type !== 'custom';
+        const alreadyExists = shouldPreventDuplicate && menuItems.some((item) => item.type === type && normalizeReferenceId(item.reference_id) === referenceId);
         if (alreadyExists) {
+            return;
+        }
+
+        if (type === 'custom' && !payloadTitle) {
+            Swal.fire('Validation', 'Custom link title is required.', 'warning');
             return;
         }
 
@@ -443,7 +464,8 @@
                 body: JSON.stringify({
                     type: type,
                     reference_id: referenceId,
-                    title: data.title,
+                    title: payloadTitle || data.title,
+                    url: payloadUrl || null,
                 }),
             });
 
@@ -455,9 +477,27 @@
             menuItems.push(result.item);
             renderMenuItems();
             syncCheckboxes();
+
+            if (type === 'custom') {
+                document.getElementById('custom-link-title').value = '';
+                document.getElementById('custom-link-url').value = '';
+                document.getElementById('custom-link-title').focus();
+            }
         } catch (error) {
             Swal.fire('Error', 'Could not add menu item. Please try again.', 'error');
         }
+    }
+
+    function addCustomLinkItem() {
+        const titleInput = document.getElementById('custom-link-title');
+        const urlInput = document.getElementById('custom-link-url');
+
+        addMenuItemFromSource({
+            type: 'custom',
+            id: null,
+            title: titleInput.value,
+            url: urlInput.value,
+        });
     }
 
     async function deleteMenuItem(itemId) {
@@ -599,6 +639,11 @@
     document.addEventListener('dragstart', (event) => {
         const sourceItem = event.target.closest('.menu-source-item');
         if (sourceItem) {
+            if (sourceItem.dataset.type === 'custom') {
+                event.preventDefault();
+                return;
+            }
+
             sourceItem.classList.add('dragging');
             event.dataTransfer.effectAllowed = 'copy';
             event.dataTransfer.setData('text/plain', JSON.stringify({
@@ -671,6 +716,15 @@
         } catch (error) {
             renderMenuItems();
             Swal.fire('Error', 'Could not update menu item order. Please try again.', 'error');
+        }
+    });
+
+    document.getElementById('custom-link-add-btn').addEventListener('click', addCustomLinkItem);
+
+    document.getElementById('custom-link-url').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            addCustomLinkItem();
         }
     });
 

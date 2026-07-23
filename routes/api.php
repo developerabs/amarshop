@@ -2,12 +2,15 @@
 
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegistrationController;
+use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CheckOutController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProductDetailsController;
 use App\Http\Controllers\Api\ProfileController;
@@ -50,20 +53,15 @@ Route::controller(BrandController::class)->prefix('brands')->group(function () {
 Route::controller(MenuController::class)->prefix('menus')->group(function () {
     Route::get('/location/{location}', 'byLocation');
 });
+Route::controller(PageController::class)->prefix('pages')->group(function () {
+    Route::get('/{slug}', 'show');
+});
 Route::middleware('auth:api')->group(function () {
     // user profile routes
     Route::controller(ProfileController::class)->prefix('profile')->group(function () {
         Route::get('/', 'index');
         Route::put('/update', 'update');
         Route::get('/orders', 'orders');
-    });
-    // order routes
-    Route::controller(OrderController::class)->prefix('orders')->group(function () {
-        Route::get('/', 'index');   
-        Route::post('/store', 'store');
-        Route::get('/{id}', 'show');
-        Route::put('/{id}', 'update');
-        Route::delete('/{id}', 'destroy');
     });
     
 });
@@ -78,6 +76,15 @@ Route::controller(WishListController::class)->prefix('wishlist')->group(function
     Route::post('/add', 'addToWishlist');
     Route::delete('/remove/{id}', 'removeFromWishlist');
 });
-
+Route::controller(OrderController::class)->prefix('orders')->group(function () {
+    Route::get('/track-order/{order_id}', 'trackOrder');
+});
+Route::controller(ContactController::class)->prefix('contact')->group(function () {
+    Route::post('/submit', 'store');
+});
+Route::controller(BlogController::class)->prefix('blog')->group(function () {
+    Route::get('/posts', 'index');
+    Route::get('/posts/{slug}', 'show');
+});
 
 

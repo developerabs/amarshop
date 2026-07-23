@@ -32,8 +32,8 @@ class MenuController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:menus,name',
-            'location' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'location' => 'required|string|max:255|unique:menus,location',
         ]);
 
         Menu::create([
@@ -47,12 +47,16 @@ class MenuController extends Controller
     public function update(Request $request)
     {
         $id = $request->input('menu_id');
+        $menu = Menu::findOrFail($id);
+        $locationRule = Str::slug($request->input('location')) === $menu->location 
+            ? 'required|string|max:255' 
+            : 'required|string|max:255|unique:menus,location';
+        
         $request->validate([
             'name' => 'required|string|max:255',
-            'location' => 'required|string|max:255',
+            'location' => $locationRule,
         ]);
 
-        $menu = Menu::findOrFail($id);
         $data = [
             'name' => $request->input('name'),
             'location' => Str::slug($request->input('location')),

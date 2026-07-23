@@ -11,7 +11,12 @@
                 </div>
                 <div class="col-md-12">
                     <label class="form-label" for="location">Location*</label>
-                    <input class="form-control" id="location" name="location" value="{{ old('location') }}" required>
+                    <select name="location" id="location" class="form-select" required>
+                        <option value="" disabled selected>Select location</option>
+                        <option value="main-navigation" {{ old('location') == 'main-navigation' ? 'selected' : '' }}>Main Navigation</option>
+                        <option value="footer-menu" {{ old('location') == 'footer-menu' ? 'selected' : '' }}>Footer Menu</option>
+                        <option value="company-menu" {{ old('location') == 'company-menu' ? 'selected' : '' }}>Company Menu</option>
+                    </select>
                 </div>
             </div>
             <div class="d-flex justify-content-end mt-4">

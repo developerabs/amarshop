@@ -12,13 +12,13 @@ class ProfileController extends Controller
 {
     public function index(Request $request)
     {
-        // dd($request->headers->all());
         $user = $request->user();
         $userData = [
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
             'image' => $user->image ? getImageUrl($user->image) : null,
+            'created_at' => $user->created_at,
         ];
         $orders = Order::with('orderItems')->where('user_id', $user->id)->orderBy('created_at', 'desc');
         $recentOrders = $orders->take(5)->get();

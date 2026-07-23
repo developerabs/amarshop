@@ -10,7 +10,21 @@
         @forelse($menus ?? [] as $menu)
         <tr data-items="{{ json_encode($menu) }}">
             <td>{{ $menu->name ?? 'N/A' }}</td>
-            <td>{{ $menu->location ?? 'N/A' }}</td>
+            <td>
+                @switch($menu->location)
+                    @case('main-navigation')
+                        Main Navigation
+                        @break
+                    @case('footer-menu')
+                        Footer Menu
+                        @break
+                    @case('company-menu')
+                        Company Menu
+                        @break
+                    @default
+                        N/A
+                @endswitch
+            </td>
             <td class="text-end">
                 <a class="btn btn-warning btn-sm" type="button" href="{{ route('admin.menus.items.index', $menu->id) }}"><i class="bi bi-eye" aria-hidden="true"></i></a>
                 <button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#editModal"><i class="bi bi-pencil" aria-hidden="true"></i></button>
