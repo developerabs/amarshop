@@ -72,6 +72,9 @@
               $siteSectionRoutes = [
                 'admin.sliders.*', 
                 'admin.banners.*',
+                'admin.client-reviews.*',
+                'admin.faqs.*',
+                'admin.social-links.*',
                 'admin.pages.*',
                 'admin.blog-categories.*',
                 'admin.blogs.*',
@@ -93,6 +96,18 @@
               <a class="nav-link {{ request()->routeIs('admin.banners.*') ? 'active' : '' }}" href="{{ route('admin.banners.index') }}">
                 <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
                 <span class="nav-text">Banners</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.client-reviews.*') ? 'active' : '' }}" href="{{ route('admin.client-reviews.index') }}">
+                <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+                <span class="nav-text">Client Reviews</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.faqs.*') ? 'active' : '' }}" href="{{ route('admin.faqs.index') }}">
+                <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+                <span class="nav-text">FAQs</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.social-links.*') ? 'active' : '' }}" href="{{ route('admin.social-links.index') }}">
+                <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>
+                <span class="nav-text">Social Links</span>
               </a>
               <a class="nav-link {{ request()->routeIs('admin.menus.*') ? 'active' : '' }}" href="{{ route('admin.menus.index') }}">
                 <span class="nav-icon"><i class="bi bi-list" aria-hidden="true"></i></span>

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Helpers\ApiResponse;
 use App\Models\Admin\SiteSettings;
-use Illuminate\Http\Request;
 
 class SiteSettingsController extends Controller
 {
@@ -20,6 +19,8 @@ class SiteSettingsController extends Controller
             'site_email' => $generalSettings['site_email'] ?? null,
             'site_phone' => $generalSettings['site_phone'] ?? null,
             'site_address' => $generalSettings['site_address'] ?? null,
+            'primary_color' => $generalSettings['primary_color'] ?? null,
+            'secondary_color' => $generalSettings['secondary_color'] ?? null,
             'free_shipping_amount' => $generalSettings['free_shipping_amount'] ?? null,
             'copyright_text' => $generalSettings['copyright_text'] ?? null,
             'site_logo' => $generalSettings['site_logo'] ? asset('storage/' . $generalSettings['site_logo']) : null,

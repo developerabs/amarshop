@@ -6,14 +6,16 @@ use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CheckOutController;
+use App\Http\Controllers\Api\ClientReviewController;
 use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\ProductDetailsController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\SocialLinkController;
 use App\Http\Controllers\Api\SiteSettingsController;
 use App\Http\Controllers\Api\WishListController;
 use Illuminate\Http\Request;
@@ -85,6 +87,15 @@ Route::controller(ContactController::class)->prefix('contact')->group(function (
 Route::controller(BlogController::class)->prefix('blog')->group(function () {
     Route::get('/posts', 'index');
     Route::get('/posts/{slug}', 'show');
+});
+Route::controller(ClientReviewController::class)->prefix('client-reviews')->group(function () {
+    Route::get('/', 'index');
+});
+Route::controller(FaqController::class)->prefix('faqs')->group(function () {
+    Route::get('/', 'index');
+});
+Route::controller(SocialLinkController::class)->prefix('social-links')->group(function () {
+    Route::get('/', 'index');
 });
 
 

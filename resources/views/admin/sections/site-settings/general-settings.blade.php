@@ -48,6 +48,22 @@
                 <div class="col-3 mb-3"><label class="form-label" for="site_phone">Site Phone</label><input class="form-control" id="site_phone" name="site_phone" type="text" value="{{ $generalSetting['site_phone'] ?? old('site_phone') }}"></div>
 
                 <div class="col-3 mb-3"><label class="form-label" for="site_address">Site Address</label><input class="form-control" id="site_address" name="site_address" type="text" value="{{ $generalSetting['site_address'] ?? old('site_address') }}"></div>
+
+                <div class="col-3 mb-3">
+                    <label class="form-label" for="primary_color">Primary Color</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input class="form-control form-control-color" id="primary_color" type="color" value="{{ $generalSetting['primary_color'] ?? old('primary_color', '#0d6efd') }}" title="Choose primary color" data-sync-target="primary_color_value">
+                        <input class="form-control" id="primary_color_value" name="primary_color" type="text" value="{{ $generalSetting['primary_color'] ?? old('primary_color', '#0d6efd') }}" placeholder="#0d6efd">
+                    </div>
+                </div>
+
+                <div class="col-3 mb-3">
+                    <label class="form-label" for="secondary_color">Secondary Color</label>
+                    <div class="d-flex align-items-center gap-2">
+                        <input class="form-control form-control-color" id="secondary_color" type="color" value="{{ $generalSetting['secondary_color'] ?? old('secondary_color', '#6c757d') }}" title="Choose secondary color" data-sync-target="secondary_color_value">
+                        <input class="form-control" id="secondary_color_value" name="secondary_color" type="text" value="{{ $generalSetting['secondary_color'] ?? old('secondary_color', '#6c757d') }}" placeholder="#6c757d">
+                    </div>
+                </div>
                 
                 <div class="col-3 mb-3"><label class="form-label" for="copyright_text">Copyright Text</label><input class="form-control" id="copyright_text" name="copyright_text" type="text" value="{{ $generalSetting['copyright_text'] ?? old('copyright_text') }}"></div>
                 
@@ -63,3 +79,30 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const colorPickers = document.querySelectorAll('input[type="color"][data-sync-target]');
+
+        colorPickers.forEach(function (picker) {
+            const targetId = picker.getAttribute('data-sync-target');
+            const textInput = document.getElementById(targetId);
+            if (!textInput) {
+                return;
+            }
+
+            picker.addEventListener('input', function () {
+                textInput.value = picker.value;
+            });
+
+            textInput.addEventListener('input', function () {
+                const value = textInput.value.trim();
+                if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value)) {
+                    picker.value = value;
+                }
+            });
+        });
+    });
+</script>
+@endpush

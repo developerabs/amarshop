@@ -5,7 +5,9 @@ use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ClientReviewController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PageController;
@@ -13,6 +15,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ShippingChargeController;
 use App\Http\Controllers\Admin\SiteSettingsController;
 use App\Http\Controllers\Admin\SliderController;
+use App\Http\Controllers\Admin\SocialLinkController;
 use App\Http\Controllers\Admin\UserCareController;
 use Illuminate\Support\Facades\Route;
 
@@ -116,6 +119,30 @@ Route::name('admin.')->group(function () {
         Route::post('/create', 'store')->name('store');
         Route::put('/update', 'update')->name('update');
         Route::delete('/{blog}', 'destroy')->name('destroy');
+    });
+    // client reviews management
+    Route::controller(ClientReviewController::class)->prefix('client-reviews')->name('client-reviews.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::post('/create', 'store')->name('store');
+        Route::put('/update', 'update')->name('update');
+        Route::delete('/{clientReview}', 'destroy')->name('destroy');
+    });
+    // faq management
+    Route::controller(FaqController::class)->prefix('faqs')->name('faqs.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::post('/create', 'store')->name('store');
+        Route::put('/update', 'update')->name('update');
+        Route::delete('/{faq}', 'destroy')->name('destroy');
+    });
+    // social links management
+    Route::controller(SocialLinkController::class)->prefix('social-links')->name('social-links.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::post('/create', 'store')->name('store');
+        Route::put('/update', 'update')->name('update');
+        Route::delete('/{socialLink}', 'destroy')->name('destroy');
     });
     // menu management
     Route::controller(MenuController::class)->prefix('menus')->name('menus.')->group(function () {
