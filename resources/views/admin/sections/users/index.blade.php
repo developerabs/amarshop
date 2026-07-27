@@ -17,7 +17,7 @@
         <h1 class="h3 mb-1">All Users</h1>
         </div>
     </div>
-    <div class="heading-actions"><button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addModal"><i class="bi bi-plus" aria-hidden="true"></i> Add User</button></div>
+    {{-- <div class="heading-actions"><button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#addModal"><i class="bi bi-plus" aria-hidden="true"></i> Add User</button></div> --}}
     </div>
 
     <section class="panel">

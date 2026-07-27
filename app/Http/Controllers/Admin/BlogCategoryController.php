@@ -23,9 +23,9 @@ class BlogCategoryController extends Controller
         if ($request->filled('query')) {
             $term = trim((string) $request->input('query'));
             $query->where(function ($q) use ($term) {
-                $q->where('name', 'like', '%' . $term . '%')
-                    ->orWhere('description', 'like', '%' . $term . '%')
-                    ->orWhere('meta_title', 'like', '%' . $term . '%');
+                $q->where('name', 'ilike', '%' . $term . '%')
+                    ->orWhere('description', 'ilike', '%' . $term . '%')
+                    ->orWhere('meta_title', 'ilike', '%' . $term . '%');
             });
         }
 

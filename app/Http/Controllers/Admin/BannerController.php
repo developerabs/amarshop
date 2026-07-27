@@ -20,8 +20,8 @@ class BannerController extends Controller
         $searchTerm = $request->input('query');
         $banners = Banner::query()
             ->when($searchTerm, function ($query) use ($searchTerm) {
-                $query->where('title', 'like', '%' . $searchTerm . '%')
-                      ->orWhere('description', 'like', '%' . $searchTerm . '%');
+                $query->where('title', 'ilike', '%' . $searchTerm . '%')
+                      ->orWhere('description', 'ilike', '%' . $searchTerm . '%');
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);

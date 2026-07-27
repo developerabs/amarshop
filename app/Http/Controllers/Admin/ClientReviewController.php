@@ -22,9 +22,9 @@ class ClientReviewController extends Controller
         if ($request->filled('query')) {
             $term = trim((string) $request->input('query'));
             $query->where(function ($q) use ($term) {
-                $q->where('title', 'like', '%' . $term . '%')
-                    ->orWhere('description', 'like', '%' . $term . '%')
-                    ->orWhere('video_link', 'like', '%' . $term . '%');
+                $q->where('title', 'ilike', '%' . $term . '%')
+                    ->orWhere('description', 'ilike', '%' . $term . '%')
+                    ->orWhere('video_link', 'ilike', '%' . $term . '%');
             });
         }
 

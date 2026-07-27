@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ProductReviewController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\SocialLinkController;
 use App\Http\Controllers\Api\SiteSettingsController;
@@ -63,7 +64,12 @@ Route::middleware('auth:api')->group(function () {
     Route::controller(ProfileController::class)->prefix('profile')->group(function () {
         Route::get('/', 'index');
         Route::put('/update', 'update');
+        Route::put('/update-password', 'updatePassword');
         Route::get('/orders', 'orders');
+    });
+
+    Route::controller(ProductReviewController::class)->prefix('product-reviews')->group(function () {
+        Route::post('/submit', 'submit');
     });
     
 });

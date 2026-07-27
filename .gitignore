@@ -26,3 +26,9 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /.zip
+# Laravel Passport OAuth migrations
+database/migrations/*_create_oauth_auth_codes_table.php
+database/migrations/*_create_oauth_access_tokens_table.php
+database/migrations/*_create_oauth_refresh_tokens_table.php
+database/migrations/*_create_oauth_clients_table.php
+database/migrations/*_create_oauth_device_codes_table.php

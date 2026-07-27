@@ -75,7 +75,7 @@ class HomeController extends Controller
     {
         $searchTerm = $request->input('search');
 
-        $categories = Category::with('children', 'children.children')->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+        $categories = Category::with('children', 'children.children')->where('name', 'ilike', '%' . $searchTerm . '%')
             ->where('status', true)
             ->latest()
             ->take(10)
@@ -88,7 +88,7 @@ class HomeController extends Controller
                     'image' => $category->image ? getImageUrl($category->image) : null,
                 ];
             });
-        $brands = Brand::whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+        $brands = Brand::where('name', 'ilike', '%' . $searchTerm . '%')
             ->where('status', true)
             ->latest()
             ->take(10)
@@ -104,24 +104,24 @@ class HomeController extends Controller
         $products = Product::with(['category', 'brand'])
             ->where('status', true)
             ->where(function ($query) use ($searchTerm) {
-                $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                $query->where('name', 'ilike', '%' . $searchTerm . '%')
                     ->orWhereIn('category_id', function ($subQuery) use ($searchTerm) {
                         $subQuery->select('id')
                             ->from('categories')
-                            ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
+                            ->where('name', 'ilike', '%' . $searchTerm . '%');
                     })
                     ->orWhereIn('brand_id', function ($subQuery) use ($searchTerm) {
                         $subQuery->select('id')
                             ->from('brands')
-                            ->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
+                            ->where('name', 'ilike', '%' . $searchTerm . '%');
                     })
-                    ->orWhereRaw('LOWER(slug) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
-                    ->orWhereRaw('LOWER(code) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
-                    ->orWhereRaw('LOWER(model) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
-                    ->orWhereRaw('LOWER(short_description) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
-                    ->orWhereRaw('LOWER(description) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
-                    ->orWhereRaw('LOWER(meta_title) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
-                    ->orWhereRaw('LOWER(meta_description) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
+                    ->orWhere('slug', 'ilike', '%' . $searchTerm . '%')
+                    ->orWhere('code', 'ilike', '%' . $searchTerm . '%')
+                    ->orWhere('model', 'ilike', '%' . $searchTerm . '%')
+                    ->orWhere('short_description', 'ilike', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'ilike', '%' . $searchTerm . '%')
+                    ->orWhere('meta_title', 'ilike', '%' . $searchTerm . '%')
+                    ->orWhere('meta_description', 'ilike', '%' . $searchTerm . '%');
             })
             ->latest()
             ->take(10)

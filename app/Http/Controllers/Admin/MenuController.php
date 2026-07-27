@@ -23,7 +23,7 @@ class MenuController extends Controller
     {
         $menus = Menu::query();
         if ($request->has('query')) {
-            $menus->whereRaw('LOWER(name) like ?', ['%' . strtolower($request->input('query')) . '%']);
+            $menus->where('name', 'ilike', '%' . $request->input('query') . '%');
         }
         $menus = $menus->latest()->paginate(10);
         return view('admin.components.data-table.menu-table', ['menus' => $menus]);

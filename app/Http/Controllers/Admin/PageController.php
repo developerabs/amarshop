@@ -17,7 +17,7 @@ class PageController extends Controller
     {
         $pages = Page::query();
         if ($request->has('query')) {
-            $pages->whereRaw('LOWER(name) like ?', ['%' . strtolower($request->input('query')) . '%']);
+            $pages->where('name', 'ilike', '%' . $request->input('query') . '%');
         }
         $pages = $pages->latest()->paginate(10);
         return view('admin.components.data-table.pages-table', ['pages' => $pages]);

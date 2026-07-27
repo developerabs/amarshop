@@ -21,7 +21,7 @@ class BrandController extends Controller
         $query = Brand::query();
 
         if ($request->has('query') && !empty($request->input('query'))) {
-            $query->where('name', 'like', '%' . $request->input('query') . '%');
+            $query->where('name', 'ilike', '%' . $request->input('query') . '%');
         }
 
         $brands = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
@@ -32,7 +32,6 @@ class BrandController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
@@ -54,7 +53,6 @@ class BrandController extends Controller
             $brand = Brand::create([
                 'name' => $validatedData['name'],
                 'slug' => Str::slug($validatedData['name']),
-                'description' => $validatedData['description'],
                 'image' => $validatedData['image'] ?? null,
                 'meta_title' => $validatedData['meta_title'],
                 'meta_description' => $validatedData['meta_description'],
@@ -79,7 +77,6 @@ class BrandController extends Controller
         $validator = Validator::make($request->all(), [
             'brand_id' => 'required|exists:brands,id',
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:255',
@@ -102,7 +99,6 @@ class BrandController extends Controller
             $brand->update([
                 'name' => $validatedData['name'],
                 'slug' => Str::slug($validatedData['name']),
-                'description' => $validatedData['description'],
                 'meta_title' => $validatedData['meta_title'],
                 'meta_description' => $validatedData['meta_description'],
                 'image' => $validatedData['image'] ?? $brand->image,

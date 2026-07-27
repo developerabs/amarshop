@@ -7,7 +7,7 @@
                 <th>Category</th>
                 <th>Brand</th>
                 <th>Price</th>
-                <th>Cost</th>
+                <th>Sale Price</th>
                 <th>Total Stock</th>
                 <th>Status</th>
                 <th>Date</th>
@@ -23,7 +23,7 @@
                 <td>{{ $product->category->name ?? 'N/A' }}</td>
                 <td>{{ $product->brand->name ?? 'N/A' }}</td>
                 <td>{{ $product->price ?? 'N/A' }}</td>
-                <td>{{ $product->cost ?? 'N/A' }}</td>
+                <td>{{ $product->sale_price ?? 'N/A' }}</td>
                 <td>{{ $product->total_stock ?? 'N/A' }}</td>
                 <td>
                     @if($product->status)

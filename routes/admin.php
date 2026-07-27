@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductReviewController;
 use App\Http\Controllers\Admin\ShippingChargeController;
 use App\Http\Controllers\Admin\SiteSettingsController;
 use App\Http\Controllers\Admin\SliderController;
@@ -54,6 +55,12 @@ Route::name('admin.')->group(function () {
         Route::get('/edit/{product}', 'edit')->name('edit');
         Route::put('/update/{product}', 'update')->name('update');
         Route::delete('/{product}', 'destroy')->name('destroy');
+    });
+    // product reviews management
+    Route::controller(ProductReviewController::class)->prefix('product-reviews')->name('product-reviews.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::post('/', 'search')->name('search');
+        Route::put('/update-status', 'updateStatus')->name('update-status');
     });
     // order management
     Route::controller(OrderController::class)->prefix('orders')->name('orders.')->group(function () {

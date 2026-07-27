@@ -102,10 +102,6 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label" for="productModel">Product Model</label>
-                            <input class="form-control" id="productModel" type="text" name="model" value="{{ old('model') }}">
-                        </div>
-                        <div class="col-md-6">
                             <label class="form-label" for="productCategory">Category*</label>
                             <select class="form-select" id="productCategory" name="category" required>
                                 <option value="" disabled selected>Choose category</option>
@@ -130,7 +126,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label" for="productBrand">Brand*</label>
                             <select class="form-select" id="productBrand" name="brand" required>
                                 <option value="" disabled selected>Choose brand</option>
@@ -140,10 +136,6 @@
                                     </option>
                                 @endforeach
                             </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label" for="productCost">Product Cost*</label>
-                            <input class="form-control" id="productCost" type="number" min="1" name="cost" value="{{ old('cost') }}" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label" for="productPrice">Product Price*</label>
@@ -199,7 +191,6 @@
                                         <th>Name</th>
                                         <th>Additional Cost</th>
                                         <th>Additional Price</th>
-                                        <th>Stock</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -229,11 +220,11 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label" for="shortDescription">Short Description</label>
-                            <textarea class="form-control" id="shortDescription" name="short_description" rows="4">{{ old('short_description') }}</textarea>
+                            <textarea class="form-control rich-editor" id="shortDescription" name="short_description" rows="4">{{ old('short_description') }}</textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label" for="longDescription">Description</label>
-                            <textarea class="form-control" id="longDescription" name="description" rows="8">{{ old('description') }}</textarea>
+                            <textarea class="form-control rich-editor" id="longDescription" name="description" rows="8">{{ old('description') }}</textarea>
                         </div>
                         <div class="col-md-12">
                             <label class="form-label" for="descImage">Description Image</label>
@@ -303,7 +294,6 @@
                             <div class="input-group">
                                 <input class="form-control" id="discountAmount" type="number" min="0" name="discount_amount" value="{{ old('discount_amount') }}" placeholder="Amount">
                                 <select class="form-select" id="discountType" name="discount_type">
-                                    <option value="">Type</option>
                                     <option value="fixed" {{ old('discount_type') == 'fixed' ? 'selected' : '' }}>Fixed</option>
                                     <option value="percentage" {{ old('discount_type') == 'percentage' ? 'selected' : '' }}>Percentage</option>
                                 </select>
@@ -314,7 +304,6 @@
                             <div class="input-group">
                                 <input class="form-control" id="taxAmount" type="number" min="0" name="tax_amount" value="{{ old('tax_amount') }}" placeholder="Tax Amount">
                                 <select class="form-select" id="taxType" name="tax_type">
-                                    <option value="">Type</option>
                                     <option value="inclusive" {{ old('tax_type') == 'inclusive' ? 'selected' : '' }}>Inclusive</option>
                                     <option value="exclusive" {{ old('tax_type') == 'exclusive' ? 'selected' : '' }}>Exclusive</option>
                                 </select>
@@ -418,7 +407,6 @@
                         </td>
                         <td><input type="number" class="form-control" name="additional_cost[]" value="0" min="0"></td>
                         <td><input type="number" class="form-control" name="additional_price[]" value="0" min="0"></td>
-                        <td><input type="number" class="form-control" name="stock[]" value="0" min="0"></td>
                     </tr>
                 `;
             });
@@ -550,6 +538,25 @@
         bindSinglePreview('productThumbnail', 'productThumbnailPreview', 'productThumbnailPreviewWrap');
         bindSinglePreview('descImage', 'productDescImagePreview', 'productDescImagePreviewWrap');
         bindMultiPreview('productImages', 'productImagesPreview');
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/tinymce@7/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        tinymce.init({
+            selector: 'textarea.rich-editor',
+            height: 420,
+            menubar: false,
+            plugins: 'lists link table code fullscreen preview',
+            toolbar: 'undo redo | blocks | bold italic underline | bullist numlist | link table | alignleft aligncenter alignright | code preview fullscreen',
+            branding: false,
+            promotion: false,
+            setup: function(editor) {
+                editor.on('change keyup', function() {
+                    editor.save();
+                });
+            }
+        });
     });
 </script>
 @endpush

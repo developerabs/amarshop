@@ -31,17 +31,9 @@
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label" for="formIcon">Icon</label>
-                    <input class="form-control" id="formIcon" name="icon" value="{{ old('icon') }}">
-                </div>
-                <div class="col-md-6">
                     <label class="form-label" for="formImage">Image</label>
                     <input class="form-control" id="formImage" name="image" type="file" accept="image/*">
                     <img id="edit_category_image_preview" src="#" alt="Image Preview" class="img-fluid fade-in mt-2" style="display: none; max-height: 60px; max-width: 120px; object-fit: cover; border-radius: 6px;">
-                </div>
-                <div class="col-12">
-                    <label class="form-label" for="formMessage">Description</label>
-                    <textarea class="form-control" id="formMessage" name="description" rows="5">{{ old('description') }}</textarea>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label" for="formMetaTitle">Meta Title</label>
@@ -100,11 +92,9 @@
                 editModal.querySelector('input[name="category_id"]').value = categoryData.id || '';
                 editModal.querySelector('input[name="name"]').value = categoryData.name || '';
                 editModal.querySelector('select[name="parent_category"]').value = categoryData.parent_id || '';
-                editModal.querySelector('textarea[name="description"]').value = categoryData.description || '';
                 editModal.querySelector('input[name="meta_title"]').value = categoryData.meta_title || '';
                 editModal.querySelector('textarea[name="meta_description"]').value = categoryData.meta_description || '';
                 editModal.querySelector('input[type="checkbox"][name="status"]').checked = categoryData.status === true || categoryData.status === 1;
-                editModal.querySelector('input[name="icon"]').value = categoryData.icon || '';
 
                 const rowImage = button.closest('tr')?.querySelector('td img');
                 if (rowImage && rowImage.getAttribute('src')) {

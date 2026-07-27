@@ -27,7 +27,7 @@ class CategoryController extends Controller
         $query = Category::query();
 
         if ($request->has('query') && !empty($request->input('query'))) {
-            $query->where('name', 'like', '%' . $request->input('query') . '%');
+            $query->where('name', 'ilike', '%' . $request->input('query') . '%');
         }
 
         $categories = $query->with('parent')->orderBy('id', 'desc')->paginate(10)->withQueryString();

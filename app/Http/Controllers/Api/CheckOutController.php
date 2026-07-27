@@ -59,10 +59,7 @@ class CheckOutController extends Controller
                 if (!$variantProduct) {
                     return ApiResponse::error('Product variant not found', ['product_variant_id' => $product['product_variant_id']], 404);
                 }
-                if ($variantProduct->stock < $product['quantity']) {
-                    return ApiResponse::error('Insufficient stock for product variant', ['product_variant_id' => $product['product_variant_id']], 400);
-                }
-                $productPrice = $variantProduct->additional_price * $product['quantity'];
+                $productPrice = ($productModel->sale_price + $variantProduct->additional_price) * $product['quantity'];
                 $subtotal += $productPrice;
 
                 if ($productModel->discount_amount > 0) {
@@ -71,7 +68,7 @@ class CheckOutController extends Controller
                         $productPrice -= $discountAmount; // Subtract discount from the product price
                         $totalDiscountAmount += $discountAmount;
                     } elseif ($productModel->discount_type === 'percentage') {
-                        $discountAmount = ($variantProduct->additional_price * ($productModel->discount_amount / 100)) * $product['quantity'];
+                        $discountAmount = (($productModel->sale_price + $variantProduct->additional_price) * ($productModel->discount_amount / 100)) * $product['quantity'];
                         $productPrice -= $discountAmount; // Subtract discount from the product price
                         $totalDiscountAmount += $discountAmount;
                     }
@@ -133,6 +130,9 @@ class CheckOutController extends Controller
         if ($shippingSettings && $subtotal >= $shippingSettings) {
             $shippingCharge = 0; // Free shipping
         }
+        if ($shippingSettings && $subtotal <= $shippingSettings && !isset($request->shipping_id)) {
+            return ApiResponse::error('Kindly select a shipping method', [], 400);
+        }
         // Create a new order
         try {
             DB::beginTransaction();
@@ -159,18 +159,20 @@ class CheckOutController extends Controller
                     return ApiResponse::error('Product not found', ['product_id' => $item['product_id']], 404);
                 }
                 $variant = null;
+                $productPrice = $product->sale_price;
                 if (!empty($item['product_variant_id'])) {
                     $variant = DB::table('product_variants')->where('id', $item['product_variant_id'])->first();
                     if (!$variant) {
                         return ApiResponse::error('Product variant not found', ['product_variant_id' => $item['product_variant_id']], 404);
                     }
+                    $productPrice += $variant->additional_price;
                 }
                 $orderItemsData[] = [
                     'product_id' => $item['product_id'],
                     'product_variant_id' => $item['product_variant_id'] ?? null,
                     'quantity' => $item['quantity'],
-                    'price' => $variant->price ?? $product->sale_price,
-                    'subtotal' => ($variant->price ?? $product->sale_price) * $item['quantity'],
+                    'price' => $productPrice,
+                    'subtotal' => $productPrice * $item['quantity'],
                     'product_name' =>   $product->name ?? 'Unknown Product',
                     'variant_name' => $variant->name ?? null,
                     'sku' => $variant->sku ?? null,
@@ -199,13 +201,6 @@ class CheckOutController extends Controller
             foreach ($validatedData['products'] as $product) {
                 $productModel = Product::find($product['product_id']);
                 $productModel->decrement('total_stock', $product['quantity']);
-                
-                // Update product variant stock if variant_id is provided
-                if (!empty($product['product_variant_id'])) {
-                    DB::table('product_variants')
-                        ->where('id', $product['product_variant_id'])
-                        ->decrement('stock', $product['quantity']);
-                }
             }
 
             DB::commit();

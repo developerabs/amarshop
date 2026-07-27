@@ -22,8 +22,8 @@ class FaqController extends Controller
         if ($request->filled('query')) {
             $term = trim((string) $request->input('query'));
             $query->where(function ($q) use ($term) {
-                $q->where('question', 'like', '%' . $term . '%')
-                    ->orWhere('answer', 'like', '%' . $term . '%');
+                $q->where('question', 'ilike', '%' . $term . '%')
+                    ->orWhere('answer', 'ilike', '%' . $term . '%');
             });
         }
 

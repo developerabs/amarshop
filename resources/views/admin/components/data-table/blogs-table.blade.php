@@ -13,7 +13,7 @@
         @forelse(($blogs ?? collect()) as $blog)
         <tr data-items="{{ json_encode($blog) }}">
             <td><img src="{{ getImageUrl($blog->thumbnail) }}" class="img-thumbnail" width="40" height="30" alt=""></td>
-            <td>{{ $blog->title ?? 'N/A' }}</td>
+            <td>{{ substr($blog->title, 0, 50) . (strlen($blog->title) > 50 ? '...' : '') ?? 'N/A' }}</td>
             <td>{{ $blog->category->name ?? 'N/A' }}</td>
             <td>
                 @if($blog->status)

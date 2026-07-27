@@ -49,4 +49,23 @@
     blogFilter();
     blogSearchInput.addEventListener('input', blogFilter);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/tinymce@7/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        tinymce.init({
+            selector: 'textarea.rich-editor',
+            height: 420,
+            menubar: false,
+            plugins: 'lists link table code fullscreen preview',
+            toolbar: 'undo redo | blocks | bold italic underline | bullist numlist | link table | alignleft aligncenter alignright | code preview fullscreen',
+            branding: false,
+            promotion: false,
+            setup: function(editor) {
+                editor.on('change keyup', function() {
+                    editor.save();
+                });
+            }
+        });
+    });
+</script>
 @endpush

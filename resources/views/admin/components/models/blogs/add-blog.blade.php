@@ -28,12 +28,8 @@
                     <input class="form-control" id="addBlogPublishedAt" name="published_at" type="datetime-local" value="{{ old('published_at') }}">
                 </div>
                 <div class="col-12">
-                    <label class="form-label" for="addBlogExcerpt">Excerpt</label>
-                    <textarea class="form-control" id="addBlogExcerpt" name="excerpt" rows="2">{{ old('excerpt') }}</textarea>
-                </div>
-                <div class="col-12">
                     <label class="form-label" for="addBlogContent">Content</label>
-                    <textarea class="form-control" id="addBlogContent" name="content" rows="5">{{ old('content') }}</textarea>
+                    <textarea class="form-control rich-editor" id="addBlogContent" name="content" rows="5">{{ old('content') }}</textarea>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label" for="addBlogMetaTitle">Meta Title</label>

@@ -80,7 +80,7 @@ class ProductController extends Controller
         }
 
         if ($search) {
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('name', 'ilike', '%' . $search . '%');
         }
 
         if ($sortBy) {
@@ -134,11 +134,19 @@ class ProductController extends Controller
     }
     public function getProductById($id)
     {
-        $product = Product::with(['category', 'brand', 'variants', 'variants.variantValues'])->find($id);
+        $product = Product::with([
+            'category',
+            'brand',
+            'variants',
+            'variants.variantValues',
+            'approvedReviews.user:id,name',
+        ])->find($id);
 
         if (!$product) {
             return ApiResponse::error('Product not found', 404);
         }
+
+        $approvedReviews = $product->approvedReviews;
 
         $productData = [
             'id' => $product->id,
@@ -172,6 +180,19 @@ class ProductController extends Controller
                         ->pluck('attribute_value', 'attribute_name')
                 ];
             }),
+            'approved_reviews' => $approvedReviews->map(function ($review) {
+                return [
+                    'id' => $review->id,
+                    'rating' => $review->rating,
+                    'review' => $review->review,
+                    'user_name' => $review->user->name ?? 'Anonymous',
+                    'created_at' => optional($review->created_at)->toDateTimeString(),
+                ];
+            })->values(),
+            'review_summary' => [
+                'total_reviews' => $approvedReviews->count(),
+                'average_rating' => round((float) ($approvedReviews->avg('rating') ?? 0), 1),
+            ],
         ];
 
         return ApiResponse::success(
@@ -184,12 +205,15 @@ class ProductController extends Controller
         $product = Product::with([
             'category:id,name,slug',
             'brand:id,name,slug',
-            'variants.variantValues'
+            'variants.variantValues',
+            'approvedReviews.user:id,name',
         ])->where('slug', $slug)->first();
 
         if (!$product) {
             return ApiResponse::error('Product not found', 404);
         }
+
+        $approvedReviews = $product->approvedReviews;
 
         $productData = [
             'id' => $product->id,
@@ -260,6 +284,19 @@ class ProductController extends Controller
             'product' => $productData,
             'attributes' => $attributes,
             'variants' => $variants,
+            'approved_reviews' => $approvedReviews->map(function ($review) {
+                return [
+                    'id' => $review->id,
+                    'rating' => $review->rating,
+                    'review' => $review->review,
+                    'user_name' => $review->user->name ?? 'Anonymous',
+                    'created_at' => optional($review->created_at)->toDateTimeString(),
+                ];
+            })->values(),
+            'review_summary' => [
+                'total_reviews' => $approvedReviews->count(),
+                'average_rating' => round((float) ($approvedReviews->avg('rating') ?? 0), 1),
+            ],
         ]);
     }
     public function relatedProducts($productId)

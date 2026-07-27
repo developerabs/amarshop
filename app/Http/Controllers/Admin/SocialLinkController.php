@@ -22,9 +22,9 @@ class SocialLinkController extends Controller
         if ($request->filled('query')) {
             $term = trim((string) $request->input('query'));
             $query->where(function ($q) use ($term) {
-                $q->where('name', 'like', '%' . $term . '%')
-                    ->orWhere('url', 'like', '%' . $term . '%')
-                    ->orWhere('icon', 'like', '%' . $term . '%');
+                $q->where('name', 'ilike', '%' . $term . '%')
+                    ->orWhere('url', 'ilike', '%' . $term . '%')
+                    ->orWhere('icon', 'ilike', '%' . $term . '%');
             });
         }
 

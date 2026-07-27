@@ -30,12 +30,8 @@
                     <input class="form-control" id="editBlogPublishedAt" name="published_at" type="datetime-local">
                 </div>
                 <div class="col-12">
-                    <label class="form-label" for="editBlogExcerpt">Excerpt</label>
-                    <textarea class="form-control" id="editBlogExcerpt" name="excerpt" rows="2">{{ old('excerpt') }}</textarea>
-                </div>
-                <div class="col-12">
                     <label class="form-label" for="editBlogContent">Content</label>
-                    <textarea class="form-control" id="editBlogContent" name="content" rows="5">{{ old('content') }}</textarea>
+                    <textarea class="form-control rich-editor" id="editBlogContent" name="content" rows="5">{{ old('content') }}</textarea>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label" for="editBlogMetaTitle">Meta Title</label>
@@ -96,8 +92,11 @@
                 editModal.querySelector('input[name="blog_id"]').value = data.id || '';
                 editModal.querySelector('select[name="blog_category_id"]').value = data.blog_category_id || '';
                 editModal.querySelector('input[name="title"]').value = data.title || '';
-                editModal.querySelector('textarea[name="excerpt"]').value = data.excerpt || '';
-                editModal.querySelector('textarea[name="content"]').value = data.content || '';
+                const contentEditor = editModal.querySelector('textarea[name="content"]');
+                contentEditor.value = data.content || '';
+                if (contentEditor.classList.contains('rich-editor') && window.tinymce) {
+                    tinymce.get(contentEditor.id).setContent(data.content || '');
+                }
                 editModal.querySelector('input[name="meta_title"]').value = data.meta_title || '';
                 editModal.querySelector('textarea[name="meta_description"]').value = data.meta_description || '';
                 editModal.querySelector('input[type="checkbox"][name="status"]').checked = data.status === true || data.status === 1;

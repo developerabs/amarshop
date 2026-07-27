@@ -23,8 +23,8 @@ class UserCareController extends Controller
 
         $users = User::query()
             ->when($searchTerm, function ($query) use ($searchTerm) {
-                $query->where('name', 'like', '%' . $searchTerm . '%')
-                      ->orWhere('email', 'like', '%' . $searchTerm . '%');
+                $query->where('name', 'ilike', '%' . $searchTerm . '%')
+                      ->orWhere('email', 'ilike', '%' . $searchTerm . '%');
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);

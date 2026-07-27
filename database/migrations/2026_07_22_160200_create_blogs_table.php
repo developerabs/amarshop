@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('thumbnail')->nullable();
             $table->text('excerpt')->nullable();
             $table->longText('content')->nullable();
-            $table->string('meta_title')->nullable();
-            $table->text('meta_description')->nullable();
+            $table->text('meta_title')->nullable();
+            $table->longText('meta_description')->nullable();
             $table->timestamp('published_at')->nullable();
             $table->boolean('status')->default(true);
             $table->timestamps();

@@ -18,7 +18,7 @@ class ShippingChargeController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
-        $shippingCharges = ShippingCharges::where('name', 'like', "%{$query}%")->latest()->paginate(10);
+        $shippingCharges = ShippingCharges::where('name', 'ilike', "%{$query}%")->latest()->paginate(10);
         return view('admin.components.data-table.shipping-charges-table', compact('shippingCharges'))->render();
     }
     public function store(Request $request)

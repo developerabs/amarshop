@@ -17,12 +17,14 @@ class SiteSettingsSeeder extends Seeder
             ['key' => 'site_title', 'value' => 'AmarShop - Your One Stop Shop', 'group' => 'general', 'type' => 'string'],
             ['key' => 'site_description', 'value' => 'Welcome to AmarShop, Your one-stop shop for all your needs. We offer a wide range of products at competitive prices.', 'group' => 'general', 'type' => 'text'],
             ['key' => 'site_logo', 'value' => 'seeder/logo.jpeg', 'group' => 'general', 'type' => 'string'],
-            ['key' => 'site_favicon', 'value' => 'seeder/favicon.png', 'group' => 'general', 'type' => 'string'],
+            ['key' => 'site_favicon', 'value' => 'seeder/favicon.jpeg', 'group' => 'general', 'type' => 'string'],
             ['key' => 'site_email', 'value' => 'info@amarshop.com', 'group' => 'general', 'type' => 'string'],
             ['key' => 'site_phone', 'value' => '+1 (123) 456-7890', 'group' => 'general', 'type' => 'string'],
             ['key' => 'site_address', 'value' => '123 Main Street, City, State 12345', 'group' => 'general', 'type' => 'string'],
             ['key' => 'free_shipping_amount', 'value' => '1000', 'group' => 'general', 'type' => 'string'],
             ['key' => 'copyright_text', 'value' => '© 2026 AmarShop. All rights reserved.', 'group' => 'general', 'type' => 'string'],
+            ['key' => 'primary_color', 'value' => '#16a34a', 'group' => 'general', 'type' => 'string'],
+            ['key' => 'secondary_color', 'value' => '#ffffff', 'group' => 'general', 'type' => 'string'],
         ];
         SiteSettings::insert($data);
     }

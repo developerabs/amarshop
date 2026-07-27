@@ -22,6 +22,7 @@
                 'admin.variant-types.*',
                 'admin.variant-values.*',
                 'admin.products.*',
+                'admin.product-reviews.*',
               ];
               $ecomActive = request()->routeIs(...$ecomRoutes);
           @endphp
@@ -43,6 +44,10 @@
               <a class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}" href="{{ route('admin.products.index') }}">
                 <span class="nav-icon"><i class="bi bi-box" aria-hidden="true"></i></span>
                 <span class="nav-text">Products</span>
+              </a>
+              <a class="nav-link {{ request()->routeIs('admin.product-reviews.*') ? 'active' : '' }}" href="{{ route('admin.product-reviews.index') }}">
+                <span class="nav-icon"><i class="bi bi-star" aria-hidden="true"></i></span>
+                <span class="nav-text">Product Reviews</span>
               </a>
             </nav>
           </div>

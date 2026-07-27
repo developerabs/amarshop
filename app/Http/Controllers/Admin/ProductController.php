@@ -24,18 +24,18 @@ class ProductController extends Controller
         $query = Product::with('category', 'brand');
 
         if ($request->has('query') && !empty($request->input('query'))) {
-            $query->where('name', 'like', '%' . $request->input('query') . '%')
-                  ->orWhere('code', 'like', '%' . $request->input('query') . '%')
-                  ->orWhere('model', 'like', '%' . $request->input('query') . '%')
-                  ->orWhere('description', 'like', '%' . $request->input('query') . '%')
-                  ->orWhere('short_description', 'like', '%' . $request->input('query') . '%')
-                  ->orWhere('meta_title', 'like', '%' . $request->input('query') . '%')
-                  ->orWhere('meta_description', 'like', '%' . $request->input('query') . '%')
+            $query->where('name', 'ilike', '%' . $request->input('query') . '%')
+                  ->orWhere('code', 'ilike', '%' . $request->input('query') . '%')
+                  ->orWhere('model', 'ilike', '%' . $request->input('query') . '%')
+                  ->orWhere('description', 'ilike', '%' . $request->input('query') . '%')
+                  ->orWhere('short_description', 'ilike', '%' . $request->input('query') . '%')
+                  ->orWhere('meta_title', 'ilike', '%' . $request->input('query') . '%')
+                  ->orWhere('meta_description', 'ilike', '%' . $request->input('query') . '%')
                   ->orWhereHas('category', function ($q) use ($request) {
-                      $q->where('name', 'like', '%' . $request->input('query') . '%');
+                      $q->where('name', 'ilike', '%' . $request->input('query') . '%');
                   })
                   ->orWhereHas('brand', function ($q) use ($request) {
-                      $q->where('name', 'like', '%' . $request->input('query') . '%');
+                      $q->where('name', 'ilike', '%' . $request->input('query') . '%');
                   });
         }
 
@@ -64,18 +64,14 @@ class ProductController extends Controller
             'code' => 'required|string|max:50|unique:products,code',
             'price' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
-            'cost' => 'required|numeric|min:0',
             'total_stock' => 'required|integer|min:0',
             'variant_name' => 'nullable|array',
             'variant_name.*' => 'nullable|string|max:255',
             'additional_cost.*' => 'nullable|numeric|min:0',
             'additional_price.*' => 'nullable|numeric|min:0',
-            'stock.*' => 'nullable|integer|min:0',
             'variant_attributes' => 'nullable|array',
             'additional_cost' => 'nullable|array',
             'additional_price' => 'nullable|array',
-            'stock' => 'nullable|array',
-            'model' => 'nullable|string|max:100',
             'alert_quantity' => 'nullable|integer|min:0',
 
             'discount_amount' => 'nullable|numeric|min:0',
@@ -86,11 +82,11 @@ class ProductController extends Controller
             'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'image' => 'required|array',
             'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'short_description' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:255',
+            'short_description' => 'nullable|string',
+            'description' => 'nullable|string',
             'desc_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:255',
+            'meta_title' => 'nullable|string',
+            'meta_description' => 'nullable|string',
 
             'has_variations' => 'nullable|boolean',
             'flash_deal' => 'nullable|boolean',
@@ -115,10 +111,10 @@ class ProductController extends Controller
             }
         }
         if ($validatedData['discount_amount'] && $validatedData['discount_amount'] > 0 && $validatedData['discount_type'] == null) {
-            return redirect()->back()->with('error', 'Discount type must be specified when discount amount is provided.')->withInput();
+            $validatedData['discount_amount'] = 0;
         }
         if ($validatedData['tax_amount'] && $validatedData['tax_amount'] > 0 && $validatedData['tax_type'] == null) {
-            return redirect()->back()->with('error', 'Tax type must be specified when tax amount is provided.')->withInput();
+            $validatedData['tax_amount'] = 0;
         }
 
         $slug = Str::slug($request->name);
@@ -136,15 +132,13 @@ class ProductController extends Controller
                     'brand_id' => $validatedData['brand'],
                     'price' => $validatedData['price'],
                     'sale_price' => $validatedData['sale_price'] ?? null,
-                    'cost' => $validatedData['cost'] ?? 0,
                     'wholesale_price' => $validatedData['wholesale_price'] ?? 0,
                     'total_stock' => $validatedData['total_stock'],
-                    'model' => $validatedData['model'] ?? null,
                     'alert_quantity' => $validatedData['alert_quantity'] ?? 0,
 
-                    'discount_amount' => $validatedData['discount_amount'] ?? null,
+                    'discount_amount' => $validatedData['discount_amount'] ?? 0,
                     'discount_type' => $validatedData['discount_type'] ?? null,
-                    'tax_rate' => $validatedData['tax_amount'] ?? null,
+                    'tax_rate' => $validatedData['tax_amount'] ?? 0,
                     'tax_type' => $validatedData['tax_type'] ?? null,
 
                     'short_description' => $validatedData['short_description'] ?? null,
@@ -171,7 +165,6 @@ class ProductController extends Controller
                             'sku' => $request->variant_name[$index],
                             'additional_cost' => $request->additional_cost[$index],
                             'additional_price' => $request->additional_price[$index],
-                            'stock' => $request->stock[$index],
                         ]);
         
                         $attributes = json_decode($attributeJson, true);
@@ -217,12 +210,13 @@ class ProductController extends Controller
                 ]);
             } catch (\Exception $e) {
                 report($e);
-                return redirect()->back()->with('error', 'Product created, but image upload failed. Please try re-uploading images.')->withInput();
+                return redirect()->route('admin.products.index')->with('error', 'Product created, but image upload failed. Please try re-uploading images.')->withInput();
             }
 
             return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
             report($e);
+            dd($e);
             return redirect()->back()->with('error', 'An error occurred while creating the product.')->withInput();
         }
     }
@@ -269,18 +263,14 @@ class ProductController extends Controller
             'code' => 'required|string|max:50|unique:products,code,' . $product->id,
             'price' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
-            'cost' => 'required|numeric|min:0',
             'total_stock' => 'required|integer|min:0',
             'variant_name' => 'nullable|array',
             'variant_name.*' => 'nullable|string|max:255',
             'additional_cost.*' => 'nullable|numeric|min:0',
             'additional_price.*' => 'nullable|numeric|min:0',
-            'stock.*' => 'nullable|integer|min:0',
             'variant_attributes' => 'nullable|array',
             'additional_cost' => 'nullable|array',
             'additional_price' => 'nullable|array',
-            'stock' => 'nullable|array',
-            'model' => 'nullable|string|max:100',
             'alert_quantity' => 'nullable|integer|min:0',
 
             'discount_amount' => 'nullable|numeric|min:0',
@@ -291,11 +281,11 @@ class ProductController extends Controller
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'image' => 'nullable|array',
             'image.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'short_description' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:255',
+            'short_description' => 'nullable|string',
+            'description' => 'nullable|string',
             'desc_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:255',
+            'meta_title' => 'nullable|string',
+            'meta_description' => 'nullable|string',
 
             'has_variations' => 'nullable|boolean',
             'flash_deal' => 'nullable|boolean',
@@ -318,10 +308,10 @@ class ProductController extends Controller
             }
         }
         if ($validatedData['discount_amount'] && $validatedData['discount_amount'] > 0 && $validatedData['discount_type'] == null) {
-            return redirect()->back()->with('error', 'Discount type must be specified when discount amount is provided.')->withInput();
+            $validatedData['discount_amount'] = 0;
         }
         if ($validatedData['tax_amount'] && $validatedData['tax_amount'] > 0 && $validatedData['tax_type'] == null) {
-            return redirect()->back()->with('error', 'Tax type must be specified when tax amount is provided.')->withInput();
+            $validatedData['tax_amount'] = 0;
         }
 
         $slug = Str::slug($request->name);
@@ -338,15 +328,13 @@ class ProductController extends Controller
                     'brand_id' => $validatedData['brand'],
                     'price' => $validatedData['price'],
                     'sale_price' => $validatedData['sale_price'] ?? null,
-                    'cost' => $validatedData['cost'] ?? 0,
                     'wholesale_price' => $validatedData['wholesale_price'] ?? 0,
                     'total_stock' => $validatedData['total_stock'],
-                    'model' => $validatedData['model'] ?? null,
                     'alert_quantity' => $validatedData['alert_quantity'] ?? 0,
 
-                    'discount_amount' => $validatedData['discount_amount'] ?? null,
+                    'discount_amount' => $validatedData['discount_amount'] ?? 0,
                     'discount_type' => $validatedData['discount_type'] ?? null,
-                    'tax_rate' => $validatedData['tax_amount'] ?? null,
+                    'tax_rate' => $validatedData['tax_amount'] ?? 0,
                     'tax_type' => $validatedData['tax_type'] ?? null,
 
                     'short_description' => $validatedData['short_description'],
@@ -374,7 +362,6 @@ class ProductController extends Controller
                             'sku' => $request->variant_name[$index],
                             'additional_cost' => $request->additional_cost[$index],
                             'additional_price' => $request->additional_price[$index],
-                            'stock' => $request->stock[$index],
                         ]);
         
                         $attributes = json_decode($attributeJson, true);
@@ -431,6 +418,7 @@ class ProductController extends Controller
                     $product->update(['desc_image' => $descImagePath]);
                 }
             } catch (\Exception $e) {
+                dd($e);
                 return redirect()->back()->with('error', 'An error occurred while updating the product images.')->withInput();
             }
             return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');

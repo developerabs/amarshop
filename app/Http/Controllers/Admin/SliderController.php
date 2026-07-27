@@ -19,8 +19,8 @@ class SliderController extends Controller
         ]);
         $sliders = Slider::query()
             ->when($request->input('query'), function ($query, $queryString) {
-                $query->where('title', 'like', '%' . $queryString . '%')
-                      ->orWhere('description', 'like', '%' . $queryString . '%');
+                $query->where('title', 'ilike', '%' . $queryString . '%')
+                      ->orWhere('description', 'ilike', '%' . $queryString . '%');
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);

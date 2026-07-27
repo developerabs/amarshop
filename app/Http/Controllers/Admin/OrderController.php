@@ -47,12 +47,12 @@ class OrderController extends Controller
             $searchTerm = trim((string) $request->input('query'));
 
             $ordersQuery->where(function ($q) use ($searchTerm) {
-                $q->where('order_no', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('payment_method', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('guest_id', 'like', '%' . $searchTerm . '%')
+                $q->where('order_no', 'ilike', '%' . $searchTerm . '%')
+                    ->orWhere('payment_method', 'ilike', '%' . $searchTerm . '%')
+                    ->orWhere('guest_id', 'ilike', '%' . $searchTerm . '%')
                     ->orWhereHas('user', function ($userQuery) use ($searchTerm) {
-                        $userQuery->where('name', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('email', 'like', '%' . $searchTerm . '%');
+                        $userQuery->where('name', 'ilike', '%' . $searchTerm . '%')
+                            ->orWhere('email', 'ilike', '%' . $searchTerm . '%');
                     });
             });
         }

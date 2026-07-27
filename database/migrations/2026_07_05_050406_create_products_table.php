@@ -17,10 +17,9 @@ return new class extends Migration
             $table->string('code', 50)->unique()->index();
             $table->unsignedBigInteger('category_id')->index();
             $table->unsignedBigInteger('brand_id')->nullable()->index();
-            $table->string('name', 100)->index();
+            $table->string('name', 255)->index();
             $table->string('slug')->unique();
-            $table->string('model', 100)->nullable();
-            $table->decimal('cost', 8, 2);
+            $table->string('model', 255)->nullable();
             $table->decimal('price', 8, 2);
             $table->decimal('sale_price', 8, 2)->nullable();
             $table->decimal('wholesale_price', 8, 2);
@@ -35,14 +34,14 @@ return new class extends Migration
             $table->timestamp('discount_end_at')->nullable();
 
             $table->string('thumbnail')->nullable();
-            $table->string('image')->nullable();
-            $table->text('short_description')->nullable();
-            $table->text('description')->nullable();
+            $table->text('image')->nullable();
+            $table->longText('short_description')->nullable();
+            $table->longText('description')->nullable();
             $table->string('video')->nullable();
             $table->string('desc_image')->nullable();
-            $table->string('meta_title')->nullable();
-            $table->text('meta_description')->nullable();
-            $table->string('meta_keywords')->nullable();
+            $table->text('meta_title')->nullable();
+            $table->longText('meta_description')->nullable();
+            $table->text('meta_keywords')->nullable();
             
             $table->boolean('is_flash_deal')->default(false);
             $table->boolean('is_featured')->default(false);

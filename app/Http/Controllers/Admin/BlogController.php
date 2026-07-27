@@ -26,11 +26,11 @@ class BlogController extends Controller
         if ($request->filled('query')) {
             $term = trim((string) $request->input('query'));
             $query->where(function ($q) use ($term) {
-                $q->where('title', 'like', '%' . $term . '%')
-                    ->orWhere('slug', 'like', '%' . $term . '%')
-                    ->orWhere('excerpt', 'like', '%' . $term . '%')
+                $q->where('title', 'ilike', '%' . $term . '%')
+                    ->orWhere('slug', 'ilike', '%' . $term . '%')
+                    ->orWhere('excerpt', 'ilike', '%' . $term . '%')
                     ->orWhereHas('category', function ($categoryQuery) use ($term) {
-                        $categoryQuery->where('name', 'like', '%' . $term . '%');
+                        $categoryQuery->where('name', 'ilike', '%' . $term . '%');
                     });
             });
         }
@@ -46,10 +46,9 @@ class BlogController extends Controller
             'blog_category_id' => 'required|exists:blog_categories,id',
             'title' => 'required|string|max:255',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
-            'excerpt' => 'nullable|string|max:500',
             'content' => 'nullable|string',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:1000',
+            'meta_title' => 'nullable|string',
+            'meta_description' => 'nullable|string',
             'published_at' => 'nullable|date',
             'status' => 'required|boolean',
         ]);
@@ -70,7 +69,6 @@ class BlogController extends Controller
                 'title' => $validated['title'],
                 'slug' => Str::slug($validated['title']) . '-' . Str::lower(Str::random(5)),
                 'thumbnail' => $validated['thumbnail'] ?? null,
-                'excerpt' => $validated['excerpt'] ?? null,
                 'content' => $validated['content'] ?? null,
                 'meta_title' => $validated['meta_title'] ?? null,
                 'meta_description' => $validated['meta_description'] ?? null,
@@ -89,10 +87,9 @@ class BlogController extends Controller
             'blog_category_id' => 'required|exists:blog_categories,id',
             'title' => 'required|string|max:255',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
-            'excerpt' => 'nullable|string|max:500',
             'content' => 'nullable|string',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:1000',
+            'meta_title' => 'nullable|string',
+            'meta_description' => 'nullable|string',
             'published_at' => 'nullable|date',
             'status' => 'required|boolean',
         ]);
@@ -116,7 +113,6 @@ class BlogController extends Controller
                     ? Str::slug($validated['title']) . '-' . Str::lower(Str::random(5))
                     : $blog->slug,
                 'thumbnail' => $validated['thumbnail'] ?? $blog->thumbnail,
-                'excerpt' => $validated['excerpt'] ?? null,
                 'content' => $validated['content'] ?? null,
                 'meta_title' => $validated['meta_title'] ?? null,
                 'meta_description' => $validated['meta_description'] ?? null,

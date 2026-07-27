@@ -12,8 +12,8 @@
         @forelse($sliders ?? [] as $slider)
         <tr data-items="{{ json_encode($slider) }}">
             <td><img src="{{ getImageUrl($slider->image) ?? '' }}" class="img-thumbnail" width="40" height="30" alt=""></td>
-            <td>{{ $slider->title ?? 'N/A' }}</td>
-            <td>{{ $slider->description ?? 'N/A' }}</td>
+            <td>{{ substr($slider->title, 0, 30) . (strlen($slider->title) > 30 ? '...' : '') ?? 'N/A' }}</td>
+            <td>{{ substr($slider->description, 0, 50) . (strlen($slider->description) > 50 ? '...' : '') ?? 'N/A' }}</td>
             <td>{{ $slider->created_at ? $slider->created_at->format('M j, Y') : 'N/A' }}</td>
             <td class="text-end">
                 <button class="btn btn-warning btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#editModal"><i class="bi bi-pencil" aria-hidden="true"></i></button>

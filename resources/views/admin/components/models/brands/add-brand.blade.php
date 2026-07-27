@@ -14,10 +14,6 @@
                     <input class="form-control" id="formBudget" name="image" type="file" accept="image/*">
                     <img id="add_brand_image_preview" src="#" alt="Image Preview" class="img-fluid fade-in mt-2" style="display: none; max-height: 60px; max-width: 120px; object-fit: cover; border-radius: 6px;">
                 </div>
-                <div class="col-12">
-                    <label class="form-label" for="formMessage">Description</label>
-                    <textarea class="form-control" id="formMessage" name="description" rows="3">{{ old('description') }}</textarea>
-                </div>
                 <div class="col-md-6">
                     <label class="form-label" for="formName">Meta Title</label>
                     <input class="form-control" id="formName" name="meta_title" value="{{ old('meta_title') }}">
@@ -30,7 +26,7 @@
                     <label class="form-label" for="formStatus">Status</label>
                     <input type="hidden" name="status" value="0">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="formStatus" name="status" value="1" {{ old('status') ? 'checked' : '' }}>
+                        <input class="form-check-input" type="checkbox" id="formStatus" name="status" value="1" {{ old('status', 1) ? 'checked' : '' }}>
                         <label class="form-check-label" for="formStatus">Active</label>
                     </div>
                 </div>

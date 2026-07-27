@@ -11,7 +11,7 @@
     <tbody>
         @forelse(($faqs ?? collect()) as $faq)
         <tr data-items='@json($faq)'>
-            <td>{{ $faq->question ?? 'N/A' }}</td>
+            <td>{{ substr($faq->question, 0, 50) . (strlen($faq->question) > 50 ? '...' : '') ?? 'N/A' }}</td>
             <td>{{ $faq->sort_order ?? 0 }}</td>
             <td>
                 @if($faq->status)

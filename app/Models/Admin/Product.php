@@ -3,6 +3,7 @@
 namespace App\Models\Admin;
 
 use App\Models\OrderItem;
+use App\Models\ProductReview;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -16,7 +17,6 @@ class Product extends Model
         'brand_id',
         'name',
         'slug',
-        'cost',
         'price',
         'sale_price',
         'wholesale_price',
@@ -54,7 +54,6 @@ class Product extends Model
         'brand_id' => 'integer',
         'name' => 'string',
         'slug' => 'string',
-        'cost' => 'decimal:2',
         'price' => 'decimal:2',
         'wholesale_price' => 'decimal:2',
         'alert_quantity' => 'integer',
@@ -105,5 +104,17 @@ class Product extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class, 'product_id');
+    }
+
+    public function approvedReviews()
+    {
+        return $this->hasMany(ProductReview::class, 'product_id')
+            ->where('is_approved', true)
+            ->latest();
     }
 }
