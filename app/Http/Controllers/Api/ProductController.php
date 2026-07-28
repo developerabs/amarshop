@@ -209,6 +209,7 @@ class ProductController extends Controller
             'brand:id,name,slug',
             'variants.variantValues',
             'approvedReviews.user:id,name',
+            'specifications'
         ])->where('slug', $slug)->first();
 
         if (!$product) {
@@ -254,6 +255,12 @@ class ProductController extends Controller
             'details_image' => $product->desc_image ? getImageUrl($product->desc_image) : null,
             'created_at' => optional($product->created_at)->toDateTimeString(),
             'updated_at' => optional($product->updated_at)->toDateTimeString(),
+            'specifications' => $product->specifications->map(function ($specification) {
+                return [
+                    'key' => $specification->key,
+                    'value' => $specification->value,
+                ];
+            })->values(),
         ];
 
         $attributes = [];

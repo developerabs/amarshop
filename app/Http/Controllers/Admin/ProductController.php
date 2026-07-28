@@ -74,6 +74,9 @@ class ProductController extends Controller
             'additional_price' => 'nullable|array',
             'alert_quantity' => 'nullable|integer|min:0',
 
+            'specification_options' => 'nullable|array',
+            'specification_values' => 'nullable|array',
+
             'discount_amount' => 'nullable|numeric|min:0',
             'discount_type' => 'nullable|in:fixed,percentage',
             'tax_amount' => 'nullable|numeric|min:0',
@@ -89,6 +92,7 @@ class ProductController extends Controller
             'meta_description' => 'nullable|string',
 
             'has_variations' => 'nullable|boolean',
+            'has_specifications' => 'nullable|boolean',
             'flash_deal' => 'nullable|boolean',
             'trending' => 'nullable|boolean',
             'daily_offer' => 'nullable|boolean',
@@ -147,6 +151,7 @@ class ProductController extends Controller
                     'meta_description' => $validatedData['meta_description'] ?? null,
 
                     'has_variants' => $validatedData['has_variations'] ?? 0,
+                    'has_specifications' => $validatedData['has_specifications'] ?? 0,
                     'is_flash_deal' => $validatedData['flash_deal'] ?? 0,
                     'is_trending' => $validatedData['trending'] ?? 0,
                     'is_daily_offer' => $validatedData['daily_offer'] ?? 0,
@@ -183,6 +188,32 @@ class ProductController extends Controller
                     }
                 }
             });
+            try {
+                // product specifications update
+                if ($request->filled('specification_options') && $request->filled('specification_values') && $validatedData['has_specifications']) {
+                    $specificationOptions = $request->input('specification_options');
+                    $specificationValues = $request->input('specification_values');
+                    $specificationData = [];
+                    foreach ($specificationOptions as $index => $option) {
+                        if (isset($specificationValues[$index])) {
+                            $value = $specificationValues[$index];
+                            $specificationData[] = [
+                                'product_id' => $product->id,
+                                'key' => $option,
+                                'value' => $value,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ];
+                        }
+                    }
+                    if (!empty($specificationData)) {
+                        DB::table('product_specifications')->insert($specificationData);
+                    }
+                }
+            } catch (\Exception $e) {
+                report($e);
+                dd($e);
+            }
 
             try {
                 $thumbnailPath = null;
@@ -230,7 +261,7 @@ class ProductController extends Controller
             }]);
         }])->where('status', true)->where('level', 0)->orderBy('id', 'desc')->get();
         $brands = Brand::where('status', true)->orderBy('id', 'desc')->get();
-        $product = Product::with(['variants', 'variants.variantValues', 'category', 'brand'])->findOrFail($product);
+        $product = Product::with(['variants', 'variants.variantValues', 'category', 'brand', 'specifications'])->findOrFail($product);
 
         $variationGroups = [];
 
@@ -273,6 +304,9 @@ class ProductController extends Controller
             'additional_price' => 'nullable|array',
             'alert_quantity' => 'nullable|integer|min:0',
 
+            'specification_options' => 'nullable|array',
+            'specification_values' => 'nullable|array',
+
             'discount_amount' => 'nullable|numeric|min:0',
             'discount_type' => 'nullable|in:fixed,percentage',
             'tax_amount' => 'nullable|numeric|min:0',
@@ -288,6 +322,7 @@ class ProductController extends Controller
             'meta_description' => 'nullable|string',
 
             'has_variations' => 'nullable|boolean',
+            'has_specifications' => 'nullable|boolean',
             'flash_deal' => 'nullable|boolean',
             'trending' => 'nullable|boolean',
             'daily_offer' => 'nullable|boolean',
@@ -343,6 +378,7 @@ class ProductController extends Controller
                     'meta_description' => $validatedData['meta_description'],
 
                     'has_variants' => $validatedData['has_variations'] ?? 0,
+                    'has_specifications' => $validatedData['has_specifications'] ?? 0,
                     'is_flash_deal' => $validatedData['flash_deal'] ?? 0,
                     'is_trending' => $validatedData['trending'] ?? 0,
                     'is_daily_offer' => $validatedData['daily_offer'] ?? 0,
@@ -352,9 +388,8 @@ class ProductController extends Controller
                     'status' => $validatedData['status'] ?? 0,
                 ]);
 
+                $product->variants()->delete();
                 if ($request->filled('variant_attributes') && $validatedData['has_variations']) {
-                    $product->variants()->delete();
-
                     foreach ($request->variant_attributes as $index => $attributeJson) {
                         $variant = ProductVariant::create([
                             'product_id' => $product->id,
@@ -380,6 +415,33 @@ class ProductController extends Controller
                     }
                 }
             });
+            try {
+                // product specifications update
+                $product->specifications()->delete();
+                if ($request->filled('specification_options') && $request->filled('specification_values') && isset($validatedData['has_specifications'])) {
+                    $specificationOptions = $request->input('specification_options');
+                    $specificationValues = $request->input('specification_values');
+                    $specificationData = [];
+                    foreach ($specificationOptions as $index => $option) {
+                        if (isset($specificationValues[$index])) {
+                            $value = $specificationValues[$index];
+                            $specificationData[] = [
+                                'product_id' => $product->id,
+                                'key' => $option,
+                                'value' => $value,
+                                'created_at' => now(),
+                                'updated_at' => now(),
+                            ];
+                        }
+                    }
+                    if (!empty($specificationData)) {
+                        DB::table('product_specifications')->insert($specificationData);
+                    }
+                }
+            } catch (\Exception $e) {
+                report($e);
+                dd($e);
+            }
 
             try {
                 if ($request->hasFile('thumbnail')) {

@@ -65,6 +65,21 @@
             border: 1px solid #dfe3e8;
             background: #fff;
         }
+        .product-specification-select {
+            display: none;
+            background: #f8f9fb;
+            border: 1px solid #dfe3e8;
+            border-radius: .75rem;
+            padding: 1rem;
+        }
+        .specification-container table {
+            background: #fff;
+            border-radius: .5rem;
+        }
+        .specification-container th,
+        .specification-container td {
+            vertical-align: middle;
+        }
     </style>
 @endpush
 @section('content')
@@ -196,6 +211,37 @@
                                 <tbody></tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+                <div class="panel mt-4">
+                    <div class="panel-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="h5 mb-1 section-title"><i class="bi bi-sliders me-2" aria-hidden="true"></i>Product Specifications</h2>
+                            <p class="text-muted mb-0">Configure specifications only when needed.</p>
+                        </div>
+                        <div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="hasSpecificationCheck" name="has_specifications" value="1" {{ old('has_specifications') == 1 ? 'checked' : '' }}>
+                                <label class="form-check-label" for="hasSpecificationCheck">Has Specifications</label>
+                            </div>
+                            <span class="form-text-muted">Enable product specification options.</span>
+                        </div>
+                    </div>
+                    <div class="product-specification-select">
+                        <p class="mb-3">Choose product specification options.</p>
+                        <div class="product-specification-items">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="specificationOptionInput">Option*</label>
+                                    <input type="text" class="form-control" id="specificationOptionInput" name="specification_options[]" value="" placeholder="Model, Material, Warranty, etc.">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="specificationValueSelect">Value*</label>
+                                    <input class="form-control" id="specificationValueSelect" name="specification_values[]" placeholder="Enter values">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm mt-3 add-specification-btn"><i class="bi bi-plus" aria-hidden="true"></i> Add Specification</button>
                     </div>
                 </div>
                 <div class="panel mt-4">
@@ -470,6 +516,114 @@
 
         hasVariationCheckbox.addEventListener('change', toggleVariationSection);
         toggleVariationSection();
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const hasSpecificationCheckbox = document.querySelector('input[name="has_specifications"]');
+        const specificationSelect = document.querySelector('.product-specification-select');
+        const specificationTableBody = document.querySelector('#specificationTable tbody');
+
+        if (!hasSpecificationCheckbox || !specificationSelect) {
+            return;
+        }
+
+        function toggleSpecificationSection() {
+            if (hasSpecificationCheckbox.checked) {
+                specificationSelect.style.display = 'block';
+            } else {
+                specificationSelect.style.display = 'none';
+                specificationTableBody.innerHTML = '';
+            }
+        }
+
+        function renderSpecificationTable() {
+            const options = [];
+            const values = [];
+            document.querySelectorAll('input[name="specification_options[]"]').forEach(input => {
+                const value = input.value.trim();
+                if (value) {
+                    options.push(value);
+                }
+            });
+            document.querySelectorAll('.specification-value-select').forEach(select => {
+                const selectedValues = $(select).val();
+                if (selectedValues && selectedValues.length) {
+                    values.push(selectedValues);
+                }
+            });
+
+            specificationTableBody.innerHTML = '';
+
+            if (!options.length || !values.length) {
+                return;
+            }
+
+            options.forEach((option, index) => {
+                const valueList = values[index] || [];
+                valueList.forEach(value => {
+                    const jsonAttributes = JSON.stringify({ [option]: value });
+                    specificationTableBody.innerHTML += `
+                        <tr>
+                            <td>
+                                ${option}
+                                <input type="hidden" name="specification_name[]" value="${option}">
+                            </td>
+                            <td>
+                                ${value}
+                                <input type="hidden" name="specification_value[]" value="${value}">
+                                <input type="hidden" name="specification_attributes[]" value='${jsonAttributes}'>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+        }
+        document.querySelector('.add-specification-btn').addEventListener('click', function() {
+            const specificationItems = specificationSelect.querySelectorAll('.product-specification-items');
+            const newSpecificationSection = document.createElement('div');
+            newSpecificationSection.className = 'product-specification-items mt-3';
+            newSpecificationSection.innerHTML = `
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Option*</label>
+                        <input type="text" class="form-control" name="specification_options[]" placeholder="Model, Material, Warranty, etc.">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Value*</label>
+                        <div class="row g-2 align-items-center">
+                            <div class="col-10">
+                                <input type="text" class="form-control" name="specification_values[]" placeholder="Enter values">
+                            </div>
+                            <div class="col-2">
+                                <button type="button" class="btn btn-outline-danger btn-sm remove-specification-btn"><i class="bi bi-trash" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            specificationItems[specificationItems.length - 1].after(newSpecificationSection);
+            initSelect2(newSpecificationSection.querySelector('.specification-value-select'));
+        });
+        document.addEventListener('click', function(event) {
+            const removeBtn = event.target.closest('.remove-specification-btn');
+            if (removeBtn) {
+                const section = removeBtn.closest('.product-specification-items');
+                if (section) {
+                    section.remove();
+                    renderSpecificationTable();
+                }
+            }
+        });
+
+        function initSelect2(element) {
+            $(element).select2({
+                tags: true,
+                tokenSeparators: [',', ' ']
+            });
+        }
+        hasSpecificationCheckbox.addEventListener('change', toggleSpecificationSection);
+        toggleSpecificationSection();
     });
 </script>
 <script>

@@ -52,6 +52,7 @@ return new class extends Migration
             $table->boolean('is_new_arrival')->default(false);
             $table->boolean('is_wholesale')->default(false);
             $table->boolean('has_variants')->default(false);
+            $table->boolean('has_specifications')->default(false);
             $table->boolean('status')->default(true);
             $table->timestamps();
             

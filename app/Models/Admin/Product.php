@@ -2,6 +2,7 @@
 
 namespace App\Models\Admin;
 
+use App\Models\Admin\ProductSpecification;
 use App\Models\OrderItem;
 use App\Models\ProductReview;
 use Illuminate\Database\Eloquent\Model;
@@ -43,6 +44,7 @@ class Product extends Model
         'is_new_arrival',
         'is_wholesale',
         'has_variants',
+        'has_specifications',
         'desc_image',
         'status',
     ];
@@ -80,6 +82,7 @@ class Product extends Model
         'is_new_arrival' => 'boolean',
         'is_wholesale' => 'boolean',
         'has_variants' => 'boolean',
+        'has_specifications' => 'boolean',
         'status' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -99,6 +102,11 @@ class Product extends Model
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);
+    }
+
+    public function specifications()
+    {
+        return $this->hasMany(ProductSpecification::class);
     }
 
     public function orderItems()
