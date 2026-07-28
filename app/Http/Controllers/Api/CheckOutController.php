@@ -30,6 +30,8 @@ class CheckOutController extends Controller
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.product_variant_id' => 'nullable|exists:product_variants,id',
             'products.*.quantity' => 'required|integer|min:1',
+
+            'agree_to_terms' => 'required|boolean',
         ]);
         if ($validator->fails()) {
             return ApiResponse::error('Validation failed', $validator->errors()->all(), 422);
@@ -39,6 +41,9 @@ class CheckOutController extends Controller
 
         if (strlen($validatedData['shipping_address']['phone']) < 10 || strlen($validatedData['shipping_address']['phone']) > 14) {
             return ApiResponse::error('Phone number must be between 10 and 14 digits', [], 400);
+        }
+        if ($validatedData['agree_to_terms'] !== true) {
+            return ApiResponse::error('You must agree to the terms of service', [], 400);
         }
 
         $subtotal = 0;

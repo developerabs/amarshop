@@ -151,7 +151,7 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label" for="productStock">Stock*</label>
-                            <input class="form-control" id="productStock" type="number" min="1" name="total_stock" value="{{ old('total_stock') }}" required>
+                            <input class="form-control" id="productStock" type="number" min="0" name="total_stock" value="{{ old('total_stock') }}" required>
                         </div>
                     </div>
                 </div>

@@ -31,6 +31,9 @@ class ProductController extends Controller
             'featured'    => 'is_featured',
             'trending'    => 'is_trending',
             'daily-offer' => 'is_daily_offer',
+            'best-deal'    => 'is_best_deal',
+            'top-sale'    => 'is_top_sale',
+            'new-arraivals' => 'is_new_arrival',
         ];
 
         $query = Product::with(['category', 'brand'])
@@ -174,7 +177,6 @@ class ProductController extends Controller
                     'name' => $variant->name,
                     'price' => $variant->additional_price,
                     'cost' => $variant->additional_cost,
-                    'stock' => $variant->stock,
                     'image' => $variant->image ? getImageUrl($variant->image) : null,
                     'attributes' => $variant->variantValues
                         ->pluck('attribute_value', 'attribute_name')
