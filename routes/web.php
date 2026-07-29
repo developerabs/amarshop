@@ -9,6 +9,9 @@ Route::get('/', function () {
 Route::get('storagelink', function () {
     Artisan::call('storage:link');
 });
+Route::get('seed', function () {
+    Artisan::call('db:seed');
+});
 
 Route::get('cache-clear', function () {
     Artisan::call('cache:clear');
