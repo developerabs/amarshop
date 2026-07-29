@@ -5,16 +5,11 @@
             <span></span>
             <span></span>
           </button>
-
-          <form class="d-none d-md-flex ms-3 flex-grow-1" role="search">
-            <input class="form-control search-input" type="search" placeholder="Search users, orders, reports" aria-label="Search">
-          </form>
-
           <div class="navbar-actions ms-auto">
             <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
               <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
             </button>
-            <div class="dropdown">
+            {{-- <div class="dropdown">
               <button class="icon-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
                 <span class="notification-dot"></span>
                 <i class="bi bi-bell" aria-hidden="true"></i>
@@ -34,16 +29,15 @@
                   <span class="notification-time">1 hour ago</span>
                 </a>
               </div>
-            </div>
+            </div> --}}
 
             <div class="dropdown">
               <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img class="avatar-img avatar-sm" src="{{ asset('admin/images/avatar/avatar.jpg') }}" alt="{{ auth()->user()->name }}">
+                <img class="avatar-img avatar-sm" src="{{ getImageUrl(auth()->user()->profile_image) }}" alt="{{ auth()->user()->name }}">
                 <span class="profile-name d-sm-inline">{{ auth()->user()->name }}</span>
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-                <li><a class="dropdown-item" href="settings.html">Account settings</a></li>
+                <li><a class="dropdown-item" href="{{ route('admin.profile.index') }}">Profile</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <form id="logout-form" action="{{ route('admin.logout') }}" method="POST">
                   @csrf

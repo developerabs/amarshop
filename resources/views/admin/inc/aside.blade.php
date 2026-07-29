@@ -166,7 +166,7 @@
       </nav>
 
       <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="{{ asset('admin/images/avatar/avatar.jpg') }}" alt="{{ auth()->user()->name }}">
+        <img class="avatar-img avatar-md sidebar-user-avatar" src="{{ getImageUrl(auth()->user()->profile_image) }}" alt="{{ auth()->user()->name }}">
         <strong>{{ auth()->user()->name }}</strong>
         <small>Active Workspace</small>
       </div>
