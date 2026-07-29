@@ -29,7 +29,19 @@
           </div>
         </article>
       </div>
-
+      <div class="col-12 col-sm-6 col-xl-3">
+        <article class="metric-card metric-primary">
+          <div class="metric-top">
+            <span class="metric-label">Products</span>
+            <span class="metric-icon"><i class="bi bi-box-seam" aria-hidden="true"></i></span>
+          </div>
+          <div class="metric-value">{{ $totalProducts ?? 0 }}</div>
+          <div class="metric-meta">
+            <span class="text-success">({{ $activeProducts ?? 0 }} Active)</span>
+            <span class="text-danger">({{ $inactiveProducts ?? 0 }} Inactive)</span>
+          </div>
+        </article>
+      </div>
       <div class="col-12 col-sm-6 col-xl-3">
         <article class="metric-card metric-warning">
           <div class="metric-top">

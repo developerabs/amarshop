@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\Product;
 use App\Models\Order;
 use App\Models\User;
 use Carbon\Carbon;
@@ -26,6 +27,11 @@ class DashboardController extends Controller
         $refundedOrders = (clone $orders)->where('order_status', 'returned')->count();
         $recentOrders = $orders->latest()->take(5)->get();
 
+        $products = Product::query();
+        $totalProducts = $products->count();
+        $activeProducts = (clone $products)->where('status', 'true')->count();
+        $inactiveProducts = (clone $products)->where('status', 'false')->count();
+
         // order monthly chart data
        $monthlyOrders = Order::selectRaw("DATE_PART('month', created_at) as month, COUNT(*) as count")
             ->whereYear('created_at', now()->year)
@@ -38,6 +44,6 @@ class DashboardController extends Controller
                 return [$monthName => $item->count];
             });
         // dd($monthlyOrders);
-        return view('admin.dashboard', compact('authUser', 'totalUsers', 'activeUsers', 'inactiveUsers', 'totalOrders', 'pendingOrders', 'completedOrders', 'canceledOrders', 'refundedOrders', 'recentOrders', 'monthlyOrders'));
+        return view('admin.dashboard', compact('authUser', 'totalUsers', 'activeUsers', 'inactiveUsers', 'totalOrders', 'pendingOrders', 'completedOrders', 'canceledOrders', 'refundedOrders', 'recentOrders', 'monthlyOrders', 'totalProducts', 'activeProducts', 'inactiveProducts'));
     }
 }

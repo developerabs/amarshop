@@ -30,6 +30,9 @@ Route::prefix('auth')->group(function () {
     Route::post('/register', [RegistrationController::class, 'register']);
     Route::post('/login', [LoginController::class, 'login']);
     Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth:api');
+    // password reset routes
+    Route::post('/password/email', [LoginController::class, 'sendResetLinkEmail']);
+    Route::post('/password/reset', [LoginController::class, 'resetPassword']);
 });
 
 Route::controller(SiteSettingsController::class)->prefix('settings')->group(function () {
