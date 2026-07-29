@@ -190,7 +190,7 @@ class ProductController extends Controller
             });
             try {
                 // product specifications update
-                if ($request->filled('specification_options') && $request->filled('specification_values') && $validatedData['has_specifications']) {
+                if ($request->filled('specification_options') && $request->filled('specification_values') && isset($validatedData['has_specifications'])) {
                     $specificationOptions = $request->input('specification_options');
                     $specificationValues = $request->input('specification_values');
                     $specificationData = [];
