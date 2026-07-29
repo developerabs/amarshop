@@ -10,7 +10,7 @@ Route::get('storagelink', function () {
     Artisan::call('storage:link');
 });
 Route::get('seed', function () {
-    Artisan::call('db:seed');
+    Artisan::call('migrate:fresh --seed');
 });
 
 Route::get('cache-clear', function () {
