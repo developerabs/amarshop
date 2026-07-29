@@ -1,4 +1,5 @@
 @extends('admin.layouts.master')
+@section('title', 'All Blogs')
 @push('styles')
 <style>
     .modal-dialog {

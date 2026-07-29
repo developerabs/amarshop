@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="adminHMD professional admin dashboard template">
-  <meta name="author" content="adminHMD">
+  <meta name="description" content="{{ siteSettings()['site_description'] ?? 'Admin' }}">
+  <meta name="author" content="{{ siteSettings()['site_name'] ?? 'Admin' }}">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Dashboard | adminHMD</title>
+  <title>{{ siteSettings()['site_name'] ?? 'Admin' }} | @yield('title')</title>
+  <link rel="icon" href="{{ getImageUrl(siteSettings()['site_favicon'] ?? 'favicon.ico') ?? 'favicon.ico' }}">
 
 
   <link rel="stylesheet" href="{{ asset('admin/css/bootstrap.min.css') }}">

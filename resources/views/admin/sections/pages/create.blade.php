@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-
+@section('title', 'Create New Page')
 @push('styles')
 <style>
     .page-create-grid {

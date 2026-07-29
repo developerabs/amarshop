@@ -1,4 +1,5 @@
 @extends('admin.layouts.master')
+@section('title', 'All Shipping Charges')
 @push('styles')
 <style>
     .modal-dialog {

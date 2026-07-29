@@ -2,7 +2,7 @@
 
 @section('content')
 <section class="auth-card">
-    <a class="auth-brand" href="index.html"><span class="brand-icon"><i class="bi bi-grid-1x2-fill" aria-hidden="true"></i></span><span><strong>adminHMD</strong><small>Sign in to your admin workspace.</small></span></a>
+    <a class="auth-brand" href="index.html"><span class="brand-icon"><i class="bi bi-grid-1x2-fill" aria-hidden="true"></i></span><span><strong>{{ siteSettings()['site_name'] ?? 'Admin' }}</strong><small>Sign in to your admin workspace.</small></span></a>
     <form class="needs-validation" novalidate action="{{ route('admin.login.submit') }}" method="POST">
         @csrf
 

@@ -104,6 +104,30 @@ class OrderController extends Controller
         $validated = $request->validate([
             'order_status' => 'required|in:' . implode(',', self::ORDER_STATUSES),
         ]);
+        if ($order->order_status === 'delivered') {
+            return redirect()->back()->with('error', 'Cannot change the status of a delivered order.');
+        }
+        if ($order->order_status === 'cancelled') {
+            return redirect()->back()->with('error', 'Cannot change the status of a cancelled order.');
+        }
+        if ($order->order_status === 'returned') {
+            return redirect()->back()->with('error', 'Cannot change the status of a returned order.');
+        }
+        if ($order->order_status === 'pending' && $validated['order_status'] === 'delivered') {
+            return redirect()->back()->with('error', 'Cannot mark a pending order as delivered.');
+        }
+        if ($order->order_status === 'pending' && $validated['order_status'] === 'returned') {
+            return redirect()->back()->with('error', 'Cannot mark a pending order as returned.');
+        }
+        // stock update when cancelled or returned
+        if (in_array($validated['order_status'], ['cancelled', 'returned'], true)) {
+            foreach ($order->orderItems as $item) {
+                $product = $item->product;
+                if ($product) {
+                    $product->increment('total_stock', $item->quantity);
+                }
+            }
+        }
 
         $order->update([
             'order_status' => $validated['order_status'],
@@ -117,6 +141,18 @@ class OrderController extends Controller
         $validated = $request->validate([
             'payment_status' => 'required|in:' . implode(',', self::PAYMENT_STATUSES),
         ]);
+        if ($order->payment_status === 'paid' && $validated['payment_status'] !== 'paid') {
+            return redirect()->back()->with('error', 'Cannot change the payment status of a paid order.');
+        }
+        if ($order->payment_status === 'refunded' && $validated['payment_status'] !== 'refunded') {
+            return redirect()->back()->with('error', 'Cannot change the payment status of a refunded order.');
+        }
+        if ($order->payment_status === 'failed' && $validated['payment_status'] !== 'failed') {
+            return redirect()->back()->with('error', 'Cannot change the payment status of a failed order.');
+        }
+        if ($order->payment_status === 'pending' && $validated['payment_status'] === 'refunded') {
+            return redirect()->back()->with('error', 'Cannot mark a pending order as refunded.');
+        }
 
         $order->update([
             'payment_status' => $validated['payment_status'],

@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Http\UploadedFile;
+use App\Models\Admin\SiteSettings;
 use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -78,4 +79,9 @@ function getImageUrl(?string $imagePath): string
     } catch (Throwable $e) {
         return $defaultImage;
     }
+}
+function siteSettings(): array
+{
+    $settings = SiteSettings::all()->pluck('value', 'key')->toArray();
+    return $settings;
 }

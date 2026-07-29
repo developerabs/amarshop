@@ -1,4 +1,5 @@
 @extends('admin.layouts.master')
+@section('title', 'Menu Items Builder')
 @push('styles')
 <style>
     .menu-builder-wrapper {
