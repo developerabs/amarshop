@@ -15,6 +15,12 @@ Route::get('seed', function () {
 Route::get('passport', function () {
     Artisan::call('passport:install --force');
 });
+Route::get('migrate', function () {
+    Artisan::call('migrate');
+});
+Route::get('key', function () {
+    Artisan::call('key:generate');
+});
 
 Route::get('cache-clear', function () {
     Artisan::call('cache:clear');
