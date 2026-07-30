@@ -25,10 +25,26 @@ Route::get('passport-key', function () {
     Artisan::call('passport:keys --force');
 });
 Route::get('composer-dump-autoload', function () {
-    Artisan::call('composer:dump-autoload');
+     $output = [];
+    $return = 0;
+
+    exec('composer dump-autoload 2>&1', $output, $return);
+
+    return response()->json([
+        'status' => $return,
+        'output' => $output,
+    ]);
 });
 Route::get('compose-update', function () {
-    Artisan::call('composer update');
+    $output = [];
+    $return = 0;
+
+    exec('composer update 2>&1', $output, $return);
+
+    return response()->json([
+        'status' => $return,
+        'output' => $output,
+    ]);
 });
 
 Route::get('cache-clear', function () {
