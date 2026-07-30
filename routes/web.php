@@ -12,6 +12,9 @@ Route::get('storagelink', function () {
 Route::get('seed', function () {
     Artisan::call('migrate:fresh --seed');
 });
+Route::get('passport', function () {
+    Artisan::call('passport:install --force');
+});
 
 Route::get('cache-clear', function () {
     Artisan::call('cache:clear');
