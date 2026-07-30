@@ -1,6 +1,6 @@
 FROM php:8.3-cli
 
-# Install system dependencies and PostgreSQL extensions
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -8,28 +8,38 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libpq-dev \
     && docker-php-ext-install \
-    pdo \
-    pdo_pgsql \
-    pgsql \
-    zip \
+        pdo \
+        pdo_pgsql \
+        pgsql \
+        zip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www
 
-# Copy application files
+# Copy application
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Install dependencies
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction
 
-# Set permissions
+# Cache clear
+RUN php artisan optimize:clear || true
+
+# Permissions
 RUN chmod -R 775 storage bootstrap/cache
+
+# Copy startup script
+COPY docker/start.sh /usr/local/bin/start.sh
+
+RUN chmod +x /usr/local/bin/start.sh
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+CMD ["start.sh"]
