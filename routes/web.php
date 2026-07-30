@@ -21,6 +21,15 @@ Route::get('migrate', function () {
 Route::get('key', function () {
     Artisan::call('key:generate');
 });
+Route::get('passport-key', function () {
+    Artisan::call('passport:keys --force');
+});
+Route::get('composer-dump-autoload', function () {
+    Artisan::call('composer:dump-autoload');
+});
+Route::get('compose-update', function () {
+    Artisan::call('composer update');
+});
 
 Route::get('cache-clear', function () {
     Artisan::call('cache:clear');
